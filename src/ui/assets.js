@@ -96,7 +96,12 @@ const EVENTS_JS = `<script>(function(){
 // The head every page shares: fonts, icons (both served by Open HL, see
 // routes/assets.js; bump ?v= when the files change) and the shared event stream.
 const FONT = `<link rel="stylesheet" href="/ui/vendor/fonts/fonts.css?v=1"><link rel="stylesheet" href="/ui/vendor/fontawesome/css/all.min.css?v=6.5.1">` + EVENTS_JS;
-const FAVICON = `<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%23151B23'/><path d='M16 46V18l16 18 16-18v28' fill='none' stroke='%2362A8E5' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/></svg>">`;
+// The Open HL monogram: an upright L with a sideways H over its upper right.
+// LOGO_SVG is the bare mark (sidebar); the favicon puts it on the app tile.
+const LOGO_PATHS = "<path d='M15 22V49H48' fill='none' stroke='%COLOR_L%' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/>" +
+  "<path d='M24 14H49M24 32H49M36.5 14V32' fill='none' stroke='%COLOR_H%' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/>";
+const LOGO_SVG = `<svg class="m-logo" viewBox="8 8 48 48" aria-hidden="true">${LOGO_PATHS.replace("%COLOR_L%", "currentColor").replace("%COLOR_H%", "var(--accent)")}</svg>`;
+const FAVICON = `<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%23151B23'/>${LOGO_PATHS.replace("%COLOR_L%", "%23E4E9EF").replace("%COLOR_H%", "%2362A8E5")}</svg>">`;
 
 // Every theme defines the same tokens. The legacy names at the end keep pages
 // that predate the design system working while they are migrated.
@@ -258,6 +263,8 @@ html.nav-hidden .m-cell.menu{display:flex;}
 .m-brand{height:var(--pulse-h);flex-shrink:0;display:flex;align-items:center;gap:10px;padding:0 18px;border-bottom:1px solid var(--line);
   text-decoration:none;color:var(--text);}
 .m-brand-name{font:600 19px/1 var(--font-display);letter-spacing:.01em;}
+.m-logo{width:26px;height:26px;flex-shrink:0;color:var(--text);}
+.m-logo path{stroke:currentColor;} .m-logo path+path{stroke:var(--accent);}
 .m-nav-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:8px 10px 12px;scrollbar-width:thin;}
 .m-group-h{font:500 12.5px/1 var(--font-display);color:var(--muted);padding:16px 10px 8px;}
 .m-link{display:flex;align-items:center;gap:12px;height:36px;padding:0 10px;border-radius:var(--r-ctl);color:var(--text-2);
@@ -265,8 +272,10 @@ html.nav-hidden .m-cell.menu{display:flex;}
 .m-link svg,.m-link i{width:18px;height:18px;font-size:15px;flex-shrink:0;color:var(--muted);display:flex;align-items:center;justify-content:center;}
 .m-link:hover{background:var(--raised);color:var(--text);}
 .m-link:hover svg,.m-link:hover i{color:var(--text-2);}
-.m-link.active{background:var(--raised);color:var(--text);box-shadow:inset 2px 0 0 var(--accent);}
-.m-link.active svg,.m-link.active i{color:var(--accent);}
+.m-link.active{color:var(--text);font-weight:700;}
+.m-link.active:hover{background:none;}
+.m-link.active svg,.m-link.active i{width:28px;height:28px;margin:0 -5px;padding:6px;border-radius:50%;font-size:14px;
+  background:var(--accent);color:var(--accent-ink);box-shadow:0 4px 14px color-mix(in srgb,var(--accent) 40%,transparent);}
 .m-link-l{flex:1;overflow:hidden;text-overflow:ellipsis;}
 .m-count{min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--accent-soft);color:var(--accent);
   font-size:12px;font-weight:600;display:none;align-items:center;justify-content:center;}
@@ -655,7 +664,7 @@ function navBar(active) {
     return head + `<a href="${p.href}" class="m-link${cur === p.href ? " active" : ""}" title="${p.title}"${cur === p.href ? ' aria-current="page"' : ''}>${p.icon}<span class="m-link-l">${p.title}</span>${count}</a>`;
   }).join("");
   return `<header class="m-nav" id="m-nav">
-<a href="/" class="m-brand" title="Open HL home"><span class="m-brand-name">Open HL</span></a>
+<a href="/" class="m-brand" title="Open HL home">${LOGO_SVG}<span class="m-brand-name">Open HL</span></a>
 <nav class="m-nav-scroll" aria-label="Pages">${links}</nav>
 <div class="m-nav-foot">
   <button class="m-foot-btn" id="theme-picker-btn" type="button" title="Theme"><span class="m-swatch"></span><span class="m-foot-l">Theme</span></button>
