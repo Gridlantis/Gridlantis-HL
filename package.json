@@ -1,8 +1,8 @@
 {
-  "name": "metis-social-agent",
+  "name": "openhl-social-agent",
   "version": "1.0.0",
   "private": true,
-  "description": "Playwright sidecar for Metis social autopost. Kept out of server.js so Metis stays zero-dependency.",
+  "description": "Playwright sidecar for Open HL social autopost. Kept out of server.js so Open HL stays zero-dependency.",
   "main": "social_agent.js",
   "scripts": {
     "start": "node social_agent.js",

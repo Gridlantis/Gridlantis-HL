@@ -8,7 +8,7 @@ const { getDashboard, readSocial, writeSocial } = require("./store");
 // ═══ SOCIAL SIGN-IN — Meta and LinkedIn OAuth ═════════════════════════════════
 // Same shape as the Google Calendar sign-in: a one-time state minted by a
 // signed-in page, a callback outside the login wall that checks it, and a
-// paste-the-address fallback for browsers that are not on the Metis host (both
+// paste-the-address fallback for browsers that are not on the Open HL host (both
 // providers only redirect back to localhost or a public domain).
 //
 // After the callback the person still has to choose WHICH Page / company to use

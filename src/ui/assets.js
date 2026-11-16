@@ -1,4 +1,4 @@
-// ─── METIS DESIGN SYSTEM · "control room" ────────────────────────────────────
+// ─── OPENHL DESIGN SYSTEM · "control room" ────────────────────────────────────
 // Calm operations console for a home server. Rules the whole UI follows:
 //   • colour carries meaning: --ok / --warn / --fault are status, --accent is
 //     "you can act on this". Nothing is coloured for decoration.
@@ -207,11 +207,11 @@ html.nav-rail .m-nav-scroll,html.nav-rail .m-nav-foot{padding-left:8px;padding-r
 .theme-chip.active{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);}
 .theme-dot{width:12px;height:12px;border-radius:4px;flex-shrink:0;}
 .m-apps-chev{margin-left:auto;font-size:10px!important;width:auto!important;transition:transform .15s;}
-.metis-get-app.open .m-apps-chev{transform:rotate(180deg);}
+.openhl-get-app.open .m-apps-chev{transform:rotate(180deg);}
 .m-apps-menu{position:fixed;left:calc(var(--nav-w) + 8px);bottom:12px;z-index:9999;display:none;width:240px;
   background:var(--surface);border:1px solid var(--line);border-radius:var(--r-panel);padding:6px;
   box-shadow:0 18px 48px rgba(0,0,0,.4);flex-direction:column;gap:2px;}
-.metis-get-app.open .m-apps-menu{display:flex;}
+.openhl-get-app.open .m-apps-menu{display:flex;}
 .m-apps-item{display:flex;align-items:center;gap:12px;padding:8px 10px;border-radius:var(--r-ctl);color:var(--text);text-decoration:none;}
 .m-apps-item:hover,.m-apps-item:focus-visible{background:var(--raised);}
 .m-apps-item i{width:18px;text-align:center;color:var(--muted);font-size:15px;}
@@ -219,7 +219,7 @@ html.nav-rail .m-nav-scroll,html.nav-rail .m-nav-foot{padding-left:8px;padding-r
 .m-apps-item b{font-weight:500;font-size:13.5px;}
 .m-apps-item small{font-size:12px;color:var(--muted);}
 html.nav-rail .m-apps-chev{display:none;}
-.metis-switch-server[hidden]{display:none;}
+.openhl-switch-server[hidden]{display:none;}
 
 .m-pulse{position:fixed;top:0;left:var(--nav-w);right:0;height:var(--pulse-h);z-index:55;display:flex;align-items:stretch;
   background:var(--bg-nav);border-bottom:1px solid var(--line);overflow-x:auto;overflow-y:hidden;scrollbar-width:none;}
@@ -264,22 +264,22 @@ const THEME_JS = `(function(){
     root.style.colorScheme=th.dark?'dark':'light';
   }
   var saved='slate';
-  try{ saved=pick(localStorage.getItem('metis-theme')); if(localStorage.getItem('metis-nav')==='rail') root.classList.add('nav-rail'); if(localStorage.getItem('metis-nav-hidden')==='1') root.classList.add('nav-hidden'); }catch(e){}
+  try{ saved=pick(localStorage.getItem('openhl-theme')); if(localStorage.getItem('openhl-nav')==='rail') root.classList.add('nav-rail'); if(localStorage.getItem('openhl-nav-hidden')==='1') root.classList.add('nav-hidden'); }catch(e){}
   apply(saved);
 
   window._applyTheme=function(name){
     if(!THEMES[name])return;
     apply(name);
-    try{localStorage.setItem('metis-theme',name);}catch(e){}
+    try{localStorage.setItem('openhl-theme',name);}catch(e){}
     document.querySelectorAll('.theme-chip').forEach(function(c){c.classList.toggle('active',c.dataset.theme===name);});
-    try{window.dispatchEvent(new Event('metis:theme'));}catch(e){}
+    try{window.dispatchEvent(new Event('openhl:theme'));}catch(e){}
   };
 
   window._buildThemePicker=function(){
     var pop=document.getElementById('theme-popover');if(!pop||pop.dataset.built)return;
     pop.dataset.built='1';
     var cur=saved;
-    try{cur=pick(localStorage.getItem('metis-theme'));}catch(e){}
+    try{cur=pick(localStorage.getItem('openhl-theme'));}catch(e){}
     var darkDiv=document.getElementById('theme-dark-grid');
     var lightDiv=document.getElementById('theme-light-grid');
     Object.entries(THEMES).forEach(function(entry){
@@ -345,7 +345,7 @@ const NAV_PAGES = [
    icon:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="2.2"/><path d="M10.5 18.5h3"/><path d="m10.5 8.5 3 2-3 2"/></svg>`},
   {href:"/docker", group:"Systems",    color:"#38bdf8", title:"Containers",
    icon:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="4" height="4"/><rect x="8" y="11" width="4" height="4"/><rect x="13" y="11" width="4" height="4"/><rect x="8" y="6" width="4" height="4"/><path d="M3 15c0 3 2.5 4.5 6 4.5s8-1.6 9.3-5.2c2.2.3 3.2-1.3 2.7-2.3"/></svg>`},
-  {href:"/world", group:"Systems",     color:"#22d3ee", title:"Metis World",
+  {href:"/world", group:"Systems",     color:"#22d3ee", title:"Open HL World",
    icon:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9z"/><path d="M4 7.5 12 12l8-4.5M12 12v9"/></svg>`},
 ];
 
@@ -400,7 +400,7 @@ const ALARM_HTML = `<style>${ALARM_CSS}</style>
 </div>`;
 
 const ALARM_JS = `(function(){
-  if (window.__metisAlarm) return; window.__metisAlarm = true;
+  if (window.__openhlAlarm) return; window.__openhlAlarm = true;
 
   var Q = [], cur = null;              // queue of ringing reminders + the one on screen
   var AC = null, beat = null, armed = false;
@@ -445,7 +445,7 @@ const ALARM_JS = `(function(){
     try { (PATTERNS[sound] || PATTERNS.chime)(); } catch(e){}
     try { if (navigator.vibrate) navigator.vibrate([220,120,220]); } catch(e){}
   }
-  window.__metisPreviewSound = function(s){ arm(); play(s); };
+  window.__openhlPreviewSound = function(s){ arm(); play(s); };
 
   function startRing(sound){ stopRing(); arm(); play(sound); beat = setInterval(function(){ play(sound); }, 2600); }
   function stopRing(){
@@ -457,7 +457,7 @@ const ALARM_JS = `(function(){
     try {
       if (!('Notification' in window) || Notification.permission !== 'granted') return;
       var n = new Notification(r.title || 'Reminder', {
-        body: r.note || '', tag: 'metis-reminder-' + r.id, requireInteraction: true
+        body: r.note || '', tag: 'openhl-reminder-' + r.id, requireInteraction: true
       });
       n.onclick = function(){ try { window.focus(); } catch(e){} n.close(); };
     } catch(e){}
@@ -567,7 +567,7 @@ function navBar(active) {
     return head + `<a href="${p.href}" class="m-link${cur === p.href ? " active" : ""}" title="${p.title}"${cur === p.href ? ' aria-current="page"' : ''}>${p.icon}<span class="m-link-l">${p.title}</span>${count}</a>`;
   }).join("");
   return `<header class="m-nav" id="m-nav">
-<a href="/" class="m-brand" title="Metis home"><span class="m-brand-name">Metis</span></a>
+<a href="/" class="m-brand" title="Open HL home"><span class="m-brand-name">Open HL</span></a>
 <nav class="m-nav-scroll" aria-label="Pages">${links}</nav>
 <div class="m-nav-foot">
   <button class="m-foot-btn" id="theme-picker-btn" type="button" title="Theme"><span class="m-swatch"></span><span class="m-foot-l">Theme</span></button>
@@ -576,14 +576,14 @@ function navBar(active) {
     <div><div class="theme-section-label">Dark</div><div class="theme-grid" id="theme-dark-grid"></div></div>
     <div><div class="theme-section-label">Light</div><div class="theme-grid" id="theme-light-grid"></div></div>
   </div>
-  <div class="metis-get-app">
+  <div class="openhl-get-app">
     <button class="m-foot-btn" id="m-apps-btn" type="button" title="Get the app" aria-haspopup="menu" aria-expanded="false" aria-controls="m-apps-menu"><i class="fa-solid fa-download"></i><span class="m-foot-l">Get the app</span><i class="fa-solid fa-chevron-up m-apps-chev"></i></button>
     <div class="m-apps-menu" id="m-apps-menu" role="menu" aria-label="Get the app">
       <a href="/download#desktop" class="m-apps-item" role="menuitem"><i class="fa-solid fa-desktop"></i><span><b>Desktop app</b><small>Windows and Linux</small></span></a>
       <a href="/download#android" class="m-apps-item" role="menuitem"><i class="fa-brands fa-android"></i><span><b>Android app</b><small>Android 7 and newer</small></span></a>
     </div>
   </div>
-  <button class="m-foot-btn metis-switch-server" type="button" title="Connect to a different Metis server" hidden><i class="fa-solid fa-server"></i><span class="m-foot-l">Switch server</span></button>
+  <button class="m-foot-btn openhl-switch-server" type="button" title="Connect to a different Open HL server" hidden><i class="fa-solid fa-server"></i><span class="m-foot-l">Switch server</span></button>
   <button class="m-foot-btn m-collapse" id="m-collapse" type="button" title="Collapse sidebar"><i class="fa-solid fa-angles-left"></i><span class="m-foot-l">Collapse</span></button>
   <button class="m-foot-btn m-hide" id="m-hide" type="button" title="Hide sidebar (bring it back with the menu button, top left)"><i class="fa-solid fa-eye-slash"></i><span class="m-foot-l">Hide sidebar</span></button>
   <form method="POST" action="/logout"><button class="m-foot-btn" type="submit" title="Sign out"><i class="fa-solid fa-arrow-right-from-bracket"></i><span class="m-foot-l">Sign out</span></button></form>

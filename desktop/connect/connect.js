@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const D = window.metisDesktop;
+  const D = window.openhlDesktop;
   const $ = id => document.getElementById(id);
   let lastTest = null;
 
@@ -31,7 +31,7 @@
         if ($("trust-cb").checked) { await D.connect.trust(r.url, r.fingerprint); r = await D.connect.test(url); }
       }
       if (!r.ok) { status($("status"), r.error, "bad"); btn.disabled = false; return; }
-      status($("status"), "Found Metis" + (r.hostname ? " on " + r.hostname : "") + " — opening…", "ok");
+      status($("status"), "Found Open HL" + (r.hostname ? " on " + r.hostname : "") + " — opening…", "ok");
       const o = await D.connect.open(r.url);
       if (!o.ok) { status($("status"), o.error, "bad"); btn.disabled = false; }
     } catch (e) { status($("status"), e.message, "bad"); btn.disabled = false; }
@@ -41,7 +41,7 @@
   $("browse").addEventListener("click", async () => { const f = await D.connect.pickFolder(); if (f) $("folder").value = f; });
   $("start-local").addEventListener("click", async () => {
     const b = $("start-local"); b.disabled = true;
-    status($("local-status"), "Starting Metis…", "busy");
+    status($("local-status"), "Starting Open HL…", "busy");
     const r = await D.connect.startLocal($("folder").value);
     if (!r.ok) { status($("local-status"), r.error, "bad"); b.disabled = false; }
   });
@@ -53,6 +53,6 @@
     $("url").value = (st.notice && st.notice.url) || st.lastUrl || "";
     if (st.notice && st.notice.error) { $("notice").hidden = false; $("notice").textContent = st.notice.error; }
     if (st.platform === "linux") { $("local").hidden = false; if (st.localFolder) $("folder").value = st.localFolder; }
-    $("foot").textContent = "Metis desktop " + st.version + " · Ctrl+Shift+Alt+S switches server";
+    $("foot").textContent = "Open HL desktop " + st.version + " · Ctrl+Shift+Alt+S switches server";
   })();
 })();

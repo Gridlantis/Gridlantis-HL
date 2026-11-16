@@ -40,7 +40,7 @@ function request(method, path, body, opts = {}) {
   if (!st.ok) {
     return Promise.reject(st.reason === "no-socket"
       ? err("Docker is not running on this host", 503)
-      : err("Metis cannot use the Docker socket — add this user to the 'docker' group", 403));
+      : err("Open HL cannot use the Docker socket — add this user to the 'docker' group", 403));
   }
   return new Promise((resolve, reject) => {
     const payload = body === undefined || body === null ? null : Buffer.from(JSON.stringify(body));

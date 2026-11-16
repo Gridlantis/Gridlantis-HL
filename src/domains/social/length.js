@@ -1,6 +1,6 @@
 // ── Post length as each platform counts it ──────────────────────────────────
 // Links are the difference. Mastodon counts every link as 23 characters.
-// Bluesky counts the text that is displayed, and Metis displays a long link
+// Bluesky counts the text that is displayed, and Open HL displays a long link
 // shortened ("knack.be/nieuws/wereld/…", the way the Bluesky app does) with the
 // full address in its link facet — see bskyRichText() in bluesky.js. Elsewhere
 // a link costs its full length.

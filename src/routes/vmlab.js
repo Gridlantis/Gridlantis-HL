@@ -44,7 +44,7 @@ module.exports = async function vmlabRoutes(ctx) {
 
   try {
     // ── Pages + static ───────────────────────────────────────────────────────
-    // Always served by this Metis, whichever host the page then drives.
+    // Always served by this Open HL, whichever host the page then drives.
     let mm;
     if (pathname === "/vmlab" && req.method === "GET") return html(vmlabHtml());
     if ((mm = m(/^\/vmlab\/console\/([^/]+)$/)) && req.method === "GET") {
@@ -72,8 +72,8 @@ module.exports = async function vmlabRoutes(ctx) {
       return json(hosts.list());
     }
     if (pathname === "/api/vmlab/hosts" && req.method === "POST") return json(hosts.add(await body()));
-    // How this browser reaches Metis (Funnel, tailnet direct or relayed, LAN),
-    // shown on the console. Always about this Metis, so never proxied.
+    // How this browser reaches Open HL (Funnel, tailnet direct or relayed, LAN),
+    // shown on the console. Always about this Open HL, so never proxied.
     if (pathname === "/api/vmlab/connection" && req.method === "GET") return json(await connection.describe(req));
     // Try an address and token before committing them to the registry.
     if (pathname === "/api/vmlab/hosts/test" && req.method === "POST") {
@@ -107,7 +107,7 @@ module.exports = async function vmlabRoutes(ctx) {
 };
 
 // ── VNC over WebSocket ───────────────────────────────────────────────────────
-// The console tunnel is reachable only through Metis, so it inherits the Metis
+// The console tunnel is reachable only through Open HL, so it inherits the Open HL
 // login. For a remote host the two sockets are spliced onto the agent's own
 // tunnel, which is itself talking to that machine's QEMU.
 module.exports.handleUpgrade = function handleUpgrade(req, socket, head) {

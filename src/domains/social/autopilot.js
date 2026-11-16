@@ -406,7 +406,7 @@ async function autopilotTick() {
         saveCfg(dash.id, { lastError: e.message, failures, nextRunAt: new Date(Date.now() + RETRY_MS).toISOString() });
         console.error("[social autopilot]", dash.name, "-", e.message);
         // Say so once, not every half hour while the AI peer is off.
-        if (failures === 1) sendAlert("Metis · social autopilot (" + dash.name + ")", "Could not write a post: " + e.message, false);
+        if (failures === 1) sendAlert("Open HL · social autopilot (" + dash.name + ")", "Could not write a post: " + e.message, false);
       }
     }
   } catch (e) { /* never let the ticker die */ }

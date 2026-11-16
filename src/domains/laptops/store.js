@@ -10,16 +10,16 @@ const { errorWithStatus } = require("../../helpers");
 
 // ─── LAPTOPS · saved machines ────────────────────────────────────────────────
 // Each laptop runs tools/laptop/setup-remote.sh once. That script starts a VNC
-// server bound to the laptop's tailnet address, lets only Metis in, and prints
+// server bound to the laptop's tailnet address, lets only Open HL in, and prints
 // a pairing code — the laptop's address plus a random password, the way
 // RustDesk shows an ID and a permanent password. Pasting the code here is the
-// last time anyone handles that password: Metis logs in with it on every
+// last time anyone handles that password: Open HL logs in with it on every
 // connect (see rfb.js) and never sends it to a browser.
 //
 // The file holds those passwords, so it sits in the project root on the SSD
 // (never on the NTFS volume, where chmod is a no-op) and is written owner-only.
 const LAPTOPS_FILE = dataFile("laptops.json");
-const PAIR_PREFIX = "metis-laptop:";
+const PAIR_PREFIX = "openhl-laptop:";
 
 const err = errorWithStatus(400);
 
@@ -34,7 +34,7 @@ function write(list) {
 }
 
 // ── Pairing code ─────────────────────────────────────────────────────────────
-// metis-laptop:<base64url of {"v":1,"name","host","port","password"}>
+// openhl-laptop:<base64url of {"v":1,"name","host","port","password"}>
 function parsePairing(code) {
   const s = String(code || "").trim().replace(/\s+/g, "");
   if (!s.startsWith(PAIR_PREFIX)) throw err("that is not a pairing code — it starts with " + PAIR_PREFIX);

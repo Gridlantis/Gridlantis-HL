@@ -20,7 +20,7 @@ if (!CHROME) {
 }
 
 const svg = fs.readFileSync(SVG, "utf8");
-const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "metis-icon-"));
+const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "openhl-icon-"));
 const page = path.join(tmp, "icon.html");
 fs.writeFileSync(page, `<!doctype html><meta charset="utf-8">
 <style>html,body{margin:0;background:transparent}svg{display:block;width:${SIZE}px;height:${SIZE}px}</style>${svg}`);

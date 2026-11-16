@@ -4,14 +4,14 @@ const path = require("path");
 const vm = require("vm");
 const { errorWithStatus } = require("../../helpers");
 
-// ─── LAPTOPS · VNC (RFB) handshake done by Metis ─────────────────────────────
-// A laptop runs a VNC server locked to Metis's tailnet address and protected by
-// a password that Metis keeps. Metis logs in to that server itself and hands
+// ─── LAPTOPS · VNC (RFB) handshake done by Open HL ─────────────────────────────
+// A laptop runs a VNC server locked to Open HL's tailnet address and protected by
+// a password that Open HL keeps. Open HL logs in to that server itself and hands
 // the browser a session that is already authenticated, so noVNC never asks for
 // a password and the password never reaches the browser.
 //
-//   browser (noVNC) ─ws─ Metis ─tcp─ laptop x11vnc
-//   Metis plays the server for the browser (offering "no auth") and the client
+//   browser (noVNC) ─ws─ Open HL ─tcp─ laptop x11vnc
+//   Open HL plays the server for the browser (offering "no auth") and the client
 //   for the laptop (answering its VNC-auth challenge). After both handshakes the
 //   bytes, starting at ClientInit, are spliced straight through.
 
@@ -91,7 +91,7 @@ function login(laptop, timeoutMs = 8000) {
       } else if (types.includes(SEC_NONE)) {
         sock.write(Buffer.from([SEC_NONE]));
       } else {
-        throw err("the PC only offers VNC security types Metis cannot speak (" + types.join(", ") + ")");
+        throw err("the PC only offers VNC security types Open HL cannot speak (" + types.join(", ") + ")");
       }
       const result = (await r.read(4)).readUInt32BE(0);
       if (result !== 0) {
@@ -108,11 +108,11 @@ function login(laptop, timeoutMs = 8000) {
   });
 }
 
-// The setup script appends " metis-<key>=<value>" tokens to the desktop name;
-// today just metis-monitors=WxH+X+Y/OUTPUT,… (the viewer parses it too).
+// The setup script appends " openhl-<key>=<value>" tokens to the desktop name;
+// today just openhl-monitors=WxH+X+Y/OUTPUT,… (the viewer parses it too).
 function splitDesktopName(name) {
   const tok = {};
-  const desktop = String(name).replace(/\s+metis-([a-z]+)=(\S*)/g, (_, k, v) => { tok[k] = v; return ""; }).trim();
+  const desktop = String(name).replace(/\s+openhl-([a-z]+)=(\S*)/g, (_, k, v) => { tok[k] = v; return ""; }).trim();
   const monitors = tok.monitors == null ? null : tok.monitors.split(",")
     .map(s => /^(\d+)x(\d+)\+(\d+)\+(\d+)(?:\/(.*))?$/.exec(s)).filter(Boolean)
     .map(g => ({ w: +g[1], h: +g[2], x: +g[3], y: +g[4], name: g[5] || "" }));

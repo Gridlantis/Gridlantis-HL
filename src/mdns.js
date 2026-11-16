@@ -4,7 +4,7 @@ const dgram = require("dgram");
 function advertiseMdns(port) {
   const MDNS_ADDR = '224.0.0.251';
   const MDNS_PORT = 5353;
-  const hostname = 'metis';
+  const hostname = 'openhl';
   const svcName = `${hostname}._http._tcp.local`;
   function encodeName(name) {
     const parts = name.split('.');

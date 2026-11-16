@@ -20,13 +20,13 @@ const { errorWithStatus } = require("../../helpers");
 //   ephemeral   — overlay in vmlab/scratch; the environment and everything it
 //                 wrote are deleted the moment the VM stops.
 // QEMU runs as a transient systemd --user unit when available, so restarting
-// Metis (or its own service) never takes running VMs down with it.
+// Open HL (or its own service) never takes running VMs down with it.
 const LOG_DIR = path.join(VMLAB_DIR, "logs");
 fs.mkdirSync(LOG_DIR, { recursive: true });
 
 const runDir = id => path.join(RUN_DIR, id);
 const sock = (id, n) => path.join(runDir(id), n + ".sock");
-const unitName = id => "metis-vm-" + id;
+const unitName = id => "openhl-vm-" + id;
 const qarg = s => String(s).replace(/,/g, ",,");            // QEMU option-value escaping
 
 const err = errorWithStatus(400);
@@ -55,7 +55,7 @@ hoststats.setVmPids(() => store.envs.read().filter(e => e.pid && e.status !== "s
 // ── Validation / normalization ───────────────────────────────────────────────
 const clampInt = (v, lo, hi, def) => { const n = parseInt(v, 10); return Number.isFinite(n) ? Math.min(hi, Math.max(lo, n)) : def; };
 
-// Default guest login: the account Metis itself runs as, so a new VM has the
+// Default guest login: the account Open HL itself runs as, so a new VM has the
 // same username you already type on this machine.
 function defaultUser() {
   try { return require("os").userInfo().username || "user"; } catch { return "user"; }
@@ -170,7 +170,7 @@ function writeSeed(env) {
   };
   // JSON is valid YAML, and it sidesteps every YAML quoting pitfall in passwords and commands.
   fs.writeFileSync(path.join(dir, "user-data"), "#cloud-config\n" + JSON.stringify(cfg, null, 2) + "\n");
-  fs.writeFileSync(path.join(dir, "meta-data"), "instance-id: metis-" + env.id + "\nlocal-hostname: " + host + "\n");
+  fs.writeFileSync(path.join(dir, "meta-data"), "instance-id: openhl-" + env.id + "\nlocal-hostname: " + host + "\n");
   return dir;
 }
 
@@ -180,7 +180,7 @@ function buildArgs(env, opts) {
   const win = env.family === "windows";
   const rd = runDir(env.id);
   const a = [];
-  a.push("-name", "metis-vm-" + env.id + ",process=metis-vm-" + env.id);
+  a.push("-name", "openhl-vm-" + env.id + ",process=openhl-vm-" + env.id);
   a.push("-machine", "q35,accel=" + (kvm ? "kvm" : "tcg"));
   a.push("-cpu", kvm ? (win ? "host,hv_relaxed,hv_spinlocks=0x1fff,hv_vapic,hv_time" : "host") : "max");
   a.push("-smp", String(env.cpus), "-m", String(env.memoryMb));
@@ -301,7 +301,7 @@ async function startEnv(id, { forceTcg = false } = {}) {
       try { await execP("systemctl", ["--user", "reset-failed", unitName(id)], 5000); } catch {}
       try {
         await execP("systemd-run", ["--user", "--collect", "--quiet", "--unit=" + unitName(id),
-          "--description=Metis VM Lab · " + env.name,
+          "--description=Open HL VM Lab · " + env.name,
           "-p", "StandardOutput=append:" + logFile, "-p", "StandardError=append:" + logFile,
           "-p", "TimeoutStopSec=20", "--", qemu].concat(args), 15000);
         viaSystemd = true;
@@ -430,7 +430,7 @@ async function cleanupAfterExit(env, extra = {}) {
 }
 
 // Watch running VMs: notice shutdowns from inside the guest, reattach after a
-// Metis restart, and probe the guest agent so the UI can show it.
+// Open HL restart, and probe the guest agent so the UI can show it.
 let watchBusy = false;
 async function watch() {
   if (watchBusy) return;

@@ -102,7 +102,7 @@ async function nodeChecksRun() {
     if (MONITOR_LOG.length > 120) MONITOR_LOG.shift();
     broadcast("node_status", { id: ev.id, name: ev.name, kind: ev.kind, online: ev.online, at: Date.now() });
     const recovery = !(SETTINGS.alerts && SETTINGS.alerts.recovery === false);
-    if (!ev.online || recovery) sendAlert(ev.online ? "Metis · node recovered" : "Metis · NODE OFFLINE", ev.name + (ev.online ? " is back online" : " is offline"), !ev.online);
+    if (!ev.online || recovery) sendAlert(ev.online ? "Open HL · node recovered" : "Open HL · NODE OFFLINE", ev.name + (ev.online ? " is back online" : " is offline"), !ev.online);
   }
   activity("monitor", "sweep", { count: Object.keys(cur).length, online: onlineNow, ms: Date.now() - t0, label: "Checked " + Object.keys(cur).length + " nodes, " + onlineNow + " online" });
   monitorPrimed = true;

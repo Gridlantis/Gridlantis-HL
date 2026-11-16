@@ -1,5 +1,5 @@
-/* Metis World — a 3D town where every Metis job is a robot errand.
-   Inside the glowing wall: Metis's own districts around the core. Outside:
+/* Open HL World — a 3D town where every Open HL job is a robot errand.
+   Inside the glowing wall: Open HL's own districts around the core. Outside:
    the services it talks to. 'activity' SSE events send robots between them. */
 import * as THREE from "three";
 import { OrbitControls } from "/world/assets/OrbitControls.js";
@@ -241,7 +241,7 @@ function buildGround() {
       lamp.position.copy(polar(R_WALL, ga, 4.4)); scene.add(lamp);
     }
   }
-  const wallLabel = textSprite("Metis network", "#22d3ee", 1.2);
+  const wallLabel = textSprite("Open HL network", "#22d3ee", 1.2);
   wallLabel.position.copy(polar(R_WALL + 1, 195, 5)); scene.add(wallLabel);
 
   // Stars.
@@ -269,8 +269,8 @@ function buildCore() {
   ring.rotation.x = Math.PI / 2.4; g.add(ring);
   spinners.push({ obj: crystal, axis: "y", speed: 0.6 }, { obj: ring, axis: "z", speed: 0.9 });
   const light = new THREE.PointLight("#22d3ee", 60, 40, 1.6); light.position.y = 16; g.add(light);
-  const lab = textSprite("Metis", "#22d3ee", 1.7); lab.position.y = 20.5; g.add(lab);
-  register("core", g, { title: "Metis", sub: "The server everything runs on", href: "/", color: "#22d3ee",
+  const lab = textSprite("Open HL", "#22d3ee", 1.7); lab.position.y = 20.5; g.add(lab);
+  register("core", g, { title: "Open HL", sub: "The server everything runs on", href: "/", color: "#22d3ee",
     door: new THREE.Vector3(0, 0, 0), a: 0, r: 0, inside: true });
 }
 
@@ -1075,7 +1075,7 @@ function frame() {
   } catch (e) {
     const el = $("w-err");
     el.style.display = "flex";
-    el.textContent = "Metis World could not start: " + (e && e.message || e) + ". This page needs WebGL.";
+    el.textContent = "Open HL World could not start: " + (e && e.message || e) + ". This page needs WebGL.";
     console.error(e);
   }
 })();

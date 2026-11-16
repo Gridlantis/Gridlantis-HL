@@ -91,7 +91,7 @@
       st.busy.action === "stop" ? "Stopping" : "Starting", " the phones (", fmtAgo(st.busy.since), ")…"));
     if (st.lastError) banners.appendChild(h("div", { class: "banner bad" }, "Last ", st.lastError.action, " failed: ", st.lastError.message));
     if (st.cvd && st.adb === false) banners.appendChild(h("div", { class: "banner" },
-      "adb is not set up in Metis yet, so phones cannot be mirrored. ", h("a", { href: "/mobile" }, "Install tools on Mobile host"), "."));
+      "adb is not set up in Open HL yet, so phones cannot be mirrored. ", h("a", { href: "/mobile" }, "Install tools on Mobile host"), "."));
     if (!S.st) { box.appendChild(h("div", { class: "empty" }, "Loading…")); return; }
     if (!st.groups || !st.groups.length) {
       box.appendChild(h("div", { class: "empty" }, h("b", null, "No Cuttlefish group"),

@@ -1,20 +1,20 @@
 #!/usr/bin/env node
 /**
- * social_agent.js — Metis social autopost sidecar
+ * social_agent.js — Open HL social autopost sidecar
  * ---------------------------------------------------------------------------
  * Drives a real browser for the platforms that have no free, sanctioned posting
- * API. Metis talks to this over HTTP on 127.0.0.1 and never touches Playwright
+ * API. Open HL talks to this over HTTP on 127.0.0.1 and never touches Playwright
  * itself, which keeps server.js at zero npm dependencies.
  *
  * DESIGN RULES (deliberate, please keep them):
  *   1. NO PASSWORDS. `/login` opens a visible browser window and YOU sign in by
  *      hand — 2FA, CAPTCHA, device prompts and all. Playwright only saves the
- *      resulting cookies. Nothing here ever asks Metis for a credential.
+ *      resulting cookies. Nothing here ever asks Open HL for a credential.
  *   2. POSTS ONLY. There is no follow, like, comment, message or scrape
  *      capability, and none should be added.
  *   3. ONE ACCOUNT PER PLATFORM. No profile rotation, no proxy pool. Those are
  *      the building blocks of spam operations, not of a personal tool.
- *   4. HUMAN PACE. Metis enforces a gap between posts; do not remove it.
+ *   4. HUMAN PACE. Open HL enforces a gap between posts; do not remove it.
  *
  * Install:
  *   cd agents/social && npm install && npx playwright install chromium
@@ -179,7 +179,7 @@ async function doLogin(platform) {
   return withContext(platform, false, async (page, ctx, meta, sp) => {
     await page.goto(meta.loginUrl, { waitUntil: "domcontentloaded" });
     console.log(`\n→ Sign in to ${meta.label} in the browser window that just opened.`);
-    console.log("  Metis is not watching your keystrokes; it only saves the session cookie when you're in.\n");
+    console.log("  Open HL is not watching your keystrokes; it only saves the session cookie when you're in.\n");
     // Poll for up to 5 minutes — long enough for 2FA, app approval, CAPTCHA.
     const deadline = Date.now() + 5 * 60 * 1000;
     let ok = false;

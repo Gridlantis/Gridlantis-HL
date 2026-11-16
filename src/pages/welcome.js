@@ -6,8 +6,8 @@ const { BASE_CSS, FAVICON, FONT, LEGACY_THEMES, THEMES } = require("../ui/assets
 function welcomeHtml() {
   return `<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Metis</title>${FONT}${FAVICON}
-<script>(function(){try{var T=${JSON.stringify(THEMES)},L=${JSON.stringify(LEGACY_THEMES)};var n=localStorage.getItem('metis-theme')||'slate';var t=T[L[n]||n]||T.slate;for(var k in t.vars)document.documentElement.style.setProperty('--'+k,t.vars[k]);document.documentElement.style.colorScheme=t.dark?'dark':'light';}catch(e){}})();</script>
+<title>Open HL</title>${FONT}${FAVICON}
+<script>(function(){try{var T=${JSON.stringify(THEMES)},L=${JSON.stringify(LEGACY_THEMES)};var n=localStorage.getItem('openhl-theme')||'slate';var t=T[L[n]||n]||T.slate;for(var k in t.vars)document.documentElement.style.setProperty('--'+k,t.vars[k]);document.documentElement.style.colorScheme=t.dark?'dark':'light';}catch(e){}})();</script>
 <style>
 ${BASE_CSS}
 body{display:grid;place-items:center;padding:24px;}

@@ -10,7 +10,7 @@ function httpGet(url, timeoutMs=10000, extraHeaders={}) {
     const req = mod.get({
       hostname: u.hostname, port: u.port || undefined,
       path: u.pathname + u.search,
-      headers: { 'User-Agent': 'Metis/1.0', ...extraHeaders }
+      headers: { 'User-Agent': 'OpenHL/1.0', ...extraHeaders }
     }, res => {
       // Follow redirects
       if ((res.statusCode === 301 || res.statusCode === 302 || res.statusCode === 307 || res.statusCode === 308) && res.headers.location) {
@@ -69,7 +69,7 @@ function httpPost(url, body, headers={}, timeoutMs=10000) {
   });
 }
 
-// This Metis's own tailnet address — the one another machine on the tailnet
+// This Open HL's own tailnet address — the one another machine on the tailnet
 // should call back on, and the only one a laptop's VNC server should let in.
 // 100.64.0.0/10 is the CGNAT range Tailscale hands out.
 function tailnetIp() {

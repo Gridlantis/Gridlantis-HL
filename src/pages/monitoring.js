@@ -1,7 +1,7 @@
 const { BASE_CSS, FAVICON, FONT, NAV_CSS, TOAST_CSS, TOAST_JS, navBar } = require("../ui/assets");
 
 // ─── MONITORING ──────────────────────────────────────────────────────────────
-// Reachability of every node Metis watches, drawn as a topology map, plus host
+// Reachability of every node Open HL watches, drawn as a topology map, plus host
 // metrics, the recent state changes, the check schedule and alert delivery.
 //
 // Client JS sits inside a template literal: no backticks, no dollar-brace, no
@@ -9,7 +9,7 @@ const { BASE_CSS, FAVICON, FONT, NAV_CSS, TOAST_CSS, TOAST_JS, navBar } = requir
 function monitoringHtml() {
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Metis · Monitoring</title>${FONT}${FAVICON}
+<title>Open HL · Monitoring</title>${FONT}${FAVICON}
 <style>
 ${BASE_CSS}${NAV_CSS}${TOAST_CSS}
 .mon-when{color:var(--muted);text-align:right;font-size:13px;line-height:1.5;}
@@ -232,14 +232,14 @@ function hhmm(d){ return d.toLocaleTimeString([], { hour:'2-digit', minute:'2-di
 function hhmmss(d){ return d.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' }); }
 
 // ═══ TOPOLOGY MAP ════════════════════════════════════════════════════════════
-// Metis in the middle, the ways in on the left, every monitored node on the
+// Open HL in the middle, the ways in on the left, every monitored node on the
 // right. A down node's link turns into a red dashed line so an outage reads at
 // a glance. Redrawn when data, size or theme changes; no idle animation.
 var MAP = { hub:null, ins:[], outs:[], hover:null, overflow:0 };
 function layoutMap(w,h){
   var narrow = w < 600;
   var cx = narrow ? Math.max(90, w*0.30) : Math.max(150, w*0.36), cy = h/2;
-  MAP.hub = { x:cx, y:cy, r:30, label:'Metis', sub:(HOST && HOST.hostname) || 'this machine', kind:'hub' };
+  MAP.hub = { x:cx, y:cy, r:30, label:'Open HL', sub:(HOST && HOST.hostname) || 'this machine', kind:'hub' };
   var ins = [ {l:'Home network',s:'LAN'}, {l:'Tailscale',s:'remote access'}, {l:'Browsers and apps',s:'clients'} ];
   MAP.ins = ins.map(function(o,i){
     return { x: narrow ? 22 : Math.min(90, w*0.12), y: cy + (i - 1) * Math.min(110, h*0.26), r:10, label:o.l, sub:o.s, kind:'in' };
@@ -455,7 +455,7 @@ function renderRoster(){
 }
 function renderLogs(){
   var box=el('logs'); box.textContent='';
-  if (!LOG.length){ hint(box, 'No changes yet. Every node has kept its state since Metis started.'); setText('log-note',''); return; }
+  if (!LOG.length){ hint(box, 'No changes yet. Every node has kept its state since Open HL started.'); setText('log-note',''); return; }
   LOG.forEach(function(l){
     var row=document.createElement('div'); row.className='lg';
     var t=document.createElement('span'); t.className='t'; t.textContent=hhmm(new Date(l.at));
@@ -638,7 +638,7 @@ loadHost();  setInterval(loadHost, 4000);
 loadSide();  setInterval(loadSide, 30000);
 var rT = null;
 window.addEventListener('resize', function(){ clearTimeout(rT); rT = setTimeout(function(){ drawActivity(); drawSpark(); drawMap(); }, 80); });
-window.addEventListener('metis:theme', function(){ readTokens(); drawActivity(); drawSpark(); drawMap(); renderQueue(); renderHealth(); });
+window.addEventListener('openhl:theme', function(){ readTokens(); drawActivity(); drawSpark(); drawMap(); renderQueue(); renderHealth(); });
 
 // ═══ ALERT CHANNELS ══════════════════════════════════════════════════════════
 async function loadAlerts(){

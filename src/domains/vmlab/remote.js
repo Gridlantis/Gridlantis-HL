@@ -6,7 +6,7 @@ const { errorWithStatus } = require("../../helpers");
 
 // ─── VM LAB · talking to a remote host's agent ───────────────────────────────
 // A remote VM host runs vmlab-agent.js, which serves exactly the same
-// /api/vmlab/* surface as Metis does locally, behind a bearer token. So Metis
+// /api/vmlab/* surface as Open HL does locally, behind a bearer token. So Open HL
 // does not reimplement anything for remote hosts: it forwards the request and
 // streams the answer straight back.
 const err = errorWithStatus(502);

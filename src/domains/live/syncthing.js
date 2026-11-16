@@ -8,23 +8,23 @@ const { execFile } = require("child_process");
 const { ROOT, UPLOAD_DIR } = require("../../config");
 const { tailnetIp } = require("../../net");
 
-// ─── Live folders: Metis's own Syncthing ─────────────────────────────────────
-// Metis is the hub. It runs a private Syncthing (systemd user unit
-// metis-live.service) that keeps an always-on copy of every live folder under
+// ─── Live folders: Open HL's own Syncthing ─────────────────────────────────────
+// Open HL is the hub. It runs a private Syncthing (systemd user unit
+// openhl-live.service) that keeps an always-on copy of every live folder under
 // uploads/Live folders/, so PCs sync through it even when they are never on at
 // the same time, and the Files page can browse the copy. It listens on the
 // tailnet address only, port 22100 (not Syncthing's 22000, so a Syncthing the
 // user already runs is left alone), with discovery, relays, NAT and usage
 // reporting off: devices find each other by fixed tailnet addresses only.
 //
-// The binaries are Metis's own build of Syncthing: upstream v2.1.7 plus
+// The binaries are Open HL's own build of Syncthing: upstream v2.1.7 plus
 // tools/live/syncthing-conflicts.patch, which stops a 3-device same-second
 // edit from losing one version and removes duplicate conflict copies (see
 // tools/live/build-syncthing.sh). Built once
-// into live/dist; Metis serves the PC builds to the setup scripts, so every
+// into live/dist; Open HL serves the PC builds to the setup scripts, so every
 // device runs the same patched version.
 
-const VERSION = "v2.1.7-metis.2";
+const VERSION = "v2.1.7-openhl.2";
 const PLATFORMS = { "linux-amd64": "tar.gz", "linux-arm64": "tar.gz", "windows-amd64": "zip" };
 const ASSETS = Object.fromEntries(Object.entries(PLATFORMS).map(([p, ext]) => [p, { file: `syncthing-${p}-${VERSION}.${ext}` }]));
 const BUILD_SCRIPT = path.join(ROOT, "tools", "live", "build-syncthing.sh");
@@ -38,8 +38,8 @@ const HOME = path.join(LIVE_DIR, "home");
 const VERSIONS_DIR = path.join(LIVE_DIR, "versions");
 const HUB_DIR = path.join(UPLOAD_DIR, "Live folders");
 const META_FILE = path.join(LIVE_DIR, "meta.json");
-const ENV_FILE = path.join(HOME, "metis.env");
-const UNIT_NAME = "metis-live.service";
+const ENV_FILE = path.join(HOME, "openhl.env");
+const UNIT_NAME = "openhl-live.service";
 const UNIT_FILE = path.join(os.homedir(), ".config", "systemd", "user", UNIT_NAME);
 
 const err = (msg, status = 500) => Object.assign(new Error(msg), { status });
@@ -86,7 +86,7 @@ async function ensureBinary() {
 
 // ── The service ──────────────────────────────────────────────────────────────
 function apiKey() {
-  const f = path.join(HOME, "metis-apikey");
+  const f = path.join(HOME, "openhl-apikey");
   try { const k = fs.readFileSync(f, "utf8").trim(); if (k.length >= 32) return k; } catch {}
   const k = crypto.randomBytes(24).toString("hex");
   fs.mkdirSync(HOME, { recursive: true });
@@ -110,7 +110,7 @@ async function ensureService(binaryChanged) {
   }
   const envChanged = writeIfChanged(ENV_FILE, `STGUIAPIKEY=${apiKey()}\nSTNOUPGRADE=1\n`, 0o600);
   const unitChanged = writeIfChanged(UNIT_FILE, `[Unit]
-Description=Metis live folders (Syncthing hub)
+Description=Open HL live folders (Syncthing hub)
 After=network-online.target
 
 [Service]
@@ -172,7 +172,7 @@ async function configure() {
   });
   await api("PATCH", "/rest/config/defaults/folder", { fsWatcherDelayS: 1 });
   const me = await myId();
-  await api("PATCH", "/rest/config/devices/" + me, { name: "Metis" }).catch(() => {});
+  await api("PATCH", "/rest/config/devices/" + me, { name: "Open HL" }).catch(() => {});
   fs.mkdirSync(HUB_DIR, { recursive: true });
   fs.mkdirSync(VERSIONS_DIR, { recursive: true });
 }
@@ -184,7 +184,7 @@ async function myId() {
   return idCache;
 }
 
-// Brought up once per Metis start; every API call waits on it, and a failure
+// Brought up once per Open HL start; every API call waits on it, and a failure
 // is retried on the next call instead of sticking.
 let ready = null, lastError = null;
 function ensure() {
@@ -200,7 +200,7 @@ function ensure() {
   return ready;
 }
 
-// ── Metadata Metis keeps beside Syncthing's config ───────────────────────────
+// ── Metadata Open HL keeps beside Syncthing's config ───────────────────────────
 function readMeta() {
   try { return JSON.parse(fs.readFileSync(META_FILE, "utf8")); } catch { return { devices: {} }; }
 }

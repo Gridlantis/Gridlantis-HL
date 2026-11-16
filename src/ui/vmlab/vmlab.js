@@ -5,7 +5,7 @@
 
   const TABS = ["envs", "images", "host", "usb", "hosts"];
   // S.host is the machine every VM, image and USB call on this page acts on:
-  // "local" is the Metis serving the page, anything else is a second device
+  // "local" is the Open HL serving the page, anything else is a second device
   // running the VM Lab agent. window.VL stamps it onto each request.
   const S = { ov: null, ovError: null, tab: "envs", specs: null, stats: null, statsTimer: null, hosts: null, host: "local" };
   const $ = sel => document.querySelector(sel);
@@ -130,11 +130,11 @@
       "VMs cannot start until it is. Without root run ", h("code", null, "tools/vmlab/install-qemu.sh"), ", or with root ",
       h("code", null, "sudo apt install qemu-system-x86 qemu-utils ovmf"), "."));
     else if (!c.kvm) box.appendChild(h("div", { class: "banner" }, h("b", null, "KVM acceleration is unavailable. "),
-      "VMs will run in software emulation and be very slow. Enable virtualization in firmware and make sure Metis can open ", h("code", null, "/dev/kvm"), "."));
+      "VMs will run in software emulation and be very slow. Enable virtualization in firmware and make sure Open HL can open ", h("code", null, "/dev/kvm"), "."));
     else if (!c.kvmUsable) box.appendChild(h("div", { class: "banner" }, h("b", null, "Hardware acceleration is blocked right now: "), (c.kvmProblem || "KVM guests fail to start") + ". ",
-      "New VMs fall back to software emulation, which is several times slower. Shut down the other hypervisor's VMs (or move them into VM Lab) to get full speed back — Metis re-checks automatically."));
+      "New VMs fall back to software emulation, which is several times slower. Shut down the other hypervisor's VMs (or move them into VM Lab) to get full speed back — Open HL re-checks automatically."));
     if (c.qemu && !c.systemdRun) box.appendChild(h("div", { class: "banner" },
-      "systemd user services are unavailable, so running VMs will stop if the Metis process is killed."));
+      "systemd user services are unavailable, so running VMs will stop if the Open HL process is killed."));
   }
 
   function kpi(k, v, pct) {
@@ -158,7 +158,7 @@
   function renderEnvs() {
     const p = panel("envs"); p.innerHTML = "";
     const head = h("div", { class: "row" },
-      h("div", null, h("div", { class: "sec-t" }, "Virtual machines"), h("div", { class: "sec-s" }, "Each one is a full virtual machine. Open its console from any browser or the Metis desktop app.")),
+      h("div", null, h("div", { class: "sec-t" }, "Virtual machines"), h("div", { class: "sec-s" }, "Each one is a full virtual machine. Open its console from any browser or the Open HL desktop app.")),
       h("span", { class: "spacer" }),
       h("a", { class: "btn", href: "/vmlab/cuttlefish", title: "Google's Cuttlefish virtual Android phones on this machine" }, icon("fa-brands fa-android"), "Cuttlefish"),
       h("button", { class: "btn", onclick: () => openMobileVm(), title: "A virtual phone: Android or a Linux phone OS" }, icon("fa-solid fa-mobile-screen-button"), "New mobile VM"),
@@ -625,7 +625,7 @@
       h("div", { class: "progress" }, bar), status), [h("button", { class: "btn", onclick: modal.close }, "Cancel"), go]);
   }
 
-  // Pick an ISO (or disk image) you already have in Metis Files. The common
+  // Pick an ISO (or disk image) you already have in Open HL Files. The common
   // case: download something in the browser, then boot it here.
   function openFromFiles() {
     const listBox = h("div", { class: "usb-pick", style: { maxHeight: "300px" } }, h("div", { class: "hint" }, icon("fa-solid fa-spinner fa-spin"), " Looking through your files…"));
@@ -644,7 +644,7 @@
     } }, "Add");
 
     modal.open("Add an image from my files", h("div", null,
-      h("div", { class: "sec-s", style: { marginBottom: "10px" } }, "ISOs and disk images you already have. Anything you upload to Metis Files — or drop in a media folder — shows up here."),
+      h("div", { class: "sec-s", style: { marginBottom: "10px" } }, "ISOs and disk images you already have. Anything you upload to Open HL Files — or drop in a media folder — shows up here."),
       listBox, h("div", { class: "form", style: { marginTop: "12px" } }, modeRow), meta.el),
       [h("button", { class: "btn", onclick: modal.close }, "Cancel"), go], true);
 
@@ -745,13 +745,13 @@
       h("span", null, label, !ok && fix ? h("div", { class: "hint" }, fix) : null));
     const checklist = h("div", { class: "checklist" },
       ck(!!s.cpu.virtualization, "Hardware virtualization" + (s.cpu.virtualization ? " (" + s.cpu.virtualization + ")" : ""), "Enable VT-x / AMD-V in the firmware setup."),
-      ck(v.kvm, "KVM available to Metis", "Add the Metis user to the kvm group, then log in again."),
+      ck(v.kvm, "KVM available to Open HL", "Add the Open HL user to the kvm group, then log in again."),
       ck(v.kvmUsable, "KVM guests actually run", v.kvmProblem || "Another hypervisor may be holding VT-x."),
       ck(!!v.qemu, "QEMU " + (v.qemuVersion || ""), "Run tools/vmlab/install-qemu.sh (no root) or install qemu-system-x86."),
       ck(!!v.qemuImg, "qemu-img", "Installed with QEMU."),
       ck(v.uefi, "UEFI firmware (OVMF)", "Needed only for UEFI guests such as Windows 11."),
       ck(v.swtpm, "TPM emulator (swtpm)", "Optional: Windows 11 wants TPM 2.0. sudo apt install swtpm"),
-      ck(v.systemdRun, "VMs outlive Metis restarts (systemd user units)", "Without it, VMs stop if the Metis process is killed."));
+      ck(v.systemdRun, "VMs outlive Open HL restarts (systemd user units)", "Without it, VMs stop if the Open HL process is killed."));
 
     p.appendChild(h("div", { class: "two", style: { marginTop: "14px" } },
       h("div", { class: "box" }, h("div", { class: "box-h" }, "Hardware"), hw),
@@ -848,7 +848,7 @@
       h("div", null, h("div", { class: "sec-t" }, "Host USB devices"), h("div", { class: "sec-s" }, "Pass a device plugged into the host through to a running VM. It disappears from the host while attached.")),
       h("span", { class: "spacer" }), h("button", { class: "btn", onclick: loadUsb }, icon("fa-solid fa-rotate"), "Refresh")));
     if (list.some(d => !d.accessible)) p.appendChild(h("div", { class: "banner", style: { marginTop: "12px" } },
-      h("b", null, "Some devices are not accessible to Metis. "), "USB device nodes belong to root by default. Run this once on the host to grant access, then replug the devices:",
+      h("b", null, "Some devices are not accessible to Open HL. "), "USB device nodes belong to root by default. Run this once on the host to grant access, then replug the devices:",
       h("div", { style: { marginTop: "6px" } }, h("code", null, "sudo tools/vmlab/setup-host.sh"))));
     if (!list.length) { p.appendChild(h("div", { class: "empty" }, h("b", null, "No USB devices"), "Nothing is plugged into the host's USB ports (hubs are hidden).")); return; }
     const targets = S.ov.envs.filter(e => e.running && e.usb && e.usb.enabled);
@@ -874,8 +874,8 @@
   }
 
   // ── Hosts ───────────────────────────────────────────────────────────────────
-  // VM Lab drives one machine at a time. "local" is this Metis; every other
-  // host is a second device running vmlab-agent.js, which Metis reaches over
+  // VM Lab drives one machine at a time. "local" is this Open HL; every other
+  // host is a second device running vmlab-agent.js, which Open HL reaches over
   // the tailnet with a bearer token and proxies for. Switching host swaps the
   // whole page — machines, images, USB and stats all come from that device.
   const hostById = id => (S.hosts || []).find(x => x.id === id) || null;
@@ -978,7 +978,7 @@
               label: hy.enabled === false ? "Turn on" : "Turn off",
               run: () => act("Host", () => api("PATCH", "/api/vmlab/hosts/" + hy.id, { enabled: hy.enabled === false }), "Saved").then(() => loadHosts(true), () => {}) },
             { icon: "fa-solid fa-trash", label: "Remove host", danger: true, run: async () => {
-              if (!await confirmBox("Remove " + hy.name + "?", "Metis forgets its address and token. The VMs on that machine keep running and come back if you add it again.", "Remove", true)) return;
+              if (!await confirmBox("Remove " + hy.name + "?", "Open HL forgets its address and token. The VMs on that machine keep running and come back if you add it again.", "Remove", true)) return;
               if (hy.id === S.host) switchHost("local");
               await act("Remove", () => api("DELETE", "/api/vmlab/hosts/" + hy.id), "Removed");
               loadHosts(true);
@@ -994,7 +994,7 @@
       h("code", null, "tools/vmlab/deploy-agent.sh user@the-other-machine"), " from here, or on that machine directly: ",
       h("code", null, "node vmlab-agent.js"), h("br"),
       "It prints a token; paste it, with the machine's address and port (3010 by default), into ",
-      h("b", null, "Add a VM host"), ". Only this Metis ever talks to the agent, and the console, images and USB of that device then appear here exactly like this machine's."));
+      h("b", null, "Add a VM host"), ". Only this Open HL ever talks to the agent, and the console, images and USB of that device then appear here exactly like this machine's."));
   }
 
   async function testHost(hy) {

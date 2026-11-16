@@ -70,7 +70,7 @@ module.exports = async function aiRoutes(ctx) {
     if (!key) return json({ ok: false, error: 'OpenRouter API key not set', key: masked });
     try {
       const res = await fetch('https://openrouter.ai/api/v1/models', {
-        headers: { 'Authorization': `Bearer ${key}`, 'User-Agent': 'Metis/1.0' }
+        headers: { 'Authorization': `Bearer ${key}`, 'User-Agent': 'OpenHL/1.0' }
       });
       const body = await res.text();
       return json({ ok: res.ok, key: masked, status: res.status, response: body.slice(0, 300) });
@@ -84,7 +84,7 @@ module.exports = async function aiRoutes(ctx) {
     if (!ORK) return json({ error: 'No OpenRouter API key set' }, 400);
     try {
       const res = await fetch('https://openrouter.ai/api/v1/models', {
-        headers: { 'Authorization': `Bearer ${ORK}`, 'User-Agent': 'Metis/1.0' }
+        headers: { 'Authorization': `Bearer ${ORK}`, 'User-Agent': 'OpenHL/1.0' }
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error?.message || `HTTP ${res.status}`);

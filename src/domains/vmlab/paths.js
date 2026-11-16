@@ -18,7 +18,7 @@ const SEEDS_DIR   = path.join(VMLAB_DIR, "seeds");     // cloud-init NoCloud see
 // per-user tmpfs, fall back to vmlab/run.
 const RUN_DIR = (() => {
   const xdg = process.env.XDG_RUNTIME_DIR;
-  if (xdg && fs.existsSync(xdg)) return path.join(xdg, "metis-vmlab");
+  if (xdg && fs.existsSync(xdg)) return path.join(xdg, "openhl-vmlab");
   return path.join(VMLAB_DIR, "run");
 })();
 
@@ -41,7 +41,7 @@ function firstExecutable(list) {
   for (const p of list) { if (!p) continue; try { fs.accessSync(p, fs.constants.X_OK); return p; } catch {} }
   return null;
 }
-// Resolved on every call so installing QEMU while Metis runs needs no restart.
+// Resolved on every call so installing QEMU while Open HL runs needs no restart.
 function qemuBinary() {
   return firstExecutable([process.env.VMLAB_QEMU, path.join(VMLAB_DIR, "qemu/bin/qemu-system-x86_64"),
     onPath("qemu-system-x86_64"), "/usr/libexec/qemu-kvm"]);

@@ -10,7 +10,7 @@ const { BASE_CSS, FAVICON, FONT, NAV_CSS, TOAST_CSS, TOAST_JS, navBar } = requir
 function homeHtml() {
   return `<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Metis · Home</title>${FONT}${FAVICON}
+<title>Open HL · Home</title>${FONT}${FAVICON}
 <style>
 ${BASE_CSS}${NAV_CSS}${TOAST_CSS}
 .home-head{align-items:center;}
@@ -288,7 +288,7 @@ function emptyRow(text){ return el('div', 'm-empty', text); }
   }
   function load(){ fetch('/api/home').then(function(r){ return r.json(); }).then(render).catch(function(){}); }
   load(); setInterval(function(){ if (!document.hidden) load(); }, 30000);
-  window.addEventListener('metis:pulse', function(e){
+  window.addEventListener('openhl:pulse', function(e){
     var p = e.detail; if (!p) return;
     meter('cpu', p.host.cpu, 75, 92); meter('mem', p.host.mem, 80, 93);
   });
@@ -298,7 +298,7 @@ function emptyRow(text){ return el('div', 'm-empty', text); }
 // ═══ SPOKEN NODE ALERTS ══════════════════════════════════════════════════════
 (function(){
   var voiceOn = false;
-  try { voiceOn = localStorage.getItem('metis-voice') === '1'; } catch(e){}
+  try { voiceOn = localStorage.getItem('openhl-voice') === '1'; } catch(e){}
   var prefVoice = null;
   function pickVoice(){
     try {
@@ -332,7 +332,7 @@ function emptyRow(text){ return el('div', 'm-empty', text); }
   }
   window.toggleVoice = function(){
     voiceOn = !voiceOn;
-    try { localStorage.setItem('metis-voice', voiceOn ? '1' : '0'); } catch(e){}
+    try { localStorage.setItem('openhl-voice', voiceOn ? '1' : '0'); } catch(e){}
     paintVoice();
     showToast(voiceOn ? 'Spoken alerts on' : 'Spoken alerts off', 'ok');
     if (voiceOn) { speak('Spoken alerts on. Watching nodes and A.I.'); try { if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission(); } catch(e){} }
@@ -340,8 +340,8 @@ function emptyRow(text){ return el('div', 'm-empty', text); }
   paintVoice();
   function notify(title, body){ try { if ('Notification' in window && Notification.permission === 'granted') new Notification(title, { body: body }); } catch(e){} }
   function announce(name, online){
-    if (online){ showToast(name + ' is back online', 'ok'); speak(name + ' is back online.'); notify('Metis: node recovered', name + ' is back online'); }
-    else { showToast(name + ' is offline', 'bad'); speak('Alert. ' + name + ' is offline.'); notify('Metis: node offline', name + ' is offline'); }
+    if (online){ showToast(name + ' is back online', 'ok'); speak(name + ' is back online.'); notify('Open HL: node recovered', name + ' is back online'); }
+    else { showToast(name + ' is offline', 'bad'); speak('Alert. ' + name + ' is offline.'); notify('Open HL: node offline', name + ' is offline'); }
     if (window.__homeReload) window.__homeReload();
   }
   if ('EventSource' in window) {
@@ -359,7 +359,7 @@ function emptyRow(text){ return el('div', 'm-empty', text); }
 // being edited they wait, so the refresh cannot wipe what is being typed.
 (function(){
   var TD = [], showDone = false, editing = null;
-  try { showDone = localStorage.getItem('metis-todo-done') === '1'; } catch(e){}
+  try { showDone = localStorage.getItem('openhl-todo-done') === '1'; } catch(e){}
   var list = document.getElementById('todo-list'), input = document.getElementById('todo-input');
 
   function api(method, path, body){
@@ -438,7 +438,7 @@ function emptyRow(text){ return el('div', 'm-empty', text); }
   });
   document.getElementById('todo-showdone').addEventListener('click', function(){
     showDone = !showDone;
-    try { localStorage.setItem('metis-todo-done', showDone ? '1' : '0'); } catch(e){}
+    try { localStorage.setItem('openhl-todo-done', showDone ? '1' : '0'); } catch(e){}
     render();
   });
   document.getElementById('todo-clear').addEventListener('click', function(){

@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Builds the Metis Android app into android/dist/Metis-<version>.apk.
+# Builds the Open HL Android app into android/dist/OpenHL-<version>.apk.
 #
 # No Gradle: aapt2, javac, d8, zipalign and apksigner straight from the SDK.
 # Needs a JDK 17 and an Android SDK with platforms;android-35 and
 # build-tools;35.0.0. Defaults to ~/Android/jdk and ~/Android/Sdk.
 #
-# The signing key lives OUTSIDE the repo (~/Android/metis-release.jks by
+# The signing key lives OUTSIDE the repo (~/Android/openhl-release.jks by
 # default) and is made on first build. Keep it: Android only installs an
 # update over the old app when both are signed with the same key.
 set -euo pipefail
@@ -20,8 +20,8 @@ export JAVA_HOME="${JAVA_HOME:-$HOME/Android/jdk}"
 SDK="${ANDROID_HOME:-$HOME/Android/Sdk}"
 BT="$SDK/build-tools/35.0.0"
 JAR="$SDK/platforms/android-35/android.jar"
-KEYSTORE="${METIS_KEYSTORE:-$HOME/Android/metis-release.jks}"
-KEYPASS="${METIS_KEYPASS:-metis-android}"
+KEYSTORE="${OPENHL_KEYSTORE:-$HOME/Android/openhl-release.jks}"
+KEYPASS="${OPENHL_KEYPASS:-openhl-android}"
 PATH="$JAVA_HOME/bin:$PATH"
 
 for f in "$BT/aapt2" "$BT/d8" "$BT/apksigner" "$BT/zipalign" "$JAR" "$JAVA_HOME/bin/javac"; do
@@ -29,10 +29,10 @@ for f in "$BT/aapt2" "$BT/d8" "$BT/apksigner" "$BT/zipalign" "$JAR" "$JAVA_HOME/
 done
 
 B="$HERE/build"; OUT="$HERE/dist"
-rm -rf "$B"; mkdir -p "$B/gen/local/metis/app" "$B/classes" "$B/dex" "$OUT"
+rm -rf "$B"; mkdir -p "$B/gen/local/openhl/app" "$B/classes" "$B/dex" "$OUT"
 
-cat > "$B/gen/local/metis/app/BuildInfo.java" <<EOF
-package local.metis.app;
+cat > "$B/gen/local/openhl/app/BuildInfo.java" <<EOF
+package local.openhl.app;
 final class BuildInfo { static final String VERSION = "$VERSION"; }
 EOF
 
@@ -52,12 +52,12 @@ javac -nowarn -source 11 -target 11 -encoding UTF-8 -Xlint:-options -classpath "
 echo "→ sign"
 if [ ! -f "$KEYSTORE" ]; then
   echo "  making signing key $KEYSTORE"
-  keytool -genkeypair -keystore "$KEYSTORE" -alias metis -keyalg RSA -keysize 3072 -validity 10000 \
-    -storepass "$KEYPASS" -keypass "$KEYPASS" -dname "CN=Metis" >/dev/null 2>&1
+  keytool -genkeypair -keystore "$KEYSTORE" -alias openhl -keyalg RSA -keysize 3072 -validity 10000 \
+    -storepass "$KEYPASS" -keypass "$KEYPASS" -dname "CN=Open HL" >/dev/null 2>&1
 fi
 "$BT/zipalign" -f -p 4 "$B/unsigned.apk" "$B/aligned.apk"
-APK="$OUT/Metis-$VERSION-android.apk"
-"$BT/apksigner" sign --ks "$KEYSTORE" --ks-key-alias metis --min-sdk-version $MIN_SDK --v1-signing-enabled true --v2-signing-enabled true --v3-signing-enabled true --ks-pass "pass:$KEYPASS" --key-pass "pass:$KEYPASS" \
+APK="$OUT/OpenHL-$VERSION-android.apk"
+"$BT/apksigner" sign --ks "$KEYSTORE" --ks-key-alias openhl --min-sdk-version $MIN_SDK --v1-signing-enabled true --v2-signing-enabled true --v3-signing-enabled true --ks-pass "pass:$KEYPASS" --key-pass "pass:$KEYPASS" \
   --out "$APK" "$B/aligned.apk"
 "$BT/apksigner" verify "$APK"
 rm -f "$APK.idsig"

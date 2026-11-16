@@ -7,7 +7,7 @@ const { BASE_CSS, FAVICON, FONT, NAV_CSS, TOAST_CSS, TOAST_JS, navBar } = requir
 function textsHtml() {
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Metis · Texts</title>${FONT}${FAVICON}
+<title>Open HL · Texts</title>${FONT}${FAVICON}
 <style>
 ${BASE_CSS}${NAV_CSS}${TOAST_CSS}
 .tx-page{max-width:860px;}
@@ -35,18 +35,18 @@ ${BASE_CSS}${NAV_CSS}${TOAST_CSS}
 ${navBar('/texts')}
 <main class="m-page tx-page">
   <div class="m-head">
-    <div><h1 class="m-title">Texts</h1><p class="m-sub">Text messages sent to your Twilio number. Metis checks for new ones every minute.</p></div>
+    <div><h1 class="m-title">Texts</h1><p class="m-sub">Text messages sent to your Twilio number. Open HL checks for new ones every minute.</p></div>
     <div class="tx-tools"><span class="tx-status" id="tx-status" aria-live="polite"></span>
       <button class="m-btn" id="tx-poll"><i class="fa-solid fa-rotate"></i>Check now</button></div>
   </div>
 
   <div class="m-panel tx-note" id="tx-setup" style="display:none">
     <i class="fa-solid fa-circle-info"></i>
-    <span>Twilio is not connected. Add <code>TWILIO_ACCOUNT_SID</code>, <code>TWILIO_AUTH_TOKEN</code> and <code>TWILIO_NUMBER</code> to Metis's <code>.env</code>, then restart Metis.</span>
+    <span>Twilio is not connected. Add <code>TWILIO_ACCOUNT_SID</code>, <code>TWILIO_AUTH_TOKEN</code> and <code>TWILIO_NUMBER</code> to Open HL's <code>.env</code>, then restart Open HL.</span>
   </div>
   <div class="m-panel tx-note" id="tx-perm" style="display:none">
     <i class="fa-regular fa-bell"></i>
-    <span>Allow notifications so a new text reaches you while Metis is in a background tab.</span>
+    <span>Allow notifications so a new text reaches you while Open HL is in a background tab.</span>
     <button class="m-btn" id="tx-perm-btn">Allow notifications</button>
   </div>
 
@@ -122,13 +122,13 @@ function markRead(){
   TX.items.forEach(function(t){ if (!t.readAt) { fresh[t.sid] = true; t.readAt = Date.now(); any = true; } });
   if (!any || document.hidden) return any;
   fetch('/api/texts/read', { method:'POST' })
-    .then(function(){ if (window.metisPulse) window.metisPulse.refresh(); }).catch(function(){});
+    .then(function(){ if (window.openhlPulse) window.openhlPulse.refresh(); }).catch(function(){});
   return any;
 }
 function load(){
   return fetch('/api/texts').then(function(r){ return r.json(); })
     .then(function(d){ TX = d; if (!document.hidden) markRead(); render(); })
-    .catch(function(){ $('tx-status').textContent = 'Could not reach Metis'; });
+    .catch(function(){ $('tx-status').textContent = 'Could not reach Open HL'; });
 }
 function del(t){
   if (!confirm('Delete the text from ' + fmtNum(t.from) + '? It stays in your Twilio account.')) return;
@@ -141,7 +141,7 @@ $('tx-poll').addEventListener('click', function(){
   var b = this; b.disabled = true;
   fetch('/api/texts/poll', { method:'POST' }).then(function(r){ return r.json(); })
     .then(function(d){ TX = d; markRead(); render(); showToast(d.status.ok === false ? 'Twilio check failed' : 'Checked Twilio', d.status.ok === false ? 'bad' : 'ok'); })
-    .catch(function(){ showToast('Could not reach Metis', 'bad'); })
+    .catch(function(){ showToast('Could not reach Open HL', 'bad'); })
     .then(function(){ b.disabled = !TX.configured; });
 });
 

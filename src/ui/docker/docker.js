@@ -106,7 +106,7 @@
       h("b", null, icon("fa-brands fa-docker"), " Docker is not available"),
       h("div", null, e.help || "The Docker daemon could not be reached."));
     if (e.reason === "no-socket") {
-      b.appendChild(h("div", { class: "hint", style: { marginTop: "8px" } }, "Install it once on this host — Metis picks it up automatically, no restart needed:"));
+      b.appendChild(h("div", { class: "hint", style: { marginTop: "8px" } }, "Install it once on this host — Open HL picks it up automatically, no restart needed:"));
       b.appendChild(h("pre", null, INSTALL));
     } else if (e.reason === "no-permission") {
       b.appendChild(h("pre", null, "sudo usermod -aG docker $USER      # then log out and back in"));

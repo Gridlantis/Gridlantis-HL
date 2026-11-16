@@ -1,7 +1,7 @@
 #!/bin/bash
-# setup-usb.sh — let Metis open Android phones plugged into this computer by USB
-# (Metis → Mobile host). Run once on the machine running Metis, from the
-# Metis folder:
+# setup-usb.sh — let Open HL open Android phones plugged into this computer by USB
+# (Open HL → Mobile host). Run once on the machine running Open HL, from the
+# Open HL folder:
 #
 #   sudo bash tools/mobile/setup-usb.sh
 #   sudo bash tools/mobile/setup-usb.sh --uninstall
@@ -12,7 +12,7 @@
 # every brand without a vendor list, and gives the signed-in user access to it.
 set -euo pipefail
 
-RULE=/etc/udev/rules.d/51-metis-android.rules
+RULE=/etc/udev/rules.d/51-openhl-android.rules
 [ "$(id -u)" = 0 ] || { echo "run this with sudo" >&2; exit 1; }
 
 if [ "${1:-}" = "--uninstall" ]; then
@@ -23,7 +23,7 @@ if [ "${1:-}" = "--uninstall" ]; then
 fi
 
 cat > "$RULE" <<'EOF'
-# Android debug bridge (adb) — written by Metis setup-usb.sh
+# Android debug bridge (adb) — written by Open HL setup-usb.sh
 SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ENV{ID_USB_INTERFACES}=="*:ff4201:*", MODE="0660", GROUP="plugdev", TAG+="uaccess"
 EOF
 getent group plugdev >/dev/null || groupadd -r plugdev

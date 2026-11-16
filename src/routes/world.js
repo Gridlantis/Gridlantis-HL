@@ -8,7 +8,7 @@ const { MONITOR } = require("../domains/monitor");
 const { HOST } = require("../host");
 const { worldHtml } = require("../pages/world");
 
-// Metis World: a 3D town where every Metis job is a robot errand. The page,
+// Open HL World: a 3D town where every Open HL job is a robot errand. The page,
 // its script and the vendored three.js, plus one snapshot of what to build.
 const FILES = {
   "world.js": path.join(__dirname, "../ui/world/world.js"),

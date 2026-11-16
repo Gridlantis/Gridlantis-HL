@@ -1,6 +1,6 @@
 const sseClients = new Set();
 // Taps see every broadcast after it goes out; the activity feed behind /world
-// uses one to turn existing events into Metis World errands without touching each sender.
+// uses one to turn existing events into Open HL World errands without touching each sender.
 const taps = [];
 function broadcast(event, data={}) {
   const msg = `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;

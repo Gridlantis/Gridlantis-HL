@@ -81,8 +81,8 @@ const readAiPeers    = () => readJSON(AI_PEERS_FILE);
 const writeAiPeers   = d  => writeJSON(AI_PEERS_FILE, d);
 
 // ═══ MAIL — multi-account Gmail over IMAP (read-only, pull) ═════════════════════
-// Zero-dependency IMAP client on Node's built-in tls. Metis only ever FETCHes;
-// it never deletes or modifies mail on the server. "Delete" = drop Metis's cached
+// Zero-dependency IMAP client on Node's built-in tls. Open HL only ever FETCHes;
+// it never deletes or modifies mail on the server. "Delete" = drop Open HL's cached
 // copy. New-only incremental sync via UIDs; unopened cached mail purged at 21 days.
 
 module.exports = { readAiPeers, readFileGroups, readFolders, readJSON, readLinks, readNotes, readWebforms, writeAiPeers, writeFileGroups, writeFolders, writeJSON, writeJSONFile, writeLinks, writeNotes, writeWebforms };

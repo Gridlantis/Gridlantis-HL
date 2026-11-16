@@ -3,7 +3,7 @@
   "use strict";
   const { api, h, icon, fmtAgo, toast, writeClipboard, onServerEvents } = window.VL;
   const $ = s => document.querySelector(s);
-  const S = { laptops: [], metisIp: null, status: {} };
+  const S = { laptops: [], openhlIp: null, status: {} };
   const enc = encodeURIComponent;
 
   // ── Modal ───────────────────────────────────────────────────────────────────
@@ -32,7 +32,7 @@
   async function load() {
     try {
       const r = await api("GET", "/api/laptops");
-      S.laptops = r.laptops; S.metisIp = r.metisIp;
+      S.laptops = r.laptops; S.openhlIp = r.openhlIp;
     } catch (e) { toast("Could not load PCs: " + e.message, "bad"); }
     render();
     S.laptops.forEach(l => probe(l.id));
@@ -49,9 +49,9 @@
   function render() {
     const list = $("#list"); list.innerHTML = "";
     $("#banners").innerHTML = "";
-    if (!S.metisIp) {
-      $("#banners").appendChild(h("div", { class: "banner" }, h("b", null, "Metis is not on a tailnet"),
-        "PCs are reached over Tailscale and only let Metis's tailnet address in. Start Tailscale on this machine, then set up your PCs."));
+    if (!S.openhlIp) {
+      $("#banners").appendChild(h("div", { class: "banner" }, h("b", null, "Open HL is not on a tailnet"),
+        "PCs are reached over Tailscale and only let Open HL's tailnet address in. Start Tailscale on this machine, then set up your PCs."));
     }
     if (!S.laptops.length) {
       list.appendChild(h("div", { class: "empty" }, h("b", null, "No PCs paired yet"),
@@ -125,7 +125,7 @@
 
   // ── Setup instructions ──────────────────────────────────────────────────────
   function openSetup() {
-    const base = location.protocol + "//" + (S.metisIp ? S.metisIp + (location.port ? ":" + location.port : "") : location.host);
+    const base = location.protocol + "//" + (S.openhlIp ? S.openhlIp + (location.port ? ":" + location.port : "") : location.host);
     const cmd = "curl -fsSL " + base + "/laptops/setup.sh | sudo bash";
     const copy = h("button", { class: "btn sm", onclick: async () => toast(await writeClipboard(cmd) ? "Copied" : "Copy failed") }, icon("fa-regular fa-copy"), "Copy");
     const body = h("div", null,
@@ -133,10 +133,10 @@
       h("ol", { class: "setup-steps" },
         h("li", null, "On the PC, open a terminal and run:",
           h("div", { class: "cmd" }, h("pre", null, cmd), copy)),
-        h("li", null, "It installs a VNC server that follows the login screen and your desktop, starts it at boot, and lets in only Metis",
-          S.metisIp ? " (" + S.metisIp + ")" : "", " — never the internet or the rest of your tailnet."),
-        h("li", null, "It prints a pairing code starting with ", h("code", null, "metis-laptop:"), ". Paste that into ",
-          h("b", null, "Pair a PC"), " here. Metis keeps the password; you will not type it again.")),
+        h("li", null, "It installs a VNC server that follows the login screen and your desktop, starts it at boot, and lets in only Open HL",
+          S.openhlIp ? " (" + S.openhlIp + ")" : "", " — never the internet or the rest of your tailnet."),
+        h("li", null, "It prints a pairing code starting with ", h("code", null, "openhl-laptop:"), ". Paste that into ",
+          h("b", null, "Pair a PC"), " here. Open HL keeps the password; you will not type it again.")),
       h("div", { class: "hint" }, "Running the script again keeps the same password; with ", h("code", null, "--new-password"), " it makes a new one — then use Re-pair on that PC's card. ",
         "Options: ", h("code", null, "--port N"), ", ", h("code", null, "--name NAME"), ", ", h("code", null, "--uninstall"),
         " (pass them as ", h("code", null, "sudo bash -s -- --name work"), ")."));
@@ -146,7 +146,7 @@
   // ── Pairing ─────────────────────────────────────────────────────────────────
   function openPair(existing) {
     let manual = false;
-    const code = h("textarea", { class: "in", rows: 3, placeholder: "metis-laptop:…", spellcheck: "false" });
+    const code = h("textarea", { class: "in", rows: 3, placeholder: "openhl-laptop:…", spellcheck: "false" });
     const fName = h("input", { class: "in", placeholder: "work PC", value: existing ? existing.name : "" });
     const fHost = h("input", { class: "in", placeholder: "100.x.y.z", value: existing ? existing.host : "" });
     const fPort = h("input", { class: "in", type: "number", value: existing ? existing.port : 5900 });
@@ -209,7 +209,7 @@
   }
 
   async function remove(l) {
-    if (!await confirmBox("Forget " + l.name + "?", "Metis deletes its saved password. The PC keeps running its VNC server until you run the setup script there with --uninstall.", "Forget")) return;
+    if (!await confirmBox("Forget " + l.name + "?", "Open HL deletes its saved password. The PC keeps running its VNC server until you run the setup script there with --uninstall.", "Forget")) return;
     try { await api("DELETE", "/api/laptops/" + enc(l.id)); toast("Forgot " + l.name); load(); }
     catch (e) { toast(e.message, "bad"); }
   }

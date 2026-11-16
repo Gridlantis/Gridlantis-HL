@@ -57,7 +57,7 @@ async function typhurProbe(dev) {
   if (watts != null && prev && prev.phase && cls.phase && prev.phase !== cls.phase) {
     broadcast("homeos_event", { id: dev.id, name: dev.name, event: "phase", from: prev.phase, to: cls.phase });
     if (cls.phase === TYPHUR_PHASE.DONE && dev.alertOnDone !== false) {
-      sendAlert("Metis \u00b7 " + dev.name, "Cook finished \u2014 power dropped to idle", false);
+      sendAlert("Open HL \u00b7 " + dev.name, "Cook finished \u2014 power dropped to idle", false);
     }
   }
   return { online, state };

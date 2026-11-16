@@ -8,10 +8,10 @@ const { readJSON } = require("../store");
 const { broadcast } = require("../sse");
 const { RINGING, readReminders, writeReminders } = require("./reminders");
 
-// ═══ GOOGLE CALENDAR — two-way sync with Metis reminders ═══════════════════════
-// Metis → Google: every reminder you make or edit in Metis becomes an event in
+// ═══ GOOGLE CALENDAR — two-way sync with Open HL reminders ═══════════════════════
+// Open HL → Google: every reminder you make or edit in Open HL becomes an event in
 // the calendar (tagged with its reminder id), repeating ones as a recurring event.
-// Google → Metis: renaming, moving or deleting one of those events in Google
+// Google → Open HL: renaming, moving or deleting one of those events in Google
 // changes or removes the reminder. Everything else in the calendar is shown on
 // /calendar next to the reminders but left alone.
 //
@@ -64,7 +64,7 @@ function request(method, url, { body, form, token } = {}) {
   return new Promise((resolve, reject) => {
     const u = new URL(url);
     const data = form ? new URLSearchParams(form).toString() : body ? JSON.stringify(body) : null;
-    const headers = { "User-Agent": "Metis/1.0", Accept: "application/json" };
+    const headers = { "User-Agent": "OpenHL/1.0", Accept: "application/json" };
     if (token) headers.Authorization = "Bearer " + token;
     if (data) { headers["Content-Type"] = form ? "application/x-www-form-urlencoded" : "application/json";
                 headers["Content-Length"] = Buffer.byteLength(data); }
@@ -115,7 +115,7 @@ async function finishAuth(code, state) {
     { form: { code, client_id: CLIENT_ID, client_secret: CLIENT_SECRET, redirect_uri: REDIRECT_URI, grant_type: "authorization_code" } });
   // Reconnecting to add a permission may come back without a new refresh
   // token; the one already held stays valid, so keep it.
-  if (!t.refresh_token && !G.refreshToken) throw new Error("Google sent no refresh token. Remove Metis at myaccount.google.com/permissions and connect again.");
+  if (!t.refresh_token && !G.refreshToken) throw new Error("Google sent no refresh token. Remove Open HL at myaccount.google.com/permissions and connect again.");
   Object.assign(G, { refreshToken: t.refresh_token || G.refreshToken, accessToken: t.access_token, scopes: t.scope || "",
                      expiresAt: Date.now() + (t.expires_in - 60) * 1000, lastError: null, lastSync: null });
   saveState();
@@ -219,9 +219,9 @@ function eventFor(rem) {
     start: { dateTime: new Date(rem.at).toISOString(), timeZone: TZ },
     end:   { dateTime: new Date(rem.at + EVENT_MINUTES * 60000).toISOString(), timeZone: TZ },
     recurrence: RRULE[rem.repeat] ? [RRULE[rem.repeat]] : [],
-    // metisApp is a fixed tag so the sync can list every Metis event: Google
+    // openhlApp is a fixed tag so the sync can list every Open HL event: Google
     // only filters on name=value, never on "has this property".
-    extendedProperties: { private: { metisId: rem.id, metisApp: "1" } },
+    extendedProperties: { private: { openhlId: rem.id, openhlApp: "1" } },
   };
 }
 // Google's web editor stores descriptions as HTML.
@@ -240,9 +240,9 @@ function setReminderField(id, patch) {
   writeReminders(list);
 }
 
-// ── Metis → Google ───────────────────────────────────────────────────────────
+// ── Open HL → Google ───────────────────────────────────────────────────────────
 const PUSHING = new Set();
-const LAST_PUSH = new Map();   // id -> when Metis last sent it, so a sync already under way cannot undo the edit
+const LAST_PUSH = new Map();   // id -> when Open HL last sent it, so a sync already under way cannot undo the edit
 async function pushReminder(rem) {
   if (!connected() || !rem || rem.fromEvent || PUSHING.has(rem.id)) return;
   PUSHING.add(rem.id);
@@ -269,11 +269,11 @@ async function removeReminder(rem) {
   catch (e) { if (e.status !== 404 && e.status !== 410) console.error("[gcal:delete]", e.message); }
 }
 // Fire-and-forget versions for the reminder routes: the reminder is saved in
-// Metis whether or not Google answers.
+// Open HL whether or not Google answers.
 const queuePush   = rem => { pushReminder(rem).catch(() => {}); };
 const queueRemove = rem => { removeReminder(rem).catch(() => {}); };
 
-// ── Google → Metis ───────────────────────────────────────────────────────────
+// ── Google → Open HL ───────────────────────────────────────────────────────────
 let syncing = null;
 function sync() {
   if (!connected()) return Promise.resolve(false);
@@ -283,27 +283,27 @@ function sync() {
 async function doSync() {
   try {
     const started = Date.now();
-    const linked = await listAll({ privateExtendedProperty: "metisApp=1", showDeleted: "false" });
-    const metisIdOf = ev => ev.extendedProperties && ev.extendedProperties.private && ev.extendedProperties.private.metisId;
-    const byMetis = new Map(linked.filter(ev => ev.status !== "cancelled" && metisIdOf(ev)).map(ev => [metisIdOf(ev), ev]));
+    const linked = await listAll({ privateExtendedProperty: "openhlApp=1", showDeleted: "false" });
+    const openhlIdOf = ev => ev.extendedProperties && ev.extendedProperties.private && ev.extendedProperties.private.openhlId;
+    const byOpenHL = new Map(linked.filter(ev => ev.status !== "cancelled" && openhlIdOf(ev)).map(ev => [openhlIdOf(ev), ev]));
     const now = Date.now();
     const patches = new Map(), gone = new Set();
 
     for (const rem of readReminders()) {
       // Sent to Google after the listing was taken: the listing is the stale side.
       if (PUSHING.has(rem.id) || (LAST_PUSH.get(rem.id) || 0) >= started) continue;
-      let ev = byMetis.get(rem.id);
+      let ev = byOpenHL.get(rem.id);
       if (!ev) {
         if (!rem.gcalId) continue;
         // Not in the listing: deleted in Google, or made before events carried
-        // the metisApp tag. Ask Google about this one event before deleting anything.
+        // the openhlApp tag. Ask Google about this one event before deleting anything.
         try {
           const e = await api("GET", calPath() + "/" + encodeURIComponent(rem.gcalId));
           if (e.status === "cancelled") { gone.add(rem.id); continue; }
           ev = e;
           // Tag it so later syncs find it in the listing.
           await api("PATCH", calPath() + "/" + encodeURIComponent(rem.gcalId),
-                    { extendedProperties: { private: { metisId: rem.id, metisApp: "1" } } }).catch(() => {});
+                    { extendedProperties: { private: { openhlId: rem.id, openhlApp: "1" } } }).catch(() => {});
         } catch (e) {
           if (e.status === 404 || e.status === 410) gone.add(rem.id);
           continue;
@@ -392,7 +392,7 @@ function mapEvent(ev, cal, m) {
     start: ev.start.dateTime || ev.start.date,
     end: (ev.end && (ev.end.dateTime || ev.end.date)) || null,
     link: ev.htmlLink || null,
-    metisId: (ev.extendedProperties && ev.extendedProperties.private && ev.extendedProperties.private.metisId) || null,
+    openhlId: (ev.extendedProperties && ev.extendedProperties.private && ev.extendedProperties.private.openhlId) || null,
   };
 }
 

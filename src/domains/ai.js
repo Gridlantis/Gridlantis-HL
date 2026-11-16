@@ -133,8 +133,8 @@ async function callOpenRouterRaw(messages, model, system, ms = 120000) {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${KEY}`,
-        'HTTP-Referer': 'http://metis.local',
-        'X-Title': 'Metis'
+        'HTTP-Referer': 'http://openhl.local',
+        'X-Title': 'Open HL'
       },
       body: JSON.stringify({ model: usedModel, messages: msgs, stream: false })
     });

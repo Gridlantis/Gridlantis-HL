@@ -63,7 +63,7 @@ module.exports = async function ttsRoutes(ctx) {
   if (pathname === '/api/tts/test' && req.method === 'POST') {
     const b = JSON.parse((await readBody()).toString() || '{}');
     try {
-      await speakServer(b.text || 'Metis speech test. All systems nominal.');
+      await speakServer(b.text || 'Open HL speech test. All systems nominal.');
       return json({ ok: true, played: AUDIO.mp3 || AUDIO.speaker || 'none' });
     } catch (e) { return json({ ok: false, error: e.message }, 502); }
   }

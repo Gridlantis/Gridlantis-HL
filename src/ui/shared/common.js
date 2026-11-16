@@ -84,7 +84,7 @@
 
   // Clipboard that works in the desktop app, on HTTPS, and (with a user
   // gesture) on plain HTTP.
-  const desktop = window.metisDesktop || null;
+  const desktop = window.openhlDesktop || null;
   async function writeClipboard(text) {
     try { if (desktop && desktop.clipboard) { await desktop.clipboard.writeText(text); return true; } } catch (e) {}
     try { if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(text); return true; } } catch (e) {}

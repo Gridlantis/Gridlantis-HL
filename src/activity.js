@@ -1,11 +1,11 @@
 const { broadcast, onBroadcast } = require("./sse");
 
 // ═══ ACTIVITY FEED ══════════════════════════════════════════════════════════════
-// One stream of "Metis is doing X" events for the /world page, where each one
+// One stream of "Open HL is doing X" events for the /world page, where each one
 // becomes a robot errand. Sent as the 'activity' SSE event and kept in a short
 // ring so a freshly opened page has something to replay.
 //
-//   service  which part of Metis: social, mail, ai, monitor, vmlab, docker, …
+//   service  which part of Open HL: social, mail, ai, monitor, vmlab, docker, …
 //   action   what it did: send, receive, think, check, sweep, up, down, …
 //   target   where it went, when that matters (a platform, a node, a model host)
 //   phase    "start" | "done" for jobs that take a while, omitted for instant ones

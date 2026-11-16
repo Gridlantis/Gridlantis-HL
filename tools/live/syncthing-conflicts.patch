@@ -6,7 +6,7 @@ diff -ruN a/lib/model/folder_sendrecv.go b/lib/model/folder_sendrecv.go
  	// Record the updated file in the index
  	dbUpdateChan <- dbUpdateJob{file, dbUpdateHandleFile}
 +	if isConflict(file.Name) {
-+		// Metis patch: a conflict copy arrived; check it for duplicates
++		// Open HL patch: a conflict copy arrived; check it for duplicates
 +		// once the pull is done (see pullScannerRoutine).
 +		scanChan <- file.Name
 +	}
@@ -17,7 +17,7 @@ diff -ruN a/lib/model/folder_sendrecv.go b/lib/model/folder_sendrecv.go
  		toBeScanned[path] = struct{}{}
  	}
  
-+	// Metis patch: the pull is done and the database is up to date; drop
++	// Open HL patch: the pull is done and the database is up to date; drop
 +	// duplicate conflict copies of every file that got a new one.
 +	bases := make(map[string]struct{})
 +	for path := range toBeScanned {
@@ -38,7 +38,7 @@ diff -ruN a/lib/model/folder_sendrecv.go b/lib/model/folder_sendrecv.go
  func (f *sendReceiveFolder) moveForConflict(name, lastModBy string, scanChan chan<- string) error {
  	if isConflict(name) {
  		f.sl.Info("Conflict on existing conflict copy; not copying again", slogutil.FilePath(name))
-+		// Metis patch: keep the replaced conflict copy in the version archive
++		// Open HL patch: keep the replaced conflict copy in the version archive
 +		// when the folder has one, instead of deleting it. Conflict copies are
 +		// the losing side of a conflict; deleting one loses that edit for good.
 +		if f.versioner != nil {
@@ -55,7 +55,7 @@ diff -ruN a/lib/model/folder_sendrecv.go b/lib/model/folder_sendrecv.go
  
  	metricFolderConflictsTotal.WithLabelValues(f.ID).Inc()
 -	newName := conflictName(name, lastModBy)
-+	// Metis patch: name the copy after the device making it too. Two devices
++	// Open HL patch: name the copy after the device making it too. Two devices
 +	// that both lose to the same winner in the same second used to pick the
 +	// identical name (time to the second + winner's ID); the copies then
 +	// conflicted with each other and one was deleted above, losing an edit.
@@ -67,7 +67,7 @@ diff -ruN a/lib/model/folder_sendrecv.go b/lib/model/folder_sendrecv.go
  	return strings.Contains(filepath.Base(name), ".sync-conflict-")
  }
  
-+// Metis patch: conflictBase returns the file a conflict copy was made from
++// Open HL patch: conflictBase returns the file a conflict copy was made from
 +// ("a.sync-conflict-20261115-132950-XXXXXXX-YYYYYYY.txt" -> "a.txt").
 +func conflictBase(name string) (string, bool) {
 +	if !isConflict(name) {
@@ -83,7 +83,7 @@ diff -ruN a/lib/model/folder_sendrecv.go b/lib/model/folder_sendrecv.go
 +	return dir + base[:i] + ext, true
 +}
 +
-+// Metis patch: dedupeConflicts removes conflict copies of base whose content
++// Open HL patch: dedupeConflicts removes conflict copies of base whose content
 +// is identical to another copy's. When several devices each file away the
 +// same losing version, each copy gets its own name (see moveForConflict), so
 +// one edit can show up two or three times. Of each set of identical copies the
@@ -150,11 +150,11 @@ diff -ruN a/lib/model/folder_sendrecv.go b/lib/model/folder_sendrecv.go
  func existingConflicts(name string, fs fs.Filesystem) []string {
  	ext := filepath.Ext(name)
  	matches, err := fs.Glob(name[:len(name)-len(ext)] + ".sync-conflict-????????-??????*" + ext)
-diff -ruN a/lib/model/metis_conflicts_test.go b/lib/model/metis_conflicts_test.go
---- a/lib/model/metis_conflicts_test.go	1969-12-31 19:00:00.000000000 -0500
-+++ b/lib/model/metis_conflicts_test.go	2026-11-15 14:18:49.319283943 -0500
+diff -ruN a/lib/model/openhl_conflicts_test.go b/lib/model/openhl_conflicts_test.go
+--- a/lib/model/openhl_conflicts_test.go	1969-12-31 19:00:00.000000000 -0500
++++ b/lib/model/openhl_conflicts_test.go	2026-11-15 14:18:49.319283943 -0500
 @@ -0,0 +1,78 @@
-+// Metis patch: tests for conflict copy naming and deduplication.
++// Open HL patch: tests for conflict copy naming and deduplication.
 +
 +package model
 +
@@ -165,7 +165,7 @@ diff -ruN a/lib/model/metis_conflicts_test.go b/lib/model/metis_conflicts_test.g
 +	"github.com/syncthing/syncthing/lib/fs"
 +)
 +
-+func TestMetisConflictBase(t *testing.T) {
++func TestOpenHLConflictBase(t *testing.T) {
 +	cases := map[string]string{
 +		"a.sync-conflict-20261115-132950-SVVBUCW-VJ3L4B2.txt":      "a.txt",
 +		"dir/x y.sync-conflict-20261115-132950-SVVBUCW-VJ3L4B2.md": "dir/x y.md",
@@ -184,7 +184,7 @@ diff -ruN a/lib/model/metis_conflicts_test.go b/lib/model/metis_conflicts_test.g
 +	}
 +}
 +
-+func metisWriteFile(t *testing.T, ffs fs.Filesystem, name, content string) {
++func openhlWriteFile(t *testing.T, ffs fs.Filesystem, name, content string) {
 +	t.Helper()
 +	fd, err := ffs.Create(name)
 +	if err != nil {
@@ -196,7 +196,7 @@ diff -ruN a/lib/model/metis_conflicts_test.go b/lib/model/metis_conflicts_test.g
 +	fd.Close()
 +}
 +
-+func TestMetisDedupeConflicts(t *testing.T) {
++func TestOpenHLDedupeConflicts(t *testing.T) {
 +	_, f := setupSendReceiveFolder(t)
 +	ffs := f.Filesystem()
 +	files := map[string]string{
@@ -210,7 +210,7 @@ diff -ruN a/lib/model/metis_conflicts_test.go b/lib/model/metis_conflicts_test.g
 +		"other.sync-conflict-20261115-132950-SVVBUCW-VJ3L4B2.txt": "edit by hub", // other file: untouched
 +	}
 +	for n, c := range files {
-+		metisWriteFile(t, ffs, n, c)
++		openhlWriteFile(t, ffs, n, c)
 +	}
 +	removed := f.dedupeConflicts("conf.txt")
 +	slices.Sort(removed)

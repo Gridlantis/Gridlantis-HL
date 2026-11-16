@@ -11,7 +11,7 @@ const { BASE_CSS, FAVICON, FONT, NAV_CSS, TOAST_CSS, TOAST_JS, navBar } = requir
 function flowsHtml() {
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Metis · Flow Space</title>${FONT}${FAVICON}
+<title>Open HL · Flow Space</title>${FONT}${FAVICON}
 <style>
 ${BASE_CSS}${NAV_CSS}${TOAST_CSS}
 .fs-app{display:grid;grid-template-columns:230px minmax(0,1fr) 280px;height:var(--app-h);overflow:hidden;}
@@ -428,7 +428,7 @@ function openFlow(id, keepView){
       $('fs-name').value = f.name;
       if (!keepView) view = f.view && f.view.zoom ? { x: f.view.x, y: f.view.y, zoom: f.view.zoom } : { x: 40, y: 40, zoom: 1 };
       applyView(); render(); renderList(); setStatus('Saved');
-      try { localStorage.setItem('metis-flow', f.id); } catch(e){}
+      try { localStorage.setItem('openhl-flow', f.id); } catch(e){}
       history.replaceState(null, '', '/flows?open=' + encodeURIComponent(f.id));
     }).catch(function(e){ if (e !== 'stay') showToast('Could not open that flow', 'bad'); });
 }
@@ -884,11 +884,11 @@ $('fs-redo').addEventListener('click', redo);
 $('fs-zin').addEventListener('click', function(){ zoomAt(view.zoom * 1.2); });
 $('fs-zout').addEventListener('click', function(){ zoomAt(view.zoom / 1.2); });
 $('fs-fit').addEventListener('click', fit);
-$('fs-snap').addEventListener('click', function(){ snapOn = !snapOn; this.classList.toggle('on', snapOn); try { localStorage.setItem('metis-flow-snap', snapOn ? '1' : '0'); } catch(e){} });
+$('fs-snap').addEventListener('click', function(){ snapOn = !snapOn; this.classList.toggle('on', snapOn); try { localStorage.setItem('openhl-flow-snap', snapOn ? '1' : '0'); } catch(e){} });
 $('fs-new').addEventListener('click', function(){ newFlow(); });
 $('fs-list-t').addEventListener('click', function(){
   var hid = $('app').classList.toggle('no-list');
-  try { localStorage.setItem('metis-flow-list', hid ? '0' : '1'); } catch(e){}
+  try { localStorage.setItem('openhl-flow-list', hid ? '0' : '1'); } catch(e){}
 });
 $('fs-name').addEventListener('input', function(){ if (!F) return; F.name = this.value.slice(0, 120) || 'Untitled flow'; scheduleSave(); });
 $('fs-name').addEventListener('keydown', function(e){ if (e.key === 'Enter') this.blur(); });
@@ -930,13 +930,13 @@ try {
 
 // ── boot ────────────────────────────────────────────────────────────────────
 try {
-  if (localStorage.getItem('metis-flow-snap') === '0') { snapOn = false; $('fs-snap').classList.remove('on'); }
-  if (localStorage.getItem('metis-flow-list') === '0' || window.innerWidth <= 900) $('app').classList.add('no-list');
+  if (localStorage.getItem('openhl-flow-snap') === '0') { snapOn = false; $('fs-snap').classList.remove('on'); }
+  if (localStorage.getItem('openhl-flow-list') === '0' || window.innerWidth <= 900) $('app').classList.add('no-list');
 } catch(e){}
 updUndo(); applyView();
 Promise.all([loadList(), loadNotes()]).then(function(){
   var want = new URLSearchParams(location.search).get('open'), last = null;
-  try { last = localStorage.getItem('metis-flow'); } catch(e){}
+  try { last = localStorage.getItem('openhl-flow'); } catch(e){}
   var has = function(id){ return id && FLOWS.some(function(f){ return f.id === id; }); };
   var id = has(want) ? want : has(last) ? last : FLOWS[0] && FLOWS[0].id;
   if (want && !has(want)) showToast('That flow no longer exists', 'bad');

@@ -1,12 +1,12 @@
 {
-  "name": "metis-desktop",
-  "productName": "Metis",
+  "name": "openhl-desktop",
+  "productName": "Open HL",
   "version": "1.0.0",
-  "description": "Metis in its own window: the dashboard, VM Lab consoles with full keyboard capture and two-way clipboard.",
-  "author": "Metis",
+  "description": "Open HL in its own window: the dashboard, VM Lab consoles with full keyboard capture and two-way clipboard.",
+  "author": "Open HL",
   "license": "UNLICENSED",
-  "homepage": "http://metis.local:3000",
-  "desktopName": "metis.desktop",
+  "homepage": "http://openhl.local:3000",
+  "desktopName": "openhl.desktop",
   "private": true,
   "main": "main.js",
   "scripts": {
@@ -22,9 +22,9 @@
     "electron-builder": "26.15.3"
   },
   "build": {
-    "appId": "local.metis.desktop",
-    "productName": "Metis",
-    "copyright": "Metis",
+    "appId": "local.openhl.desktop",
+    "productName": "Open HL",
+    "copyright": "Open HL",
     "directories": {
       "output": "dist",
       "buildResources": "build"
@@ -36,7 +36,7 @@
       "build/icon.png",
       "package.json"
     ],
-    "artifactName": "Metis-${version}-${os}-${arch}.${ext}",
+    "artifactName": "OpenHL-${version}-${os}-${arch}.${ext}",
     "linux": {
       "target": [
         "AppImage",
@@ -44,9 +44,9 @@
       ],
       "category": "Utility",
       "icon": "build/icon.png",
-      "maintainer": "Metis <metis@localhost>",
-      "synopsis": "Metis dashboard and VM Lab client",
-      "executableName": "metis",
+      "maintainer": "Open HL <openhl@localhost>",
+      "synopsis": "Open HL dashboard and VM Lab client",
+      "executableName": "openhl",
       "syncDesktopName": true
     },
     "deb": {
@@ -74,10 +74,10 @@
       "perMachine": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
-      "artifactName": "Metis-Setup-${version}.${ext}"
+      "artifactName": "OpenHL-Setup-${version}.${ext}"
     },
     "portable": {
-      "artifactName": "Metis-${version}-portable.${ext}"
+      "artifactName": "OpenHL-${version}-portable.${ext}"
     }
   }
 }

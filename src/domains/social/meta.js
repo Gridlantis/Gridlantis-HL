@@ -10,7 +10,7 @@ const { checkMedia, isVideo, mediaList, mediaMime } = require("./store");
 // not possible through the API, so it is always a Page.
 //
 // Instagram fetches media from a public URL rather than accepting an upload.
-// Metis has none, so images go to the Page first as UNPUBLISHED photos (they
+// Open HL has none, so images go to the Page first as UNPUBLISHED photos (they
 // never appear on the Page); Facebook's CDN address for that photo is handed to
 // Instagram, and the staging photo is deleted after publishing. Facebook stores
 // uploads as JPEG, which is also the only image format Instagram accepts.

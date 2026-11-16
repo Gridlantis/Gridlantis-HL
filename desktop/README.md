@@ -1,11 +1,11 @@
-# Metis desktop
+# Open HL desktop
 
-Metis in its own window for Windows and Linux. It connects to a Metis server
+Open HL in its own window for Windows and Linux. It connects to an Open HL server
 (LAN, Tailscale or public address), remembers it and the login, and gives VM
 Lab consoles automatic two-way clipboard and full keyboard capture. The
 browser version keeps working unchanged.
 
-On the host itself, the connect screen can also **start Metis from its
+On the host itself, the connect screen can also **start Open HL from its
 folder** using the app's built-in Node runtime.
 
 ## Build
@@ -21,7 +21,7 @@ npm run dist:win      # just Windows portable .exe + zip (no Wine needed)
 npm run dist:win-installer   # Windows setup .exe — on Linux this needs Wine
 ```
 
-Output lands in `desktop/dist/`, which Metis serves at `/download` (the download
+Output lands in `desktop/dist/`, which Open HL serves at `/download` (the download
 icon at the bottom of the sidebar).
 
 ## Use
@@ -33,5 +33,5 @@ icon at the bottom of the sidebar).
 - VM consoles open in their own window. Inside a console, Ctrl+R, F5 and
   similar keys go to the VM instead of reloading the app.
 
-Settings live in the app's user-data folder (`~/.config/Metis` on Linux,
-`%APPDATA%\Metis` on Windows).
+Settings live in the app's user-data folder (`~/.config/Open HL` on Linux,
+`%APPDATA%\Open HL` on Windows).

@@ -1,4 +1,4 @@
-/* Live folders — folders kept in sync on PCs through Metis. Plain script, uses window.VL. */
+/* Live folders — folders kept in sync on PCs through Open HL. Plain script, uses window.VL. */
 (function () {
   "use strict";
   const { api, h, icon, fmtAgo, fmtBytes, toast, writeClipboard } = window.VL;
@@ -49,7 +49,7 @@
       $("#folders").innerHTML = ""; $("#pcs").innerHTML = "";
       return;
     }
-    if (!d.metisIp) banners.appendChild(h("div", { class: "banner" }, h("b", null, "Metis is not on a tailnet"),
+    if (!d.openhlIp) banners.appendChild(h("div", { class: "banner" }, h("b", null, "Open HL is not on a tailnet"),
       "PCs reach live folders over Tailscale. Start Tailscale on this machine."));
     renderFolders(d); renderPcs(d);
   }
@@ -57,8 +57,8 @@
   // ── Status ──────────────────────────────────────────────────────────────────
   // One PC's copy of one folder, worst news first. c.pc is the PC's own report
   // (its reporter posts every 10 s); without it (a PC set up before reporting
-  // existed, or one not heard from lately) only Metis's view is known, and
-  // Metis can't see a PC whose folder has stopped with an error.
+  // existed, or one not heard from lately) only Open HL's view is known, and
+  // Open HL can't see a PC whose folder has stopped with an error.
   const pctOf = (have, total) => total > 0 ? Math.max(0, Math.min(100, Math.floor(100 * have / total))) : 100;
   const plural = (n, w) => n + " " + w + (n === 1 ? "" : "s");
   const ERROR_HINTS = [
@@ -67,13 +67,13 @@
     [/permission denied|access is denied/i, (f, p) => "Syncthing on " + p.name + " is not allowed to read or write some files in " + pcPath(f, p) + "."],
     [/no space left|insufficient disk/i, (f, p) => p.name + " is out of disk space."],
   ];
-  const pcPath = (f, p) => (p.os === "windows" ? "%USERPROFILE%\\Metis Live\\" : "~/Metis Live/") + f.label;
+  const pcPath = (f, p) => (p.os === "windows" ? "%USERPROFILE%\\Open HL Live\\" : "~/Open HL Live/") + f.label;
   const hintFor = (f, p, msg) => { const m = ERROR_HINTS.find(([re]) => re.test(msg || "")); return m ? m[1](f, p) : ""; };
 
   function pcStatus(f, p) {
     const c = f.sync[p.id] || null, r = c && c.pc;
     if (c && c.pcRunning === false) return { cls: "error", short: "stopped", text: "Syncthing on this PC is not responding",
-      hint: "The sync service on " + p.name + " is not running. Re-run the setup command there, or check: systemctl --user status metis-live" };
+      hint: "The sync service on " + p.name + " is not running. Re-run the setup command there, or check: systemctl --user status openhl-live" };
     if (r && !r.missing && (r.error || r.state === "error")) return { cls: "error", short: "error", text: "stopped: " + (r.error || "error"), hint: hintFor(f, p, r.error) };
     if (!p.connected) return { cls: "offline", short: "offline", text: p.lastSeen ? "offline · seen " + fmtAgo(p.lastSeen) : "never connected" };
     if (r && r.missing) return { cls: "syncing", short: "…", text: "being set up on this PC…" };
@@ -82,9 +82,9 @@
       const pc = pctOf(r.globalBytes - r.needBytes, r.globalBytes);
       return { cls: "syncing", short: "↓" + pc + "%", text: "downloading · " + pc + "% · " + (r.needBytes ? fmtBytes(r.needBytes) : plural(r.needFiles, "item")) + " to go" };
     }
-    if (r && r.toMetis && r.toMetis.completion < 100) {
-      const t = r.toMetis, pc = Math.floor(t.completion);
-      return { cls: "syncing", short: "↑" + pc + "%", text: "uploading to Metis · " + pc + "% · " + (t.needBytes ? fmtBytes(t.needBytes) : plural(t.needItems, "item")) + " to go" };
+    if (r && r.toOpenHL && r.toOpenHL.completion < 100) {
+      const t = r.toOpenHL, pc = Math.floor(t.completion);
+      return { cls: "syncing", short: "↑" + pc + "%", text: "uploading to Open HL · " + pc + "% · " + (t.needBytes ? fmtBytes(t.needBytes) : plural(t.needItems, "item")) + " to go" };
     }
     if (c && typeof c.completion === "number" && c.completion < 100) {
       const pc = Math.floor(c.completion);
@@ -97,12 +97,12 @@
   }
 
   function folderState(f) {
-    if (f.error || f.state === "error") return { cls: "error", text: "error on Metis" };
+    if (f.error || f.state === "error") return { cls: "error", text: "error on Open HL" };
     const bad = f.devices.map(pcById).filter(p => p && pcStatus(f, p).cls === "error");
     if (bad.length) return { cls: "error", text: "problem on " + bad.map(p => p.name).join(", ") };
     if (f.state === "scanning" || f.state === "scan-waiting") return { cls: "syncing", text: "checking for changes…" };
     if (f.state === "syncing" || f.state === "sync-preparing" || f.state === "sync-waiting" || f.needFiles)
-      return { cls: "syncing", text: "Metis receiving · " + pctOf(f.bytes - f.needBytes, f.bytes) + "%" + (f.needBytes ? " · " + fmtBytes(f.needBytes) + " to go" : "") };
+      return { cls: "syncing", text: "Open HL receiving · " + pctOf(f.bytes - f.needBytes, f.bytes) + "%" + (f.needBytes ? " · " + fmtBytes(f.needBytes) + " to go" : "") };
     const behind = f.devices.map(pcById).filter(p => p && pcStatus(f, p).cls === "syncing");
     if (behind.length) return { cls: "syncing", text: "syncing with " + behind.map(p => p.name).join(", ") + "…" };
     return { cls: "synced", text: "up to date" };
@@ -130,14 +130,14 @@
           h("div", { class: "card-meta" }, f.files + " file" + (f.files === 1 ? "" : "s") + " · " + fmtBytes(f.bytes))),
         h("div", { class: "row", style: { gap: "7px" } }, h("span", { class: "dot " + s.cls }), h("span", { class: "card-meta" }, s.text))));
       if (f.error) card.appendChild(note(f.error, true));
-      if (f.pullErrors) card.appendChild(note(f.pullErrors + " file" + (f.pullErrors > 1 ? "s" : "") + " could not be synced on Metis", true));
+      if (f.pullErrors) card.appendChild(note(f.pullErrors + " file" + (f.pullErrors > 1 ? "s" : "") + " could not be synced on Open HL", true));
 
       const chips = h("div", { class: "chips" });
-      // Metis's own copy: still receiving, stopped, or complete.
+      // Open HL's own copy: still receiving, stopped, or complete.
       const mBad = !!(f.error || f.state === "error"), mBusy = !mBad && (f.needFiles > 0 || /^(sync|scan)/.test(f.state || ""));
       const mPct = pctOf(f.bytes - f.needBytes, f.bytes);
-      chips.appendChild(h("span", { class: "chip" + (mBad ? " bad" : ""), title: "Metis keeps the always-on copy" + (mBad ? ": " + (f.error || "error") : mBusy ? ": receiving · " + mPct + "% · " + fmtBytes(f.needBytes) + " to go" : ": up to date") },
-        h("span", { class: "dot " + (mBad ? "error" : mBusy ? "syncing" : "synced") }), "Metis",
+      chips.appendChild(h("span", { class: "chip" + (mBad ? " bad" : ""), title: "Open HL keeps the always-on copy" + (mBad ? ": " + (f.error || "error") : mBusy ? ": receiving · " + mPct + "% · " + fmtBytes(f.needBytes) + " to go" : ": up to date") },
+        h("span", { class: "dot " + (mBad ? "error" : mBusy ? "syncing" : "synced") }), "Open HL",
         h("span", { class: "pct" }, mBad ? "error" : mBusy ? "↓" + mPct + "%" : "✓")));
       const problems = [];
       f.devices.forEach(id => {
@@ -155,7 +155,7 @@
         "Last change: " + (f.lastFile.deleted ? "deleted " : "") + f.lastFile.name + " · " + fmtAgo(f.lastFile.at)));
 
       card.appendChild(h("div", { class: "card-acts" },
-        h("button", { class: "btn primary", title: "Browse Metis's copy: download, upload, delete", onclick: () => openBrowse(f, "") }, icon("fa-solid fa-folder-open"), "Open"),
+        h("button", { class: "btn primary", title: "Browse Open HL's copy: download, upload, delete", onclick: () => openBrowse(f, "") }, icon("fa-solid fa-folder-open"), "Open"),
         h("button", { class: "btn sm", onclick: () => openFolder(f) }, icon("fa-solid fa-computer"), "PCs"),
         h("button", { class: "btn sm", onclick: () => openVersions(f) }, icon("fa-solid fa-clock-rotate-left"), "Restore"),
         h("span", { class: "spacer" }),
@@ -209,20 +209,20 @@
 
   // ── Add a PC ────────────────────────────────────────────────────────────────
   function openSetup() {
-    const base = location.protocol + "//" + (S.data && S.data.metisIp ? S.data.metisIp + (location.port ? ":" + location.port : "") : location.host);
+    const base = location.protocol + "//" + (S.data && S.data.openhlIp ? S.data.openhlIp + (location.port ? ":" + location.port : "") : location.host);
     const cmds = {
       linux: "curl -fsSL " + base + "/live/setup.sh | bash",
       windows: "irm " + base + "/live/setup.ps1 | iex",
     };
     const steps = {
       linux: ["Open a terminal on the PC (as yourself — no sudo) and run:",
-        "It installs Syncthing for your user, starts it now and at boot, and points it at Metis only."],
+        "It installs Syncthing for your user, starts it now and at boot, and points it at Open HL only."],
       windows: ["Open PowerShell on the PC (as yourself — no admin needed) and run:",
-        "It installs Syncthing for your user, starts it now and at every sign-in with no window, and points it at Metis only."],
+        "It installs Syncthing for your user, starts it now and at every sign-in with no window, and points it at Open HL only."],
     };
     let os = /Windows/.test(navigator.userAgent) ? "windows" : "linux";
     const body = h("div");
-    const code = h("textarea", { class: "in", rows: 3, placeholder: "metis-live:…", spellcheck: "false" });
+    const code = h("textarea", { class: "in", rows: 3, placeholder: "openhl-live:…", spellcheck: "false" });
     const result = h("div");
     const paint = () => {
       body.innerHTML = "";
@@ -233,13 +233,13 @@
       body.appendChild(h("ol", { class: "setup-steps" },
         h("li", null, steps[os][0], h("div", { class: "cmd" }, h("pre", null, cmds[os]), copy)),
         h("li", null, steps[os][1], " It needs Tailscale running on the PC; traffic never leaves your tailnet."),
-        h("li", null, "It prints a code starting with ", h("code", null, "metis-live:"), ". Paste it here:")));
+        h("li", null, "It prints a code starting with ", h("code", null, "openhl-live:"), ". Paste it here:")));
       body.appendChild(h("div", { class: "fld full", style: { marginTop: "10px" } }, code));
       body.appendChild(result);
       body.appendChild(h("div", { class: "hint", style: { marginTop: "10px" } },
-        "Folders you share with the PC appear in ", h("code", null, os === "windows" ? "%USERPROFILE%\\Metis Live" : "~/Metis Live"),
+        "Folders you share with the PC appear in ", h("code", null, os === "windows" ? "%USERPROFILE%\\Open HL Live" : "~/Open HL Live"),
         ". Running the command again is safe. To remove it: ",
-        os === "windows" ? h("code", null, "$env:METIS_LIVE_UNINSTALL=1; " + cmds.windows) : h("code", null, cmds.linux.replace("| bash", "| bash -s -- --uninstall"))));
+        os === "windows" ? h("code", null, "$env:OPENHL_LIVE_UNINSTALL=1; " + cmds.windows) : h("code", null, cmds.linux.replace("| bash", "| bash -s -- --uninstall"))));
     };
     paint();
     const add = h("button", { class: "btn primary", onclick: async () => {
@@ -294,7 +294,7 @@
       h("div", { class: "fld full" }, h("label", null, "PCs that get it"), picks),
       h("div", { class: "hint" }, f
         ? "A PC you untick stops syncing; its copy stays on that PC. Renaming changes the name here, not the folder already on each PC."
-        : "Each ticked PC gets it at ~/Metis Live/<name> within a few seconds. Metis keeps the always-on copy, plus deleted and replaced files for 30 days."),
+        : "Each ticked PC gets it at ~/Open HL Live/<name> within a few seconds. Open HL keeps the always-on copy, plus deleted and replaced files for 30 days."),
       result), [save]);
     setTimeout(() => (f ? null : name.focus()), 30);
   }
@@ -322,17 +322,17 @@
       } catch (e) { result.appendChild(note(e.message, true)); save.disabled = false; }
     } }, "Save");
     modal.open("Folders on " + p.name, h("div", { class: "rowset" }, list,
-      h("div", { class: "hint" }, "Ticked folders appear on " + p.name + " in " + (p.os === "windows" ? "%USERPROFILE%\\Metis Live" : "~/Metis Live") + "."), result), [save]);
+      h("div", { class: "hint" }, "Ticked folders appear on " + p.name + " in " + (p.os === "windows" ? "%USERPROFILE%\\Open HL Live" : "~/Open HL Live") + "."), result), [save]);
   }
 
   async function removeFolder(f) {
     if (!await confirmBox("Stop syncing " + f.label + "?",
-      "Nothing is deleted: every PC keeps its copy, and Metis keeps its copy in Files → Live folders. They just stop being kept in sync. The 30 days of old versions for this folder are dropped.", "Stop syncing")) return;
+      "Nothing is deleted: every PC keeps its copy, and Open HL keeps its copy in Files → Live folders. They just stop being kept in sync. The 30 days of old versions for this folder are dropped.", "Stop syncing")) return;
     try { await api("DELETE", "/api/live/folders/" + enc(f.id)); toast("Stopped syncing " + f.label); load(); }
     catch (e) { toast(e.message, "bad"); }
   }
 
-  // ── Browse Metis's copy ────────────────────────────────────────────────────
+  // ── Browse Open HL's copy ────────────────────────────────────────────────────
   // Uses the Files API on uploads/Live folders/<name>; whatever changes here
   // syncs out to the PCs like any other change.
   async function openBrowse(f, sub) {
@@ -364,7 +364,7 @@
       try { await api("POST", "/api/files/mkdir", { dir, name }); openBrowse(f, sub); } catch (e) { toast(e.message, "bad"); }
     } }, icon("fa-solid fa-folder-plus"), "New folder");
     modal.open(f.label, h("div", { class: "rowset" }, crumbs, list, picker,
-      h("div", { class: "hint" }, "This is Metis's copy. Anything you upload, rename or delete here reaches every PC with this folder.")), [mkdir, upload]);
+      h("div", { class: "hint" }, "This is Open HL's copy. Anything you upload, rename or delete here reaches every PC with this folder.")), [mkdir, upload]);
     let items;
     try { items = await api("GET", "/api/files?dir=" + enc(dir)); }
     catch (e) { list.innerHTML = ""; list.appendChild(note(e.message, true)); return; }

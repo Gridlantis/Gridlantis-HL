@@ -155,7 +155,7 @@ function extractJsonArray(raw) {
 //    fired still finds it and starts ringing. The alarm UI lives in navBar(),
 //    which every page renders, so no individual page has to opt in.
 //
-// A reminder that came due while Metis was down still rings if it is less than
+// A reminder that came due while Open HL was down still rings if it is less than
 // MISS_GRACE_MS late; anything older is marked missed and retired quietly rather
 // than ambushing you with a week of stale alarms on restart.
 

@@ -1,7 +1,7 @@
 const { BASE_CSS, FAVICON, FONT, NAV_CSS, THEME_JS, TOAST_CSS, TOAST_JS, navBar } = require("../ui/assets");
 
-// ─── METIS WORLD ─────────────────────────────────────────────────────────────
-// A 3D town of Metis: its services are districts inside the network wall, the
+// ─── OPENHL WORLD ─────────────────────────────────────────────────────────────
+// A 3D town of Open HL: its services are districts inside the network wall, the
 // outside world (social platforms, Google, weather, model APIs) are buildings
 // beyond it, and every 'activity' event sends a robot on an errand between
 // them. Behaviour is in src/ui/world/world.js.
@@ -52,14 +52,14 @@ html,body{height:100%;overflow:hidden;}
 
 function worldHtml() {
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Metis · World</title>${FONT}${FAVICON}
+<title>Open HL · World</title>${FONT}${FAVICON}
 <style>${BASE_CSS}${NAV_CSS}${TOAST_CSS}${WORLD_CSS}</style><script>${THEME_JS}</script>
 <script type="importmap">{"imports":{"three":"/world/assets/three.module.min.js"}}</script></head><body>
 ${navBar("/world")}
 <div class="w-stage" id="stage">
   <div class="w-hud w-card w-title">
-    <h1>Metis World</h1>
-    <p>Every job Metis runs is a robot errand. Inside the wall is Metis, outside are the services it talks to.</p>
+    <h1>Open HL World</h1>
+    <p>Every job Open HL runs is a robot errand. Inside the wall is Open HL, outside are the services it talks to.</p>
     <div class="row">
       <button class="w-btn" id="w-demo" type="button" title="Send a few practice errands. Nothing is really posted or sent."><i class="fa-solid fa-play"></i> Demo</button>
       <button class="w-btn on" id="w-spin" type="button" title="Slowly circle the town"><i class="fa-solid fa-rotate"></i> Orbit</button>
@@ -68,7 +68,7 @@ ${navBar("/world")}
   </div>
   <div class="w-hud w-card w-feed">
     <div class="w-feed-h">Activity <span class="w-live" id="w-live"><i></i><span>connecting</span></span></div>
-    <ul class="w-list" id="w-list"><li class="empty">Waiting for Metis to do something…</li></ul>
+    <ul class="w-list" id="w-list"><li class="empty">Waiting for Open HL to do something…</li></ul>
   </div>
   <div class="w-hud w-card w-legend" id="w-legend"></div>
   <div class="w-card w-tip" id="w-tip"></div>

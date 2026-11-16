@@ -6,7 +6,7 @@ const ID = document.body.dataset.laptop;
 const NAME = document.body.dataset.name;
 const $ = s => document.querySelector(s);
 
-// Metis signs in to the laptop itself and hands this page a session that is
+// Open HL signs in to the laptop itself and hands this page a session that is
 // already authenticated, so there is never a password prompt here.
 let rfb = null, connected = false, retry = 0, reconnectT = null, gaveUp = false;
 let scaleFit = true, viewOnly = false, remoteClip = "", lastSent = null, lastGesture = 0;
@@ -14,7 +14,7 @@ const mode = clipboardMode();
 
 // Which monitor to show: -1 is all of them side by side. The PC's service puts
 // its monitor layout in the desktop name (see tools/laptop/setup-remote.sh).
-const MON_KEY = "metis-pc-monitor:" + ID;
+const MON_KEY = "openhl-pc-monitor:" + ID;
 let monitors = [], monIdx = -1;
 try { monIdx = Number(localStorage.getItem(MON_KEY) ?? -1); } catch (e) {}
 
@@ -58,12 +58,12 @@ function connect() {
     stopBridge();
     setStatus("disconnected", "error");
     if (gaveUp) return;
-    // Ask Metis why: asleep, off the tailnet, service down, or a stale password.
+    // Ask Open HL why: asleep, off the tailnet, service down, or a stale password.
     let st = null;
     try { st = await api("GET", "/api/laptops/" + encodeURIComponent(ID) + "/status?force=1"); } catch (e) {}
     if (st && st.auth) {
       gaveUp = true;
-      return showOverlay("The PC rejected Metis's password", st.error, [backBtn()]);
+      return showOverlay("The PC rejected Open HL's password", st.error, [backBtn()]);
     }
     retry++;
     if (retry > 6) {
@@ -85,11 +85,11 @@ function connect() {
 }
 
 // ── Monitors ─────────────────────────────────────────────────────────────────
-// " metis-monitors=WxH+X+Y/OUTPUT,…" in the desktop name. Numbered
+// " openhl-monitors=WxH+X+Y/OUTPUT,…" in the desktop name. Numbered
 // left to right, the way they sit on the desk.
 function parseDesktopName(name) {
   let mons = null;
-  const desktop = name.replace(/\s+metis-([a-z]+)=(\S*)/g, (_, k, v) => { if (k === "monitors") mons = v; return ""; }).trim();
+  const desktop = name.replace(/\s+openhl-([a-z]+)=(\S*)/g, (_, k, v) => { if (k === "monitors") mons = v; return ""; }).trim();
   if (mons == null) return { desktop, list: [] };
   const list = mons.split(",").map(s => /^(\d+)x(\d+)\+(\d+)\+(\d+)(?:\/(.*))?$/.exec(s)).filter(Boolean)
     .map(g => ({ w: +g[1], h: +g[2], x: +g[3], y: +g[4], name: g[5] || "" }))
@@ -257,7 +257,7 @@ function pushToRemote(text) {
 }
 
 // KDE on Wayland: krfb cannot reach the clipboard, so the setup script adds a
-// small bridge to Klipper and Metis relays it (domains/laptops/clip.js). Used
+// small bridge to Klipper and Open HL relays it (domains/laptops/clip.js). Used
 // whenever the PC has one; the first reading is only a baseline, so opening
 // the viewer never overwrites this computer's clipboard.
 let bridge = false, clipSeq = null, clipPollT = null, clipBusy = false;
@@ -300,7 +300,7 @@ const pressCtrlV = () => {
   rfb.focus();
 };
 
-// In a browser the clipboard usually cannot be read on demand (Metis is plain
+// In a browser the clipboard usually cannot be read on demand (Open HL is plain
 // http on the tailnet, and even on https it asks permission), but the browser
 // still hands a real paste its text. So on Ctrl+V: let noVNC skip the V, move
 // focus to this hidden box so the browser's own paste lands here, forward the

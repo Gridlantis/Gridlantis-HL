@@ -32,7 +32,7 @@ function validSession(token) {
 // router, WebSocket upgrades check it themselves. Open when no PASSWORD is set.
 function authenticated(req) {
   if (!PASSWORD) return true;
-  const m = String(req.headers.cookie || "").match(/metis_session=([^;]+)/);
+  const m = String(req.headers.cookie || "").match(/openhl_session=([^;]+)/);
   return !!(m && validSession(m[1]));
 }
 

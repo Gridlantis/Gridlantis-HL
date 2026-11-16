@@ -90,7 +90,7 @@ function buildCreateBody(b) {
     Image: image,
     Env: env,
     ExposedPorts: exposed,
-    Labels: Object.assign({}, b.labels || {}, { "com.metis.managed": "true" }),
+    Labels: Object.assign({}, b.labels || {}, { "com.openhl.managed": "true" }),
     HostConfig: {
       PortBindings: bindings,
       Binds: binds,

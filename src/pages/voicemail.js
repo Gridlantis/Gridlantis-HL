@@ -7,7 +7,7 @@ const { BASE_CSS, FAVICON, FONT, NAV_CSS, TOAST_CSS, TOAST_JS, navBar } = requir
 function voicemailHtml() {
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Metis · Voicemail</title>${FONT}${FAVICON}
+<title>Open HL · Voicemail</title>${FONT}${FAVICON}
 <style>
 ${BASE_CSS}${NAV_CSS}${TOAST_CSS}
 .vm-page{max-width:860px;}
@@ -34,18 +34,18 @@ ${BASE_CSS}${NAV_CSS}${TOAST_CSS}
 ${navBar('/voicemail')}
 <main class="m-page vm-page">
   <div class="m-head">
-    <div><h1 class="m-title">Voicemail</h1><p class="m-sub">Messages left on your Twilio number. Metis checks for new ones every minute.</p></div>
+    <div><h1 class="m-title">Voicemail</h1><p class="m-sub">Messages left on your Twilio number. Open HL checks for new ones every minute.</p></div>
     <div class="vm-tools"><span class="vm-status" id="vm-status" aria-live="polite"></span>
       <button class="m-btn" id="vm-poll"><i class="fa-solid fa-rotate"></i>Check now</button></div>
   </div>
 
   <div class="m-panel vm-note" id="vm-setup" style="display:none">
     <i class="fa-solid fa-circle-info"></i>
-    <span>Twilio is not connected. Add <code>TWILIO_ACCOUNT_SID</code>, <code>TWILIO_AUTH_TOKEN</code> and <code>TWILIO_NUMBER</code> to Metis's <code>.env</code>, then restart Metis.</span>
+    <span>Twilio is not connected. Add <code>TWILIO_ACCOUNT_SID</code>, <code>TWILIO_AUTH_TOKEN</code> and <code>TWILIO_NUMBER</code> to Open HL's <code>.env</code>, then restart Open HL.</span>
   </div>
   <div class="m-panel vm-note" id="vm-perm" style="display:none">
     <i class="fa-regular fa-bell"></i>
-    <span>Allow notifications so a new voicemail reaches you while Metis is in a background tab.</span>
+    <span>Allow notifications so a new voicemail reaches you while Open HL is in a background tab.</span>
     <button class="m-btn" id="vm-perm-btn">Allow notifications</button>
   </div>
 
@@ -121,19 +121,19 @@ function render(){
 function load(){
   return fetch('/api/voicemail').then(function(r){ return r.json(); })
     .then(function(d){ VM = d; render(); })
-    .catch(function(){ $('vm-status').textContent = 'Could not reach Metis'; });
+    .catch(function(){ $('vm-status').textContent = 'Could not reach Open HL'; });
 }
 function markHeard(v){
   if (v.heardAt) return;
   v.heardAt = Date.now();
   fetch('/api/voicemail/' + encodeURIComponent(v.sid) + '/heard', { method:'POST' })
-    .then(function(){ if (window.metisPulse) window.metisPulse.refresh(); }).catch(function(){});
+    .then(function(){ if (window.openhlPulse) window.openhlPulse.refresh(); }).catch(function(){});
 }
 function del(v){
   if (!confirm('Delete the voicemail from ' + fmtNum(v.from) + '? It stays in your Twilio account.')) return;
   fetch('/api/voicemail/' + encodeURIComponent(v.sid), { method:'DELETE' })
     .then(function(r){ if (!r.ok) throw 0; showToast('Voicemail deleted'); return load(); })
-    .then(function(){ if (window.metisPulse) window.metisPulse.refresh(); })
+    .then(function(){ if (window.openhlPulse) window.openhlPulse.refresh(); })
     .catch(function(){ showToast('Could not delete it', 'bad'); });
 }
 
@@ -141,7 +141,7 @@ $('vm-poll').addEventListener('click', function(){
   var b = this; b.disabled = true;
   fetch('/api/voicemail/poll', { method:'POST' }).then(function(r){ return r.json(); })
     .then(function(d){ VM = d; render(); showToast(d.status.ok === false ? 'Twilio check failed' : 'Checked Twilio', d.status.ok === false ? 'bad' : 'ok'); })
-    .catch(function(){ showToast('Could not reach Metis', 'bad'); })
+    .catch(function(){ showToast('Could not reach Open HL', 'bad'); })
     .then(function(){ b.disabled = !VM.configured; });
 });
 

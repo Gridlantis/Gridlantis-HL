@@ -4,7 +4,7 @@ const { DOCKER_CSS } = require("./docker");
 const { CONSOLE_CSS, VMLAB_CSS } = require("./vmlab");
 
 // ─── PC HOST PAGE ─────────────────────────────────────────────────────────────
-// The PCs Metis can take over, and the remote-desktop viewer for one of
+// The PCs Open HL can take over, and the remote-desktop viewer for one of
 // them. Markup here; behaviour in src/ui/laptops/. Borrows the Containers card
 // language for the list and the VM Lab console chrome for the viewer.
 
@@ -21,7 +21,7 @@ const LAPTOPS_CSS = `
 
 function laptopsHtml() {
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Metis · PC host</title>${FONT}${FAVICON}
+<title>Open HL · PC host</title>${FONT}${FAVICON}
 <style>${BASE_CSS}${NAV_CSS}${TOAST_CSS}${DOCKER_CSS}${LAPTOPS_CSS}</style><script>${THEME_JS}</script></head><body>
 ${navBar("/laptops")}
 <div class="grid"></div>
@@ -29,7 +29,7 @@ ${navBar("/laptops")}
   <div class="dk-top">
     <div>
       <div class="dk-title">PC host</div>
-      <div class="dk-sub">Your PCs' desktops, one click away — Metis signs in for you.</div>
+      <div class="dk-sub">Your PCs' desktops, one click away — Open HL signs in for you.</div>
     </div>
     <div class="row">
       <button class="btn" id="b-setup"><i class="fa-solid fa-terminal"></i>Set up a PC</button>
@@ -73,7 +73,7 @@ const OSK_CSS = `
 
 function viewerHtml(laptop) {
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,interactive-widget=resizes-content">
-<title>${esc(laptop.name)} · Metis remote desktop</title>${FONT}${FAVICON}
+<title>${esc(laptop.name)} · Open HL remote desktop</title>${FONT}${FAVICON}
 <style>${BASE_CSS}${TOAST_CSS}${VMLAB_CSS}${CONSOLE_CSS}${OSK_CSS}.mon{display:flex;gap:3px;}.mon[hidden]{display:none;}</style><script>${THEME_JS}</script></head>
 <body data-laptop="${esc(laptop.id)}" data-name="${esc(laptop.name)}">
 <div class="cbar">

@@ -162,7 +162,7 @@ module.exports = async function socialRoutes(ctx) {
   }
 
   // ── Social media uploads ─────────────────────────────────────────────────────
-  // Files are stored on the Metis host and referenced by id. The browser never
+  // Files are stored on the Open HL host and referenced by id. The browser never
   // sends a filesystem path, and ids are validated against the store directory
   // so a crafted id cannot read outside it.
   if (pathname === '/api/social/upload' && req.method === 'POST') {
@@ -215,7 +215,7 @@ module.exports = async function socialRoutes(ctx) {
   }
 
   // ── Official-API sign-in (Facebook/Instagram via Meta, LinkedIn) ─────────────
-  // The callback itself is in routes/public.js; it needs no Metis session.
+  // The callback itself is in routes/public.js; it needs no Open HL session.
   const oauthStart = pathname.match(/^\/api\/social\/oauth\/(meta|linkedin)\/start$/);
   if (oauthStart && req.method === 'GET') {
     const dash = parsed.searchParams.get('dashboard') || '';
@@ -426,7 +426,7 @@ module.exports = async function socialRoutes(ctx) {
       if (inst) {
         const cfg = inst.configuration || {};
         const chars = (cfg.statuses && cfg.statuses.max_characters) || inst.max_toot_chars || 500;
-        steps.push({ name: 'Character limit', ok: true, detail: chars + ' (Metis assumes 500)' });
+        steps.push({ name: 'Character limit', ok: true, detail: chars + ' (Open HL assumes 500)' });
         const mm = cfg.media_attachments || {};
         if (mm.image_size_limit) {
           steps.push({ name: 'Media limits', ok: true,
@@ -521,7 +521,7 @@ module.exports = async function socialRoutes(ctx) {
     return json({ ok: true });
   }
   // Agent-side browser login: opens a real window so YOU sign in by hand.
-  // No password is ever sent to or stored by Metis.
+  // No password is ever sent to or stored by Open HL.
   if (pathname === '/api/social/agent/login' && req.method === 'POST') {
     const body = JSON.parse((await readBody()).toString() || '{}');
     try {

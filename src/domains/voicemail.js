@@ -9,11 +9,11 @@ const { NUMBER, POLL_MS, api, configured, twilioGet } = require("./twilio");
 
 // ═══ VOICEMAIL — Twilio recordings, pulled ════════════════════════════════════
 // The Twilio number's TwiML Bin ends in <Record>, so every voicemail is a
-// Recording on the account. Metis polls the REST API for new ones instead of
+// Recording on the account. Open HL polls the REST API for new ones instead of
 // taking a webhook, so it works without being reachable from the internet —
 // the same trade mail makes. Each recording is downloaded once into
-// data/voicemail/audio and served from there. Metis never deletes anything on
-// Twilio: "Delete" only drops Metis's copy.
+// data/voicemail/audio and served from there. Open HL never deletes anything on
+// Twilio: "Delete" only drops Open HL's copy.
 const VM_DIR      = path.join(DATA_DIR, "voicemail");
 const AUDIO_DIR   = path.join(VM_DIR, "audio");
 const VM_FILE     = path.join(VM_DIR, "voicemail.json");
@@ -23,7 +23,7 @@ fs.mkdirSync(AUDIO_DIR, { recursive: true, mode: 0o700 });
 
 const STATUS = { ok: null, error: null, lastPoll: null };
 
-// items: the voicemails Metis holds. gone: recording SIDs deleted here or left
+// items: the voicemails Open HL holds. gone: recording SIDs deleted here or left
 // on another number, so the next poll does not fetch them again. seeded: the
 // first poll imports what is already on the account without alerting.
 function readVoicemail() {
@@ -72,7 +72,7 @@ async function doPoll() {
   broadcast("voicemail_changed", { added: fresh.length });
   if (seeding) return;
   for (const v of fresh)
-    sendAlert("Metis · New voicemail", "From " + (v.from || "unknown caller") + " · " + v.duration + " s", false)
+    sendAlert("Open HL · New voicemail", "From " + (v.from || "unknown caller") + " · " + v.duration + " s", false)
       .catch(e => console.error("[voicemail:alert]", e.message));
 }
 

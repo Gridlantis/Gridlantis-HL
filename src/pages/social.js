@@ -3,7 +3,7 @@ const { BASE_CSS, FAVICON, FONT, NAV_CSS, TOAST_CSS, TOAST_JS, navBar } = requir
 function socialHtml() {
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Metis \xb7 Social</title>${FONT}${FAVICON}
+<title>Open HL \xb7 Social</title>${FONT}${FAVICON}
 <style>
 ${BASE_CSS}${NAV_CSS}${TOAST_CSS}
 .so{max-width:1440px;}
@@ -243,7 +243,7 @@ ${navBar("/social")}
     <div>
       <div class="card" id="ap-card">
         <div class="card-h"><span id="ap-h">Autopilot</span><span class="ap-pill" id="ap-pill">off</span></div>
-        <div class="hint" style="margin-bottom:9px">Describe the account and how often to post. While it is on, Metis writes each post
+        <div class="hint" style="margin-bottom:9px">Describe the account and how often to post. While it is on, Open HL writes each post
           with the local AI and publishes it straight away, with no review. It posts to this dashboard's
           accounts below. X and Threads are only used if you pick them.</div>
         <textarea id="ap-prompt" placeholder="e.g. You post for my woodworking shop. Share one practical tip about joinery, finishes or tool care, warm and plain-spoken, no sales pitch. Post about once a day, weekday mornings."></textarea>
@@ -366,7 +366,7 @@ ${navBar("/social")}
         <div class="card-h"><span id="em-h">Emails</span><span class="hint">record only</span></div>
         <div class="hint" style="margin-bottom:10px">
           Which address each account is registered under. Stored for your reference only \u2014
-          Metis never uses these to log in or authenticate.
+          Open HL never uses these to log in or authenticate.
         </div>
         <div id="emails"></div>
       </div>
@@ -425,7 +425,7 @@ function renderTabs(){
     b.addEventListener('click', function(){
       if (DASH === d.id) return;
       DASH = d.id; SELECTED = {};
-      try{ localStorage.setItem('metis-social-dash', DASH); }catch(e){}
+      try{ localStorage.setItem('openhl-social-dash', DASH); }catch(e){}
       loadAll();
     });
     wrap.appendChild(b);
@@ -680,7 +680,7 @@ el('ap-prompt').addEventListener('input', function(){ AP_DIRTY = true; });
 el('ap-save').addEventListener('click', async function(){ if (await apSave()) showToast('Prompt saved', 'ok'); });
 el('ap-toggle').addEventListener('click', async function(){
   var on = !AP.enabled;
-  if (on && !confirm('Turn on autopilot for ' + dashName() + '? Metis will publish AI-written posts to ' +
+  if (on && !confirm('Turn on autopilot for ' + dashName() + '? Open HL will publish AI-written posts to ' +
     ((AP.platforms || []).map(plabel).join(', ') || 'its accounts') + ' with no review. The first one goes out within a minute or two.')) return;
   if (await apSave({ enabled: on })) showToast(on ? 'Autopilot on' : 'Autopilot off', 'ok');
 });
@@ -1223,8 +1223,8 @@ function isRemoteHost(){
   return ['localhost', '127.0.0.1', '[::1]', '::1'].indexOf(location.hostname) === -1 && /[/][/]localhost[:/]/.test(OAUTH.redirectUri || '');
 }
 var OAUTH_HELP = {
-  meta: 'Needs <b>META_APP_ID</b> and <b>META_APP_SECRET</b> in Metis&#39;s .env (a Meta app with Facebook Login). Redirect URI: ',
-  linkedin: 'Needs <b>LINKEDIN_CLIENT_ID</b> and <b>LINKEDIN_CLIENT_SECRET</b> in Metis&#39;s .env (a LinkedIn app approved for the Community Management API). Redirect URI: '
+  meta: 'Needs <b>META_APP_ID</b> and <b>META_APP_SECRET</b> in Open HL&#39;s .env (a Meta app with Facebook Login). Redirect URI: ',
+  linkedin: 'Needs <b>LINKEDIN_CLIENT_ID</b> and <b>LINKEDIN_CLIENT_SECRET</b> in Open HL&#39;s .env (a LinkedIn app approved for the Community Management API). Redirect URI: '
 };
 function oauthCard(p){
   var d = document.createElement('div'); d.className = 'acc';
@@ -1442,7 +1442,7 @@ async function verify(platform){
 }
 async function agentLogin(platform, btn){
   btn.disabled = true; btn.textContent = 'Opening\\u2026';
-  showToast('A browser window is opening on the Metis host \\u2014 sign in there', 'info');
+  showToast('A browser window is opening on the Open HL host \\u2014 sign in there', 'info');
   try {
     var r = await fetch('/api/social/agent/login', { method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ platform: platform }) }).then(function(x){ return x.json(); });
@@ -1458,7 +1458,7 @@ function renderAgent(){
   var h = document.createElement('div'); h.className = 'hint';
   if (AGENT.online){
     h.innerHTML = 'Running on <b>127.0.0.1:' + AGENT.port + '</b>. One browser session per platform, ' +
-      '<b>shared by all three dashboards</b>. Login opens a real browser window on the Metis host \\u2014 ' +
+      '<b>shared by all three dashboards</b>. Login opens a real browser window on the Open HL host \\u2014 ' +
       'you sign in by hand, and only the session cookie is kept.';
     b.appendChild(h);
     var row = document.createElement('div'); row.className = 'row';
@@ -1485,7 +1485,7 @@ async function loadAll(){
     var dl = await fetch('/api/social/dashboards').then(function(r){ return r.json(); });
     DASHBOARDS = dl.dashboards || [];
     if (!DASH || !DASHBOARDS.filter(function(x){ return x.id===DASH; }).length){
-      var saved = null; try{ saved = localStorage.getItem('metis-social-dash'); }catch(e){}
+      var saved = null; try{ saved = localStorage.getItem('openhl-social-dash'); }catch(e){}
       DASH = (saved && DASHBOARDS.filter(function(x){ return x.id===saved; }).length)
         ? saved : (DASHBOARDS[0] && DASHBOARDS[0].id);
     }
@@ -1538,7 +1538,7 @@ el('btn-refresh').addEventListener('click', loadAll);
 // the choice of Page or company is waiting; or show why it failed.
 (function(){
   var q = new URLSearchParams(location.search);
-  if (q.get('dashboard')) { DASH = q.get('dashboard'); try { localStorage.setItem('metis-social-dash', DASH); } catch(e){} }
+  if (q.get('dashboard')) { DASH = q.get('dashboard'); try { localStorage.setItem('openhl-social-dash', DASH); } catch(e){} }
   if (q.get('pick')) showToast('Signed in \u2014 choose ' + (q.get('pick') === 'meta' ? 'a Page' : 'a company page') + ' under Accounts', 'ok');
   if (q.get('serr')) showToast(q.get('serr'), 'bad');
   if (q.get('pick') || q.get('serr')) history.replaceState(null, '', '/social');

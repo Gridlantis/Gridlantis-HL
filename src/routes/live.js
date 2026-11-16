@@ -7,10 +7,10 @@ const live = require("../domains/live");
 const st = require("../domains/live/syncthing");
 const { liveHtml } = require("../pages/live");
 
-// Live folders: OneDrive-style folders kept in sync across PCs through Metis
+// Live folders: OneDrive-style folders kept in sync across PCs through Open HL
 // (see domains/live). The setup scripts and the Syncthing builds they fetch
 // are public (routes/public.js calls publicLive), since a PC asks for them
-// before it has a Metis session; they carry no secrets, only Metis's device
+// before it has an Open HL session; they carry no secrets, only Open HL's device
 // ID and address. So is POST /live/report, which only takes a report from the
 // PC's own tailnet address.
 const SCRIPTS = {
@@ -28,8 +28,8 @@ async function script(name, host) {
   const ip = tailnetIp() || "";
   const url = "http://" + (ip ? ip + ":" + PORT : host);
   return fs.readFileSync(SCRIPTS[name].file, "utf8")
-    .replace(/__METIS_URL__/g, url).replace(/__METIS_ID__/g, await st.myId())
-    .replace(/__METIS_IP__/g, ip).replace(/__SYNC_PORT__/g, String(st.SYNC_PORT));
+    .replace(/__OPENHL_URL__/g, url).replace(/__OPENHL_ID__/g, await st.myId())
+    .replace(/__OPENHL_IP__/g, ip).replace(/__SYNC_PORT__/g, String(st.SYNC_PORT));
 }
 
 async function publicLive(ctx) {
@@ -43,7 +43,7 @@ async function publicLive(ctx) {
   if (SCRIPTS[pathname]) {
     let body;
     try { body = await script(pathname, req.headers.host || ""); }
-    catch (e) { res.writeHead(503, { "Content-Type": "text/plain" }); return res.end("echo 'Metis live folders are not running: " + e.message.replace(/'/g, "") + "' >&2; exit 1\n"); }
+    catch (e) { res.writeHead(503, { "Content-Type": "text/plain" }); return res.end("echo 'Open HL live folders are not running: " + e.message.replace(/'/g, "") + "' >&2; exit 1\n"); }
     res.writeHead(200, { "Content-Type": SCRIPTS[pathname].type, "Cache-Control": "no-cache" });
     return res.end(body);
   }
@@ -79,7 +79,7 @@ module.exports = async function liveRoutes(ctx) {
     }
     if (pathname === "/api/live" && req.method === "GET") {
       const o = await live.overview();
-      return json({ ...o, metisIp: tailnetIp() || null });
+      return json({ ...o, openhlIp: tailnetIp() || null });
     }
     if (pathname === "/api/live/folders" && req.method === "POST") {
       const b = await body();

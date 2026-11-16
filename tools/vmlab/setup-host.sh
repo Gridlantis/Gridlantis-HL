@@ -5,13 +5,13 @@
 #
 # 1. Installs QEMU, qemu-img, UEFI firmware and the TPM emulator from the
 #    distro (skip with --no-packages if you use tools/vmlab/install-qemu.sh).
-# 2. Lets the Metis user open /dev/kvm (kvm group).
+# 2. Lets the Open HL user open /dev/kvm (kvm group).
 # 3. USB passthrough: USB device nodes are root-only by default, so QEMU run
-#    by Metis cannot claim them. A udev rule gives a group read/write on them.
+#    by Open HL cannot claim them. A udev rule gives a group read/write on them.
 #    The group is plugdev when the user is already in it (no re-login needed),
 #    otherwise a new "vmlab-usb" group.
 #
-# Undo: sudo rm /etc/udev/rules/65-metis-vmlab-usb.rules && sudo udevadm trigger
+# Undo: sudo rm /etc/udev/rules/65-openhl-vmlab-usb.rules && sudo udevadm trigger
 set -euo pipefail
 
 [ "$(id -u)" = 0 ] || { echo "Run with sudo." >&2; exit 1; }
@@ -25,7 +25,7 @@ while [ $# -gt 0 ]; do
     *) echo "unknown option $1" >&2; exit 1 ;;
   esac
 done
-[ -n "$USER_NAME" ] || { echo "Pass --user NAME (the account Metis runs as)." >&2; exit 1; }
+[ -n "$USER_NAME" ] || { echo "Pass --user NAME (the account Open HL runs as)." >&2; exit 1; }
 id "$USER_NAME" >/dev/null 2>&1 || { echo "No such user: $USER_NAME" >&2; exit 1; }
 
 if [ "$PACKAGES" = 1 ]; then
@@ -55,11 +55,11 @@ else
   GROUP=vmlab-usb
   getent group "$GROUP" >/dev/null || groupadd --system "$GROUP"
   usermod -aG "$GROUP" "$USER_NAME"
-  echo "Added $USER_NAME to $GROUP (log out and back in, then restart Metis)."
+  echo "Added $USER_NAME to $GROUP (log out and back in, then restart Open HL)."
 fi
-RULE=/etc/udev/rules/65-metis-vmlab-usb.rules
+RULE=/etc/udev/rules/65-openhl-vmlab-usb.rules
 cat > "$RULE" <<RULES
-# Metis VM Lab: let members of $GROUP pass USB devices through to VMs.
+# Open HL VM Lab: let members of $GROUP pass USB devices through to VMs.
 SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", GROUP="$GROUP", MODE="0664"
 RULES
 udevadm control --reload-rules

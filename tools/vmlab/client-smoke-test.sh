@@ -1,15 +1,15 @@
 #!/bin/bash
-# client-smoke-test.sh — run ON a client machine to check Metis + VM Lab over the network.
+# client-smoke-test.sh — run ON a client machine to check Open HL + VM Lab over the network.
 #
-#   METIS_URL=http://100.64.0.1:3000 METIS_PW='…' tools/vmlab/client-smoke-test.sh
-#   ssh root@client "METIS_URL=… METIS_PW=… bash -s" < tools/vmlab/client-smoke-test.sh
+#   OPENHL_URL=http://100.64.0.1:3000 OPENHL_PW='…' tools/vmlab/client-smoke-test.sh
+#   ssh root@client "OPENHL_URL=… OPENHL_PW=… bash -s" < tools/vmlab/client-smoke-test.sh
 #
 # Checks: login, VM Lab API, host stats, console page, a full VNC handshake
 # through the WebSocket tunnel to the first running VM, and the desktop app
 # download. Needs curl and python3 on the client.
 set -u
-H="${METIS_URL:?set METIS_URL, e.g. http://100.64.0.1:3000}"
-: "${METIS_PW:?set METIS_PW}"
+H="${OPENHL_URL:?set OPENHL_URL, e.g. http://100.64.0.1:3000}"
+: "${OPENHL_PW:?set OPENHL_PW}"
 J=$(mktemp); trap 'rm -f "$J"' EXIT
 ok() { printf '  \033[32mok\033[0m  %s\n' "$*"; }
 bad() { printf '  \033[31mFAIL\033[0m %s\n' "$*"; FAILED=1; }
@@ -17,7 +17,7 @@ FAILED=0
 
 echo "client: $(hostname) · $(. /etc/os-release 2>/dev/null; echo "${PRETTY_NAME:-unknown}")  →  $H"
 code=$(curl -s -o /dev/null -w '%{http_code}' -m 10 "$H/login") && [ "$code" = 200 ] && ok "reachable ($code)" || bad "cannot reach $H/login (got ${code:-nothing})"
-code=$(curl -s -c "$J" -o /dev/null -w '%{http_code}' --data-urlencode "password=$METIS_PW" "$H/login")
+code=$(curl -s -c "$J" -o /dev/null -w '%{http_code}' --data-urlencode "password=$OPENHL_PW" "$H/login")
 [ "$code" = 302 ] && ok "login" || bad "login returned $code (wrong password or locked out)"
 
 OV=$(curl -s -b "$J" "$H/api/vmlab/overview")
@@ -31,7 +31,7 @@ curl -s -b "$J" "$H/api/vmlab/host/stats" | python3 -c 'import json,sys; l=json.
 
 if [ -n "$ENV_ID" ]; then
   code=$(curl -s -b "$J" -o /dev/null -w '%{http_code}' "$H/vmlab/console/$ENV_ID"); [ "$code" = 200 ] && ok "console page" || bad "console page $code"
-  COOKIE=$(awk '/metis_session/{print $7}' "$J") URL="$H" ENV_ID="$ENV_ID" python3 - <<'PY' || FAILED=1
+  COOKIE=$(awk '/openhl_session/{print $7}' "$J") URL="$H" ENV_ID="$ENV_ID" python3 - <<'PY' || FAILED=1
 import os, socket, ssl, base64, struct
 from urllib.parse import urlparse
 u = urlparse(os.environ["URL"]); port = u.port or (443 if u.scheme == "https" else 80)
@@ -39,7 +39,7 @@ s = socket.create_connection((u.hostname, port), timeout=10)
 if u.scheme == "https": s = ssl.create_default_context().wrap_socket(s, server_hostname=u.hostname)
 host = u.netloc
 s.sendall(("GET /api/vmlab/envs/%s/vnc HTTP/1.1\r\nHost: %s\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: %s\r\n"
-  "Sec-WebSocket-Version: 13\r\nSec-WebSocket-Protocol: binary\r\nOrigin: %s://%s\r\nCookie: metis_session=%s\r\n\r\n"
+  "Sec-WebSocket-Version: 13\r\nSec-WebSocket-Protocol: binary\r\nOrigin: %s://%s\r\nCookie: openhl_session=%s\r\n\r\n"
   % (os.environ["ENV_ID"], host, base64.b64encode(os.urandom(16)).decode(), u.scheme, host, os.environ["COOKIE"])).encode())
 buf = b""
 while b"\r\n\r\n" not in buf: buf += s.recv(4096)

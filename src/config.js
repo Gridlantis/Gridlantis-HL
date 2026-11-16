@@ -11,14 +11,14 @@ const { pipeline } = require("stream");
 
 // Project root. Every data file and upload path is resolved from here rather
 // than from the module's own directory, so code can move between directories
-// without changing where Metis reads and writes its state.
+// without changing where Open HL reads and writes its state.
 const ROOT = path.resolve(__dirname, "..");
 
 // Which program this is. The VM Lab agent (vmlab-agent.js) reuses the same
 // domain modules on a second device, but it serves no pages and has no login —
 // it is authenticated by its own bearer token — so it needs neither a .env nor
 // a PASSWORD. Everything else must still refuse to start without them.
-const ROLE = process.env.METIS_ROLE || "server";
+const ROLE = process.env.OPENHL_ROLE || "server";
 const NEEDS_PASSWORD = ROLE !== "vmlab-agent";
 
 // ─── LOAD .env ────────────────────────────────────────────────────────────────
@@ -61,12 +61,12 @@ const WYZE_EMAIL            = process.env.WYZE_EMAIL || "";
 const WYZE_PASSWORD         = process.env.WYZE_PASSWORD || "";
 const WYZE_API_KEY          = process.env.WYZE_API_KEY || "";       // developer-api-console.wyze.com
 const WYZE_KEY_ID           = process.env.WYZE_KEY_ID || "";
-const WYZE_PHONE_ID         = process.env.WYZE_PHONE_ID || "metis-" + Math.random().toString(16).slice(2, 10);
+const WYZE_PHONE_ID         = process.env.WYZE_PHONE_ID || "openhl-" + Math.random().toString(16).slice(2, 10);
 const BLINK_EMAIL           = process.env.BLINK_EMAIL || "";
 const BLINK_PASSWORD        = process.env.BLINK_PASSWORD || "";
 const BLINK_UUID            = process.env.BLINK_UUID || "";         // keep stable to avoid re-2FA every restart
 const RING_REFRESH_TOKEN    = process.env.RING_REFRESH_TOKEN || ""; // from ring-client-api CLI
-const RING_HARDWARE_ID      = process.env.RING_HARDWARE_ID || "metis-ring-client";
+const RING_HARDWARE_ID      = process.env.RING_HARDWARE_ID || "openhl-ring-client";
 const TUYA_CLIENT_ID        = process.env.TUYA_CLIENT_ID || "";     // iot.tuya.com, only for cloud fallback
 const TUYA_CLIENT_SECRET    = process.env.TUYA_CLIENT_SECRET || "";
 const TUYA_REGION           = process.env.TUYA_REGION || "us";

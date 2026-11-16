@@ -12,7 +12,7 @@ async function blinkLogin() {
   const uid = BLINK_UUID || crypto.randomUUID();
   const r = await httpPost("https://rest-prod.immedia-semi.com/api/v5/account/login",
     JSON.stringify({ email: BLINK_EMAIL, password: BLINK_PASSWORD, unique_id: uid,
-      device_identifier: "Metis", client_name: "Metis", reauth: true }),
+      device_identifier: "Open HL", client_name: "Open HL", reauth: true }),
     { "Content-Type": "application/json", "User-Agent": "Blink/8280 CFNetwork" }, 12000);
   const o = JSON.parse(r);
   if (!o.auth || !o.auth.token) throw new Error(o.message || "Blink login failed");

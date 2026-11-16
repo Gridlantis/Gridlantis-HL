@@ -15,7 +15,7 @@ flows.json
 
 # ── App state / personal data (JSON stores) ──
 # Everything lives under data/ now; the root-level names below cover old installs
-# until Metis first starts and moves them.
+# until Open HL first starts and moves them.
 /data/
 *.json.bak
 notes.json

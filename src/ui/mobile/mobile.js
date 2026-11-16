@@ -44,14 +44,14 @@
         catch (e) { toast(e.message, "bad"); btn.disabled = false; btn.lastChild.textContent = " Install tools"; }
       } }, icon("fa-solid fa-download"), " Install tools");
       banners.appendChild(h("div", { class: "empty" }, h("b", null, "One-time setup"),
-        "Metis needs Android's adb (Google platform-tools, ~7 MB) and the scrcpy server (v" + (t.scrcpyVersion || "") + ") that runs on the phone. ",
-        "They go in Metis's own folder — nothing is installed system-wide.", h("br"), h("br"), btn));
+        "Open HL needs Android's adb (Google platform-tools, ~7 MB) and the scrcpy server (v" + (t.scrcpyVersion || "") + ") that runs on the phone. ",
+        "They go in Open HL's own folder — nothing is installed system-wide.", h("br"), h("br"), btn));
       return;
     }
     if (S.devices.some(d => d.state === "no permissions")) {
       const cmd = "sudo bash " + (t.usbScript || "tools/mobile/setup-usb.sh");
       banners.appendChild(h("div", { class: "note bad", style: { marginBottom: "14px" } },
-        "A phone is plugged in by USB but Linux will not let Metis open it. Run this once in a terminal on the computer running Metis, then unplug and replug the phone:",
+        "A phone is plugged in by USB but Linux will not let Open HL open it. Run this once in a terminal on the computer running Open HL, then unplug and replug the phone:",
         h("div", { class: "cmd" }, h("pre", null, cmd),
           h("button", { class: "btn sm", onclick: async () => toast(await writeClipboard(cmd) ? "Copied" : "Copy failed") }, icon("fa-regular fa-copy"), "Copy"))));
     }
@@ -60,10 +60,10 @@
         h("ol", { class: "setup-steps", style: { textAlign: "left", display: "inline-block" } },
           h("li", null, "On the phone: Settings → About phone → tap ", h("b", null, "Build number"), " seven times to unlock Developer options."),
           h("li", null, "Developer options → turn on ", h("b", null, "USB debugging"), " (and ", h("b", null, "Wireless debugging"), " for Wi-Fi)."),
-          h("li", null, h("b", null, "USB:"), " plug it into this computer (the one running Metis) and allow the prompt on the phone."),
+          h("li", null, h("b", null, "USB:"), " plug it into this computer (the one running Open HL) and allow the prompt on the phone."),
           h("li", null, h("b", null, "Wi-Fi (Android 11+):"), " Wireless debugging → ", h("i", null, "Pair device with pairing code"),
             ", then use ", h("b", null, "Pair"), " above. Works over Tailscale too.")),
-        h("div", { class: "hint" }, "adb " + (t.adbSource === "system" ? "(system)" : "(Metis's own)") + " · scrcpy " + t.scrcpyVersion)));
+        h("div", { class: "hint" }, "adb " + (t.adbSource === "system" ? "(system)" : "(Open HL's own)") + " · scrcpy " + t.scrcpyVersion)));
       return;
     }
     const grid = h("div", { class: "grid-cards" });
@@ -154,7 +154,7 @@
     modal.open("Pair a phone (Android 11+)", h("div", { class: "rowset" },
       h("ol", { class: "setup-steps" },
         h("li", null, "Phone: Developer options → ", h("b", null, "Wireless debugging"), " → ", h("b", null, "Pair device with pairing code"), "."),
-        h("li", null, "Enter the IP address & port and the 6-digit code it shows. (The phone must be on the same network as Metis, or on your tailnet.)"),
+        h("li", null, "Enter the IP address & port and the 6-digit code it shows. (The phone must be on the same network as Open HL, or on your tailnet.)"),
         h("li", null, "Then the address under ", h("i", null, "IP address & port"), " on the Wireless debugging screen connects it — it is a different port.")),
       h("div", { class: "fld" }, h("label", null, "Pairing IP address & port"), addr),
       h("div", { class: "fld" }, h("label", null, "Wi-Fi pairing code"), code),
@@ -212,7 +212,7 @@
     } else if (!AP.enabled) {
       c.appendChild(h("div", { class: "hint", style: { marginTop: "6px" } },
         "Turns this computer into an AirPlay receiver called \"" + AP.name + "\". " +
-        (AP.installed ? "" : "Metis downloads UxPlay (an open-source AirPlay server, ~0.3 MB) into its own folder — no sudo.")));
+        (AP.installed ? "" : "Open HL downloads UxPlay (an open-source AirPlay server, ~0.3 MB) into its own folder — no sudo.")));
     }
     if (AP.enabled && !AP.running && AP.log && AP.log.length) c.appendChild(h("div", { class: "note bad" }, AP.log[AP.log.length - 1]));
     const acts = h("div", { class: "card-acts" });

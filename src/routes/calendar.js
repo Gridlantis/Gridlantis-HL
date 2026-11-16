@@ -5,7 +5,7 @@ const { broadcast } = require("../sse");
 
 // The calendar page and its Google connection. The OAuth callback itself is in
 // routes/public.js (see finishFromUrl) because the browser Google sends back is
-// not always signed in to Metis.
+// not always signed in to Open HL.
 module.exports = async function calendarRoutes(ctx) {
   const { req, pathname, parsed, html, json, redirect, readBody } = ctx;
 
@@ -66,7 +66,7 @@ module.exports = async function calendarRoutes(ctx) {
     catch (e) { return json({ events: [], connected: gcal.connected(), error: e.message }, 502); }
   }
 
-  // A reminder that rings before a Google event. It stays a Metis-only alarm:
+  // A reminder that rings before a Google event. It stays an Open HL-only alarm:
   // the event is already in the calendar, so it is not copied back as a second one.
   if (pathname === '/api/calendar/remind' && req.method === 'POST') {
     const body = JSON.parse((await readBody(16 * 1024)).toString() || '{}');

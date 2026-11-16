@@ -3,7 +3,7 @@ const { BASE_CSS, FAVICON, FONT, NAV_CSS, TOAST_CSS, TOAST_JS, navBar } = requir
 function remindersHtml() {
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Metis · Reminders</title>${FONT}${FAVICON}
+<title>Open HL · Reminders</title>${FONT}${FAVICON}
 <style>
 ${BASE_CSS}${NAV_CSS}${TOAST_CSS}
 .rm-page{max-width:1180px;}
@@ -57,14 +57,14 @@ ${BASE_CSS}${NAV_CSS}${TOAST_CSS}
 ${navBar('/reminders')}
 <main class="m-page rm-page">
   <div class="m-head">
-    <div><h1 class="m-title">Reminders</h1><p class="m-sub">Alarms ring on whichever Metis page you have open.</p></div>
+    <div><h1 class="m-title">Reminders</h1><p class="m-sub">Alarms ring on whichever Open HL page you have open.</p></div>
     <div style="display:flex;align-items:center;gap:14px"><div class="rm-clock" id="rm-clock" aria-live="off"></div>
       <a class="m-btn" href="/calendar"><i class="fa-regular fa-calendar"></i>Calendar</a></div>
   </div>
 
   <div class="m-panel rm-perm" id="rm-perm" style="display:none">
     <i class="fa-regular fa-bell"></i>
-    <span>Allow notifications so alarms reach you even when Metis is in a background tab.</span>
+    <span>Allow notifications so alarms reach you even when Open HL is in a background tab.</span>
     <button class="m-btn" id="rm-perm-btn">Allow notifications</button>
   </div>
 
@@ -163,7 +163,7 @@ function render(){
   $('rm-count').textContent = rows.length ? live + ' on, ' + rows.length + ' total' : '';
 
   if (!rows.length) {
-    list.innerHTML = '<div class="rm-empty">Nothing scheduled.<br>Set a reminder and it will ring on any Metis page.</div>';
+    list.innerHTML = '<div class="rm-empty">Nothing scheduled.<br>Set a reminder and it will ring on any Open HL page.</div>';
     return;
   }
 
@@ -279,7 +279,7 @@ $('rm-save').addEventListener('click', save);
 $('rm-cancel').addEventListener('click', resetForm);
 $('rm-title').addEventListener('keydown', function(e){ if (e.key === 'Enter') save(); });
 $('rm-preview').addEventListener('click', function(){
-  if (window.__metisPreviewSound) window.__metisPreviewSound($('rm-sound').value);
+  if (window.__openhlPreviewSound) window.__openhlPreviewSound($('rm-sound').value);
 });
 document.querySelector('.rm-chips').addEventListener('click', function(e){
   var b = e.target.closest('.rm-chip'); if (!b) return;
@@ -297,7 +297,7 @@ $('rm-list').addEventListener('click', function(e){
     location.href = '/calendar?date=' + d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + '&focus=' + encodeURIComponent(r.id);
     return;
   }
-  if (a === 'test')   { if (window.__metisPreviewSound) window.__metisPreviewSound(r.sound); return; }
+  if (a === 'test')   { if (window.__openhlPreviewSound) window.__openhlPreviewSound(r.sound); return; }
   if (a === 'edit')   { startEdit(r); return; }
   if (a === 'toggle') {
     post('/api/reminders/toggle', { id: id }).then(function(res){

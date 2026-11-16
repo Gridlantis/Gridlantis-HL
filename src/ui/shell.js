@@ -1,4 +1,4 @@
-/* Metis shell — status strip, sidebar behaviour. Loaded on every page with the nav. */
+/* Open HL shell — status strip, sidebar behaviour. Loaded on every page with the nav. */
 (function () {
   "use strict";
   var root = document.documentElement;
@@ -15,7 +15,7 @@
   }
   if (collapse) collapse.addEventListener("click", function () {
     root.classList.toggle("nav-rail");
-    try { localStorage.setItem("metis-nav", root.classList.contains("nav-rail") ? "rail" : "full"); } catch (e) {}
+    try { localStorage.setItem("openhl-nav", root.classList.contains("nav-rail") ? "rail" : "full"); } catch (e) {}
     paintCollapse();
     window.dispatchEvent(new Event("resize"));   // maps and charts re-measure
   });
@@ -26,7 +26,7 @@
   var phone = window.matchMedia("(max-width:760px)");
   function setHidden(on) {
     root.classList.toggle("nav-hidden", on);
-    try { localStorage.setItem("metis-nav-hidden", on ? "1" : "0"); } catch (e) {}
+    try { localStorage.setItem("openhl-nav-hidden", on ? "1" : "0"); } catch (e) {}
     if (menu) { menu.setAttribute("aria-label", on && !phone.matches ? "Show sidebar" : "Open menu"); menu.title = on && !phone.matches ? "Show sidebar" : ""; }
     window.dispatchEvent(new Event("resize"));
   }
@@ -43,14 +43,14 @@
 
   // Inside the desktop or Android app there is nothing to download. The
   // Android app has no address bar, so it gets a way back to its connect screen.
-  if (window.metisDesktop || window.metisAndroid) document.querySelectorAll(".metis-get-app").forEach(function (a) { a.style.display = "none"; });
-  if (window.metisAndroid) document.querySelectorAll(".metis-switch-server").forEach(function (b) {
+  if (window.openhlDesktop || window.openhlAndroid) document.querySelectorAll(".openhl-get-app").forEach(function (a) { a.style.display = "none"; });
+  if (window.openhlAndroid) document.querySelectorAll(".openhl-switch-server").forEach(function (b) {
     b.hidden = false;
-    b.addEventListener("click", function () { window.metisAndroid.switchServer(); });
+    b.addEventListener("click", function () { window.openhlAndroid.switchServer(); });
   });
 
   // "Get the app" dropdown: desktop or Android.
-  var apps = document.querySelector(".metis-get-app"), appsBtn = $("m-apps-btn");
+  var apps = document.querySelector(".openhl-get-app"), appsBtn = $("m-apps-btn");
   if (apps && appsBtn) {
     var setApps = function (on) { apps.classList.toggle("open", on); appsBtn.setAttribute("aria-expanded", on ? "true" : "false"); };
     appsBtn.addEventListener("click", function (e) {
@@ -91,7 +91,7 @@
     if (kind in newest && sid && sid !== newest[kind] && !seen) {
       try {
         if ("Notification" in window && Notification.permission === "granted") {
-          var n = new Notification(title, { body: body, tag: "metis-" + kind + "-" + sid });
+          var n = new Notification(title, { body: body, tag: "openhl-" + kind + "-" + sid });
           n.onclick = function () { try { window.focus(); } catch (e) {} location.href = href; n.close(); };
         }
       } catch (e) {}
@@ -124,7 +124,7 @@
     notifyNewest("texts", tx.latest, tx.latest && tx.latest.read, "Text from " + (tx.latest && tx.latest.from || "unknown sender"),
       tx.latest && tx.latest.body || "", "/texts");
     var next = document.querySelector('[data-cell="next"]'); if (next && p.next) next.title = p.next.title;
-    window.dispatchEvent(new CustomEvent("metis:pulse", { detail: p }));
+    window.dispatchEvent(new CustomEvent("openhl:pulse", { detail: p }));
   }
   function poll() {
     if (document.hidden) return;
@@ -141,6 +141,6 @@
     poll(); clock();
     setInterval(poll, 10000); setInterval(clock, 15000);
     document.addEventListener("visibilitychange", function () { if (!document.hidden) poll(); });
-    window.metisPulse = { refresh: poll, last: function () { return last; } };
+    window.openhlPulse = { refresh: poll, last: function () { return last; } };
   }
 })();

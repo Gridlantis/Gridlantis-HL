@@ -39,7 +39,7 @@ body.viewonly #screen canvas,body.viewonly #screen video{cursor:default;}
 
 function mobileHtml() {
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Metis · Mobile host</title>${FONT}${FAVICON}
+<title>Open HL · Mobile host</title>${FONT}${FAVICON}
 <style>${BASE_CSS}${NAV_CSS}${TOAST_CSS}${DOCKER_CSS}${MOBILE_CSS}</style><script>${THEME_JS}</script></head><body>
 ${navBar("/mobile")}
 <div class="grid"></div>
@@ -75,7 +75,7 @@ ${navBar("/mobile")}
 function viewerHtml(serial) {
   const airplay = serial === "airplay";
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${airplay ? "AirPlay" : esc(serial)} · Metis phone</title>${FONT}${FAVICON}
+<title>${airplay ? "AirPlay" : esc(serial)} · Open HL phone</title>${FONT}${FAVICON}
 <style>${BASE_CSS}${TOAST_CSS}${VMLAB_CSS}${CONSOLE_CSS}${VIEWER_CSS}</style><script>${THEME_JS}</script></head>
 <body data-serial="${esc(serial)}"${airplay ? ' data-viewonly="1" class="viewonly"' : ""}>
 <div class="cbar">

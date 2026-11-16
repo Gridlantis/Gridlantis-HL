@@ -3,7 +3,7 @@ const { BASE_CSS, FAVICON, FONT, GAMEPAD_CSS, GAMEPAD_JS, NAV_CSS, SSE_JS, THEME
 function aiHtml() {
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Metis · AI</title>${FONT}${FAVICON}
+<title>Open HL · AI</title>${FONT}${FAVICON}
 <style>
 ${BASE_CSS}${NAV_CSS}${TOAST_CSS}${GAMEPAD_CSS}
 .ai-layout{display:grid;grid-template-columns:300px minmax(0,1fr);gap:16px;align-items:start;}

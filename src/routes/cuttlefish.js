@@ -12,7 +12,7 @@ const UI_ROOT = path.join(__dirname, "../ui/cuttlefish");
 
 function receiveFile(req, limit = 4 * 1024 * 1024 * 1024) {
   return new Promise((resolve, reject) => {
-    const file = path.join(os.tmpdir(), "metis-cf-" + crypto.randomBytes(6).toString("hex") + ".apk");
+    const file = path.join(os.tmpdir(), "openhl-cf-" + crypto.randomBytes(6).toString("hex") + ".apk");
     const out = fs.createWriteStream(file, { mode: 0o600 });
     let n = 0;
     req.on("data", c => { n += c.length; if (n > limit) { req.destroy(); out.destroy(); fs.unlink(file, () => {}); reject(Object.assign(new Error("file too large"), { status: 413 })); } });

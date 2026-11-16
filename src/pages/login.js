@@ -5,8 +5,8 @@ const { BASE_CSS, FAVICON, FONT, LEGACY_THEMES, THEMES } = require("../ui/assets
 // routes/public.js just before </form>, as a <p class="login-msg">.
 const loginHtml = `<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Metis · Sign in</title>${FONT}${FAVICON}
-<script>(function(){try{var T=${JSON.stringify(THEMES)},L=${JSON.stringify(LEGACY_THEMES)};var n=localStorage.getItem('metis-theme')||'slate';var t=T[L[n]||n]||T.slate;for(var k in t.vars)document.documentElement.style.setProperty('--'+k,t.vars[k]);document.documentElement.style.colorScheme=t.dark?'dark':'light';}catch(e){}})();</script>
+<title>Open HL · Sign in</title>${FONT}${FAVICON}
+<script>(function(){try{var T=${JSON.stringify(THEMES)},L=${JSON.stringify(LEGACY_THEMES)};var n=localStorage.getItem('openhl-theme')||'slate';var t=T[L[n]||n]||T.slate;for(var k in t.vars)document.documentElement.style.setProperty('--'+k,t.vars[k]);document.documentElement.style.colorScheme=t.dark?'dark':'light';}catch(e){}})();</script>
 <style>
 ${BASE_CSS}
 body{display:grid;place-items:center;padding:24px;}
@@ -26,10 +26,10 @@ form{display:flex;flex-direction:column;gap:12px;}
 .err.on{display:block;}
 </style></head><body>
 <main class="door">
-  <div class="brand"><span class="led" aria-hidden="true"></span><b>Metis</b><span class="tag">Home server</span></div>
+  <div class="brand"><span class="led" aria-hidden="true"></span><b>Open HL</b><span class="tag">Home server</span></div>
   <div class="card">
     <h1>Sign in</h1>
-    <p class="sub">Enter your Metis password.</p>
+    <p class="sub">Enter your Open HL password.</p>
     <div class="err" id="err" role="alert">That password is not correct.</div>
     <form method="POST" action="/login">
       <label class="m-label" for="pw">Password</label>

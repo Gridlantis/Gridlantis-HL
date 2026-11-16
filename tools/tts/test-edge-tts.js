@@ -6,7 +6,7 @@
  *   node tools/tts/test-edge-tts.js "custom text" en-GB-RyanNeural
  *
  * I could not test this from my sandbox (egress firewall blocks
- * speech.platform.bing.com), so run this BEFORE trusting the Metis integration.
+ * speech.platform.bing.com), so run this BEFORE trusting the Open HL integration.
  * Writes out.mp3 and tries to play it.
  *
  * Zero dependencies. Node 18+.
@@ -16,7 +16,7 @@ const crypto = require("crypto");
 const fs = require("fs");
 const { spawn, execSync } = require("child_process");
 
-const TEXT  = process.argv[2] || "Metis online. Edge text to speech is working.";
+const TEXT  = process.argv[2] || "Open HL online. Edge text to speech is working.";
 const VOICE = process.argv[3] || "en-GB-SoniaNeural";
 
 const TOKEN  = "6A5AA1D4EAFF4E9FB37E23D68491D6F4";
@@ -100,7 +100,7 @@ sock.on("data", c => {
     if (!/^HTTP\/1\.1 101/i.test(head)) {
       console.error("✗ Handshake FAILED: " + status);
       console.error("\nIf this is 403, Microsoft has likely rotated the DRM scheme again.");
-      console.error("Metis will fall back to espeak/spd-say automatically.");
+      console.error("Open HL will fall back to espeak/spd-say automatically.");
       process.exit(1);
     }
     console.log("✓ Handshake OK: " + status);
@@ -135,7 +135,7 @@ sock.on("data", c => {
           try { execSync("command -v " + c, { stdio: "ignore" }); player = c; break; } catch {}
         }
         if (!player) {
-          console.log("⚠ No mp3 player found. Metis needs one for SERVER-side speech:");
+          console.log("⚠ No mp3 player found. Open HL needs one for SERVER-side speech:");
           console.log("    sudo apt install mpg123");
           console.log("  (Browser-side speech works without it.)");
           process.exit(0);
@@ -146,7 +146,7 @@ sock.on("data", c => {
           : player === "mpv" ? ["--really-quiet", "--no-video", "out.mp3"]
           : ["--play-and-exit", "--intf", "dummy", "out.mp3"];
         const p = spawn(player, args, { stdio: "inherit" });
-        p.on("exit", () => { console.log("\n✓ Edge TTS works. Safe to use in Metis."); process.exit(0); });
+        p.on("exit", () => { console.log("\n✓ Edge TTS works. Safe to use in Open HL."); process.exit(0); });
         return;
       }
     } else if (f.op === 0x2 && f.pl.length > 2) {

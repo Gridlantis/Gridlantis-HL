@@ -5,7 +5,7 @@ function notesHtml() {
   const seedFolders = '[]';
   return `<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Metis \xb7 Notes</title>${FONT}${FAVICON}<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<title>Open HL \xb7 Notes</title>${FONT}${FAVICON}<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
 ${BASE_CSS}${NAV_CSS}${TOAST_CSS}${GAMEPAD_CSS}
 /* Notes keeps its own HUD typography inside the shared shell. */
@@ -1162,7 +1162,7 @@ function setFoldersHidden(hide){
   document.querySelector('.notes-layout').classList.toggle('folders-hidden',hide);
   document.getElementById('sidebar-toggle').textContent=hide?'\u25ba':'\u25c4';
   document.getElementById('sidebar-toggle').title=hide?'Show folders':'Hide folders';
-  try{localStorage.setItem('metis-notes-sidebar',hide?'1':'0');}catch(e){}
+  try{localStorage.setItem('openhl-notes-sidebar',hide?'1':'0');}catch(e){}
 }
 document.getElementById('sidebar-toggle').addEventListener('click',function(){
   setFoldersHidden(!document.getElementById('notes-sidebar').classList.contains('collapsed'));
@@ -1172,7 +1172,7 @@ document.getElementById('sidebar-toggle').addEventListener('click',function(){
 // flag from a desktop session would hide folders with no way to get them back.
 (function(){
   try{
-    if(localStorage.getItem('metis-notes-sidebar')==='1' && window.innerWidth>700) setFoldersHidden(true);
+    if(localStorage.getItem('openhl-notes-sidebar')==='1' && window.innerWidth>700) setFoldersHidden(true);
   }catch(e){}
 })();
 (function(){

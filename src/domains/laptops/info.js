@@ -1,8 +1,8 @@
 const net = require("net");
 
 // Hardware and live usage for the PC host card. The setup script installs a
-// systemd socket one port below VNC (tailnet address, Metis only) that answers
-// each connection with one line of JSON from /etc/metis-remote/info.sh and
+// systemd socket one port below VNC (tailnet address, Open HL only) that answers
+// each connection with one line of JSON from /etc/openhl-remote/info.sh and
 // hangs up. A PC set up before that existed simply refuses the connection.
 function fetchInfo(pc, timeoutMs = 4000) {
   return new Promise((resolve, reject) => {

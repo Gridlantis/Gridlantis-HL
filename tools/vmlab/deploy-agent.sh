@@ -1,17 +1,17 @@
 #!/bin/bash
-# deploy-agent.sh — put the Metis VM Lab agent on a second machine.
+# deploy-agent.sh — put the Open HL VM Lab agent on a second machine.
 #
 #   tools/vmlab/deploy-agent.sh [user@]host [options]
 #
 #   --port N        port the agent listens on           (default 3010)
-#   --dir PATH      install directory on that machine   (default ~/metis-vmlab)
+#   --dir PATH      install directory on that machine   (default ~/openhl-vmlab)
 #   --no-qemu       skip installing QEMU there
 #   --no-service    just install; do not start a systemd --user unit
 #   --ssh "OPTS"    extra options for ssh/rsync (e.g. -i ~/.ssh/other_key)
 #
 # It copies the agent's code, makes sure QEMU is present, starts it as a
 # systemd --user service, and prints the address and token to paste into
-# Metis under VM Lab → Hosts → Add a VM host.
+# Open HL under VM Lab → Hosts → Add a VM host.
 #
 # The agent has no login of its own: the token is the whole of its security,
 # so keep the port on a tailnet or LAN and never expose it to the internet.
@@ -19,7 +19,7 @@ set -euo pipefail
 
 TARGET=""
 PORT=3010
-DIR="metis-vmlab"
+DIR="openhl-vmlab"
 WITH_QEMU=1
 WITH_SERVICE=1
 SSH_OPTS=""
@@ -129,7 +129,7 @@ fi
 say "4/5  Starting the agent"
 if [ "$WITH_SERVICE" = 1 ]; then
   UNIT='[Unit]
-Description=Metis VM Lab agent
+Description=Open HL VM Lab agent
 After=network-online.target
 
 [Service]
@@ -142,24 +142,24 @@ RestartSec=3
 
 [Install]
 WantedBy=default.target'
-  SSH "mkdir -p ~/.config/systemd/user && cat > ~/.config/systemd/user/metis-vmlab-agent.service <<'UNITEOF'
+  SSH "mkdir -p ~/.config/systemd/user && cat > ~/.config/systemd/user/openhl-vmlab-agent.service <<'UNITEOF'
 $UNIT
 UNITEOF
-systemctl --user daemon-reload && systemctl --user enable --now metis-vmlab-agent.service"
+systemctl --user daemon-reload && systemctl --user enable --now openhl-vmlab-agent.service"
   # Without lingering the unit dies when the last session on that machine ends.
   if ! SSH "loginctl show-user \$USER -p Linger 2>/dev/null | grep -q Linger=yes"; then
     echo "  ! The agent will stop when you log out of $TARGET. To keep it running:"
     echo "      ssh $TARGET 'sudo loginctl enable-linger \$USER'"
   fi
   sleep 2
-  SSH "systemctl --user is-active --quiet metis-vmlab-agent.service" \
-    || { echo "✗ the service did not start:"; SSH "systemctl --user status --no-pager -n 30 metis-vmlab-agent.service" || true; exit 1; }
-  echo "  metis-vmlab-agent.service is running"
+  SSH "systemctl --user is-active --quiet openhl-vmlab-agent.service" \
+    || { echo "✗ the service did not start:"; SSH "systemctl --user status --no-pager -n 30 openhl-vmlab-agent.service" || true; exit 1; }
+  echo "  openhl-vmlab-agent.service is running"
 else
   echo "  --no-service: start it yourself with  cd $DEST && node vmlab-agent.js"
 fi
 
-say "5/5  Details for Metis"
+say "5/5  Details for Open HL"
 TOKEN="$(SSH "cat '$DEST/vmlab/agent-token' 2>/dev/null" | tr -d '\r\n' || true)"
 ADDR="$(SSH 'tailscale ip -4 2>/dev/null | head -1' | tr -d '\r\n' || true)"
 [ -n "$ADDR" ] || ADDR="${TARGET#*@}"
@@ -169,12 +169,12 @@ if [ -z "$TOKEN" ]; then
 else
   cat <<EOF
 
-  In Metis: VM Lab → Hosts → Add a VM host
+  In Open HL: VM Lab → Hosts → Add a VM host
 
     Address      $ADDR:$PORT
     Agent token  $TOKEN
 
 EOF
 fi
-echo "  Logs:    ssh $TARGET 'journalctl --user -u metis-vmlab-agent -f'"
-echo "  Restart: ssh $TARGET 'systemctl --user restart metis-vmlab-agent'"
+echo "  Logs:    ssh $TARGET 'journalctl --user -u openhl-vmlab-agent -f'"
+echo "  Restart: ssh $TARGET 'systemctl --user restart openhl-vmlab-agent'"

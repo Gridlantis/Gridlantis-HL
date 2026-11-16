@@ -1,10 +1,10 @@
 # VM Lab
 
-Full virtual machines inside Metis, in the spirit of VirtualBox. Open it from
+Full virtual machines inside Open HL, in the spirit of VirtualBox. Open it from
 the **VM Lab** icon in the sidebar, or at `/vmlab`.
 
 - **Operating systems** — download Ubuntu, Debian, Fedora, AlmaLinux, Alpine or
-  Kali from the catalog; add an ISO or disk image you already have in Metis
+  Kali from the catalog; add an ISO or disk image you already have in Open HL
   Files with **Add from my files**; upload one; import one by host path; or
   fetch any URL. Windows ISOs come from Microsoft and are added by hand.
 - **Virtual machines** — one VM each. Choose the disk image or ISO to boot,
@@ -14,7 +14,7 @@ the **VM Lab** icon in the sidebar, or at `/vmlab`.
   from CD onto a fresh blank disk, exactly like a new VirtualBox machine. Once
   installed, *Boot from disk next time* in the VM's menu flips the boot order;
   the ISO stays attached and can be swapped or ejected.
-- **Console** — full VM screen in any browser or the Metis desktop app, with
+- **Console** — full VM screen in any browser or the Open HL desktop app, with
   two-way clipboard, “type this text” (for login prompts), special keys, and
   live USB attach/detach.
 - **USB** — pass devices plugged into the host through to a VM.
@@ -38,11 +38,11 @@ With root (also enables USB passthrough and the Windows 11 TPM):
 sudo tools/vmlab/setup-host.sh       # QEMU, OVMF, swtpm, kvm group, USB udev rule
 ```
 
-VMs run as transient `systemd --user` units named `metis-vm-<id>`, so
-restarting Metis never stops them; Metis re-attaches on start.
+VMs run as transient `systemd --user` units named `openhl-vm-<id>`, so
+restarting Open HL never stops them; Open HL re-attaches on start.
 
 ```sh
-systemctl --user list-units 'metis-vm-*'
+systemctl --user list-units 'openhl-vm-*'
 ```
 
 ### Hardware acceleration and VirtualBox
@@ -56,13 +56,13 @@ VirtualBox VMs down, or move them into VM Lab, to get full speed.
 
 A second machine can host VMs too — useful when it has the spare CPU and RAM,
 or when this one's virtualization is tied up. That machine runs the **VM Lab
-agent**: the same VM Lab code as Metis, serving only `/api/vmlab/*` behind a
-bearer token, with no login page and no other Metis subsystem. Metis proxies to
+agent**: the same VM Lab code as Open HL, serving only `/api/vmlab/*` behind a
+bearer token, with no login page and no other Open HL subsystem. Open HL proxies to
 it, so its machines, images, USB devices, host stats and consoles appear in the
 VM Lab page exactly like this machine's.
 
 ```
-Metis (this machine)                  the second device
+Open HL (this machine)                  the second device
 ┌────────────────────────┐            ┌──────────────────────────┐
 │ /vmlab  [VM host ▾]    │  HTTP+WS   │ vmlab-agent.js :3010     │
 │  ├ local  → vmlab-api  │ ─ token →  │  └ vmlab-api + domains   │
@@ -97,7 +97,7 @@ node vmlab-agent.js                   # prints its token and listens on :3010
 
 The agent needs no `.env` and no `PASSWORD`; the token is its whole login.
 **So keep the port on a tailnet or LAN and never expose it to the internet.**
-Metis stores each host's address and token in `vmlab/hosts.json` (mode 0600,
+Open HL stores each host's address and token in `vmlab/hosts.json` (mode 0600,
 on the SSD), and never sends them anywhere but to that host.
 
 ### Living with two hosts
@@ -107,16 +107,16 @@ on the SSD), and never sends them anywhere but to that host.
 - USB passthrough passes devices plugged into **the host running the VM**, so
   run `sudo tools/vmlab/setup-host.sh --user <you>` on the second device too.
 - The console works the same from anywhere: the browser's WebSocket goes to
-  Metis, Metis splices it onto the agent's, and the agent talks to that
-  machine's QEMU. Only Metis ever reaches the agent.
+  Open HL, Open HL splices it onto the agent's, and the agent talks to that
+  machine's QEMU. Only Open HL ever reaches the agent.
 - If a host is asleep or offline the page says so and offers a way back to this
   machine; the other host is unaffected.
 - Turning a host **off** in the list keeps its address and token but stops
-  Metis talking to it. Removing it forgets both — the VMs over there keep
+  Open HL talking to it. Removing it forgets both — the VMs over there keep
   running and reappear if it is added again.
 
 ```sh
-ssh other-machine 'journalctl --user -u metis-vmlab-agent -f'   # agent logs
+ssh other-machine 'journalctl --user -u openhl-vmlab-agent -f'   # agent logs
 ssh other-machine 'sudo loginctl enable-linger $USER'           # survive logout
 ```
 
@@ -147,23 +147,23 @@ guest runs `spice-vdagent` (Linux desktops, Windows guest tools):
 
 | client | host → VM | VM → host |
 |---|---|---|
-| Metis desktop app | automatic | automatic |
+| Open HL desktop app | automatic | automatic |
 | browser on HTTPS or localhost | automatic | automatic |
 | browser on plain HTTP | Ctrl+V pastes | copied when the browser allows, otherwise one click in the Clipboard panel |
 
 Text consoles and login screens have no clipboard agent; use **Clipboard →
 Type it**, which sends the text as keystrokes.
 
-## Reaching Metis from anywhere
+## Reaching Open HL from anywhere
 
-Metis listens on port 3000 on every interface. Choose one:
+Open HL listens on port 3000 on every interface. Choose one:
 
 1. **Tailscale (recommended).** Install Tailscale on each client and open
    `http://<host tailscale IP>:3000`. Only your tailnet can reach it.
 2. **Tailscale with HTTPS** (enables automatic clipboard sync in browsers):
    `tailscale serve --bg 3000`, then open `https://<host>.<tailnet>.ts.net`.
 3. **Public internet:** `tailscale funnel --bg 3000`, or a reverse proxy with a
-   real certificate. Metis then faces the whole internet behind one password —
+   real certificate. Open HL then faces the whole internet behind one password —
    use a long one. Failed logins are rate-limited (5 per 15 minutes per address).
 
 ## Checking from a client
@@ -172,8 +172,8 @@ Run on any Linux client (or pipe it over SSH) to test login, the VM Lab API,
 host stats, a VNC handshake through the console tunnel, and desktop downloads:
 
 ```sh
-METIS_URL=http://100.64.0.1:3000 METIS_PW='…' tools/vmlab/client-smoke-test.sh
-ssh root@client "METIS_URL=http://100.64.0.1:3000 METIS_PW='…' bash -s" < tools/vmlab/client-smoke-test.sh
+OPENHL_URL=http://100.64.0.1:3000 OPENHL_PW='…' tools/vmlab/client-smoke-test.sh
+ssh root@client "OPENHL_URL=http://100.64.0.1:3000 OPENHL_PW='…' bash -s" < tools/vmlab/client-smoke-test.sh
 ```
 
 ## Files
@@ -183,7 +183,7 @@ ssh root@client "METIS_URL=http://100.64.0.1:3000 METIS_PW='…' bash -s" < tool
 | `src/domains/vmlab/` | lifecycle, images, QMP/agent client, USB, host stats |
 | `src/domains/vmlab/hosts.js` | the host registry (this machine + remote agents) |
 | `src/domains/vmlab/remote.js` | talking to a remote agent: probe, proxy, console tunnel |
-| `src/routes/vmlab-api.js` | the machine-facing API, mounted by both Metis and the agent |
+| `src/routes/vmlab-api.js` | the machine-facing API, mounted by both Open HL and the agent |
 | `src/routes/vmlab.js` | pages, host routing/proxying, and the VNC WebSocket tunnel |
 | `vmlab-agent.js`, `src/vmlab-agent.js` | the agent a second device runs |
 | `tools/vmlab/deploy-agent.sh` | installs and starts that agent over SSH |

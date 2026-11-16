@@ -112,7 +112,7 @@ async function socialTick() {
       writeSocial(after);
       broadcast("social_update", { id: slot.id, status: slot.status, results });
       if (slot.status === "failed") {
-        sendAlert("Metis \u00b7 social post failed",
+        sendAlert("Open HL \u00b7 social post failed",
           live.platforms.map(p => p + ": " + ((results[p] && results[p].error) || "?")).join(" \u00b7 "), false);
       }
     }

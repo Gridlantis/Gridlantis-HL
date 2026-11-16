@@ -1,8 +1,8 @@
-package local.metis.app;
+package local.openhl.app;
 
-// Metis for Android: a WebView around a Metis server, like the desktop app.
+// Open HL for Android: a WebView around an Open HL server, like the desktop app.
 //
-// It holds no Metis logic of its own. It remembers which servers you use,
+// It holds no Open HL logic of its own. It remembers which servers you use,
 // keeps the login cookie, and adds what a plain browser tab handles poorly:
 // file uploads and downloads with the session, the back button, microphone
 // and camera prompts, and pinning a self-signed HTTPS certificate.
@@ -59,7 +59,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle saved) {
         super.onCreate(saved);
-        prefs = getSharedPreferences("metis", MODE_PRIVATE);
+        prefs = getSharedPreferences("openhl", MODE_PRIVATE);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
         web = new WebView(this);
@@ -77,14 +77,14 @@ public class MainActivity extends Activity {
         s.setDisplayZoomControls(false);
         s.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
         s.setAllowFileAccess(false);   // assets still load; the device's files do not
-        s.setUserAgentString(s.getUserAgentString() + " MetisAndroid/" + BuildInfo.VERSION);
+        s.setUserAgentString(s.getUserAgentString() + " OpenHLAndroid/" + BuildInfo.VERSION);
 
         CookieManager cm = CookieManager.getInstance();
         cm.setAcceptCookie(true);
         cm.setAcceptThirdPartyCookies(web, true);
 
-        web.addJavascriptInterface(new ConnectBridge(), "MetisConnect");
-        web.addJavascriptInterface(new AppBridge(), "metisAndroid");
+        web.addJavascriptInterface(new ConnectBridge(), "OpenHLConnect");
+        web.addJavascriptInterface(new AppBridge(), "openhlAndroid");
         web.setWebViewClient(new Client());
         web.setWebChromeClient(new Chrome());
         web.setDownloadListener(this::download);
@@ -183,7 +183,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    // What Metis pages can see: that they run in the app, and a way back to
+    // What Open HL pages can see: that they run in the app, and a way back to
     // the connect screen. Only answers for the server the app connected to.
     class AppBridge {
         @JavascriptInterface public String version() { return BuildInfo.VERSION; }

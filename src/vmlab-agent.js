@@ -5,13 +5,13 @@ const os = require("os");
 const path = require("path");
 
 // ─── VM LAB AGENT ────────────────────────────────────────────────────────────
-// Turns a second device into a VM host for Metis. It serves exactly one thing:
+// Turns a second device into a VM host for Open HL. It serves exactly one thing:
 // the /api/vmlab/* API from src/routes/vmlab-api.js, which is the same module
-// Metis mounts for its own machine. There is no UI, no login page and no other
-// Metis subsystem here — a Metis elsewhere on the tailnet proxies to this
+// Open HL mounts for its own machine. There is no UI, no login page and no other
+// Open HL subsystem here — an Open HL elsewhere on the tailnet proxies to this
 // process with a bearer token and renders the pages itself.
 //
-//   METIS_ROLE=vmlab-agent node vmlab-agent.js
+//   OPENHL_ROLE=vmlab-agent node vmlab-agent.js
 //
 // Environment:
 //   VMLAB_AGENT_TOKEN  shared secret (generated into vmlab/agent-token if unset)
@@ -87,7 +87,7 @@ function authorize(req, res, ip) {
 }
 
 // ── Request handling ─────────────────────────────────────────────────────────
-// The same ctx the Metis router builds, so vmlab-api.js cannot tell the
+// The same ctx the Open HL router builds, so vmlab-api.js cannot tell the
 // difference — including the writeHead/end wrapper that marks a request as
 // answered.
 async function handle(req, res) {
@@ -103,7 +103,7 @@ async function handle(req, res) {
 
   if (pathname === "/health" && req.method === "GET") {       // unauthenticated liveness only
     res.writeHead(200, { "Content-Type": "application/json" });
-    return res.end(JSON.stringify({ ok: true, agent: "metis-vmlab" }));
+    return res.end(JSON.stringify({ ok: true, agent: "openhl-vmlab" }));
   }
   if (!authorize(req, res, ip)) return;
   if (!pathname.startsWith("/api/vmlab/")) {
@@ -158,7 +158,7 @@ server.requestTimeout = 0;
 server.headersTimeout = 60 * 1000;
 
 // ── The console tunnel ───────────────────────────────────────────────────────
-// Metis relays the browser's WebSocket onto this one, so the bytes arriving
+// Open HL relays the browser's WebSocket onto this one, so the bytes arriving
 // here are already noVNC's, and the far end is this machine's QEMU.
 const ws = require("./ws");
 server.on("upgrade", (req, socket, head) => {
@@ -189,7 +189,7 @@ server.on("error", err => {
 });
 
 server.listen(PORT, BIND, async () => {
-  console.log("🖥  Metis VM Lab agent on " + os.hostname() + " → http://" + (BIND === "0.0.0.0" ? "0.0.0.0" : BIND) + ":" + PORT);
+  console.log("🖥  Open HL VM Lab agent on " + os.hostname() + " → http://" + (BIND === "0.0.0.0" ? "0.0.0.0" : BIND) + ":" + PORT);
   for (const [name, addrs] of Object.entries(os.networkInterfaces())) {
     for (const a of addrs) if (a.family === "IPv4" && !a.internal) console.log("   " + name + ": http://" + a.address + ":" + PORT);
   }

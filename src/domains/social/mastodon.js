@@ -8,7 +8,7 @@ const { httpGet, httpPost } = require("../../net");
 // ── Mastodon (official API) ─────────────────────────────────────────────────
 async function mastoUploadMedia(acct, filePath) {
   const data = fs.readFileSync(filePath);
-  const bnd = "----metis" + crypto.randomBytes(12).toString("hex");
+  const bnd = "----openhl" + crypto.randomBytes(12).toString("hex");
   const mime = mediaMime(filePath);
   const body = Buffer.concat([
     Buffer.from(`--${bnd}\r\nContent-Disposition: form-data; name="file"; filename="${path.basename(filePath)}"\r\nContent-Type: ${mime}\r\n\r\n`),

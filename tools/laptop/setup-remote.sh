@@ -1,20 +1,20 @@
 #!/bin/bash
-# setup-remote.sh — let Metis remote into this PC (Metis → PC host).
+# setup-remote.sh — let Open HL remote into this PC (Open HL → PC host).
 #
-#   curl -fsSL http://<metis-tailnet-ip>:<port>/laptops/setup.sh | sudo bash
+#   curl -fsSL http://<openhl-tailnet-ip>:<port>/laptops/setup.sh | sudo bash
 #   sudo bash setup-remote.sh [options]
 #
-#   --metis IP      Metis's tailnet address; the only machine let in
-#                   (filled in automatically when fetched from Metis)
+#   --openhl IP      Open HL's tailnet address; the only machine let in
+#                   (filled in automatically when fetched from Open HL)
 #   --port N        VNC port on this PC's tailnet address       (default 5900)
-#   --name NAME     what Metis calls this PC                    (default hostname)
+#   --name NAME     what Open HL calls this PC                    (default hostname)
 #   --display D     X display to serve, e.g. :0   (default: find it — follows the
 #                   login screen and whichever desktop is signed in)
-#   --new-password  make a fresh password (re-pair in Metis after); a plain
-#                   re-run keeps the password Metis already has
+#   --new-password  make a fresh password (re-pair in Open HL after); a plain
+#                   re-run keeps the password Open HL already has
 #   --x11           switch the login screen and desktop to Xorg even when no
 #                   Wayland session is running right now
-#   --keep-wayland  leave a Wayland PC alone (Metis then only reaches it when
+#   --keep-wayland  leave a Wayland PC alone (Open HL then only reaches it when
 #                   someone picks an X11 session by hand)
 #   --uninstall     remove the service, password and firewall rule
 #
@@ -25,25 +25,25 @@
 #
 # KDE Plasma 6.8+ has no X11 session either. There the script runs KDE's own
 # Desktop Sharing (krfb) in the signed-in session: unattended access with the
-# Metis password, pre-authorized with the screen-sharing portal so nobody has
+# Open HL password, pre-authorized with the screen-sharing portal so nobody has
 # to click Allow, restarted by systemd if it ever exits. Same limit as GNOME
 # below: the desktop and lock screen, not the login screen.
 #
 # GNOME 49+ has no X11 session to switch to. There the script turns on GNOME
 # Remote Desktop's own VNC server in the signed-in user's session instead,
-# with the same password and Metis-only firewall guard. That shares the
+# with the same password and Open HL-only firewall guard. That shares the
 # desktop and its lock screen, but not GDM's login screen: after a reboot
-# Metis reaches the PC once someone signs in (or GDM auto-login does).
+# Open HL reaches the PC once someone signs in (or GDM auto-login does).
 #
 # The RustDesk model without a relay: a service that starts at boot and serves
 # the screen whether or not anyone is signed in, plus a permanent random
-# password. Metis stores that password from the pairing code and signs in with
+# password. Open HL stores that password from the pairing code and signs in with
 # it every time, so you never type it. Unlike RustDesk, nothing leaves the
 # tailnet — the VNC server listens only on this PC's Tailscale address and
-# accepts only Metis's address, and the firewall is opened for that one peer.
+# accepts only Open HL's address, and the firewall is opened for that one peer.
 set -euo pipefail
 
-METIS_IP="${METIS_IP:-}"
+OPENHL_IP="${OPENHL_IP:-}"
 PORT=5900
 NAME=""
 DISPLAY_ARG=""
@@ -54,7 +54,7 @@ UNINSTALL=0
 
 while [ $# -gt 0 ]; do
   case "$1" in
-    --metis) METIS_IP="$2"; shift 2 ;;
+    --openhl) OPENHL_IP="$2"; shift 2 ;;
     --port) PORT="$2"; shift 2 ;;
     --name) NAME="$2"; shift 2 ;;
     --display) DISPLAY_ARG="$2"; shift 2 ;;
@@ -67,15 +67,15 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-CONF=/etc/metis-remote
-UNIT=/etc/systemd/system/metis-remote.service
-INFO_SOCKET=/etc/systemd/system/metis-remote-info.socket
-INFO_SERVICE=/etc/systemd/system/metis-remote-info@.service
-CLIP_SOCKET=/etc/systemd/system/metis-remote-clip.socket
-CLIP_SERVICE=/etc/systemd/system/metis-remote-clip@.service
-CLIP_SH=/usr/local/lib/metis-remote/clip.sh   # outside $CONF: that one is root-only
-SDDM_DROPIN=/etc/sddm.conf.d/99-metis-x11.conf
-GUARD_UNIT=/etc/systemd/system/metis-remote-guard.service
+CONF=/etc/openhl-remote
+UNIT=/etc/systemd/system/openhl-remote.service
+INFO_SOCKET=/etc/systemd/system/openhl-remote-info.socket
+INFO_SERVICE=/etc/systemd/system/openhl-remote-info@.service
+CLIP_SOCKET=/etc/systemd/system/openhl-remote-clip.socket
+CLIP_SERVICE=/etc/systemd/system/openhl-remote-clip@.service
+CLIP_SH=/usr/local/lib/openhl-remote/clip.sh   # outside $CONF: that one is root-only
+SDDM_DROPIN=/etc/sddm.conf.d/99-openhl-x11.conf
+GUARD_UNIT=/etc/systemd/system/openhl-remote-guard.service
 say()  { printf '\n\033[1m%s\033[0m\n' "$*"; }
 warn() { printf '\033[33m! %s\033[0m\n' "$*" >&2; }
 die()  { printf '\033[31m✗ %s\033[0m\n' "$*" >&2; exit 1; }
@@ -117,8 +117,8 @@ close_firewall() {
 
 # ── Uninstall ────────────────────────────────────────────────────────────────
 if [ "$UNINSTALL" = 1 ]; then
-  say "Removing Metis remote desktop"
-  systemctl disable --now metis-remote metis-remote-info.socket metis-remote-clip.socket metis-remote-guard 2>/dev/null || true
+  say "Removing Open HL remote desktop"
+  systemctl disable --now openhl-remote openhl-remote-info.socket openhl-remote-clip.socket openhl-remote-guard 2>/dev/null || true
   if [ -f "$CONF/remote.env" ]; then
     # shellcheck disable=SC1091
     . "$CONF/remote.env"
@@ -145,7 +145,7 @@ if [ "$UNINSTALL" = 1 ]; then
     echo "Pick the Wayland session on the login screen to go back to it."
   fi
   systemctl daemon-reload
-  echo "Done. x11vnc itself is left installed. Forget this PC in Metis too."
+  echo "Done. x11vnc itself is left installed. Forget this PC in Open HL too."
   exit 0
 fi
 
@@ -154,15 +154,15 @@ say "1/5  Checking this PC"
 command -v tailscale >/dev/null || die "Tailscale is not installed — https://tailscale.com/download/linux"
 TS_IP="$(tailscale ip -4 2>/dev/null | head -n1 || true)"
 [ -n "$TS_IP" ] || die "Tailscale is not connected — run 'sudo tailscale up' first"
-[ -n "$METIS_IP" ] || die "Metis's tailnet address is unknown — re-run with --metis 100.x.y.z"
-[[ "$METIS_IP" =~ ^100\.[0-9]+\.[0-9]+\.[0-9]+$ ]] || die "--metis must be a tailnet IPv4 address (100.x.y.z), got '$METIS_IP'"
+[ -n "$OPENHL_IP" ] || die "Open HL's tailnet address is unknown — re-run with --openhl 100.x.y.z"
+[[ "$OPENHL_IP" =~ ^100\.[0-9]+\.[0-9]+\.[0-9]+$ ]] || die "--openhl must be a tailnet IPv4 address (100.x.y.z), got '$OPENHL_IP'"
 [[ "$PORT" =~ ^[0-9]+$ ]] && [ "$PORT" -ge 3 ] && [ "$PORT" -le 65535 ] || die "--port must be 3–65535"
 INFO_PORT=$((PORT - 1))   # hardware/usage info for the PC host card
 CLIP_PORT=$((PORT - 2))   # clipboard bridge (KDE on Wayland only)
 [ -n "$NAME" ] || NAME="$(hostname)"
 NAME="$(printf '%s' "$NAME" | tr -cd 'A-Za-z0-9 ._-' | cut -c1-60)"
 echo "   this PC:     $NAME at $TS_IP:$PORT"
-echo "   Metis:       $METIS_IP (the only address let in)"
+echo "   Open HL:       $OPENHL_IP (the only address let in)"
 
 # ── Wayland → Xorg ───────────────────────────────────────────────────────────
 # x11vnc serves X11 only; a Wayland desktop shows as a black screen or not at
@@ -278,7 +278,7 @@ elif { [ "$WAYLAND" = 1 ] || [ "$FORCE_X11" = 1 ]; } && [ "$KEEP_WAYLAND" = 0 ];
   elif [ "$DM" = sddm ] || { [ -z "$GDM_CONF" ] && command -v sddm >/dev/null; }; then
     install -d -m 755 /etc/sddm.conf.d
     {
-      echo "# Written by Metis setup-remote.sh: x11vnc can only share an Xorg screen."
+      echo "# Written by Open HL setup-remote.sh: x11vnc can only share an Xorg screen."
       echo "# Delete this file (or run setup-remote.sh --uninstall) to go back to Wayland."
       echo "[General]"
       echo "DisplayServer=x11"
@@ -316,7 +316,7 @@ elif { [ "$WAYLAND" = 1 ] || [ "$FORCE_X11" = 1 ]; } && [ "$KEEP_WAYLAND" = 0 ];
     warn "pick an X11/Xorg session on the login screen for remote access."
   fi
 elif [ "$WAYLAND" = 1 ]; then
-  warn "a Wayland session is running and --keep-wayland was given: Metis can only reach this PC"
+  warn "a Wayland session is running and --keep-wayland was given: Open HL can only reach this PC"
   warn "when someone signs in to an X11/Xorg session."
 fi
 
@@ -329,15 +329,15 @@ if [ "$MODE" = kde ]; then
   KWRITE="$(command -v kwriteconfig6 || command -v kwriteconfig5 || true)"
   [ -n "$KWRITE" ] || die "kwriteconfig6 is missing — it comes with KDE Frameworks; is this really a Plasma desktop?"
   command -v python3 >/dev/null || command -v perl >/dev/null || pkg_install python3 || pkg_install python || die "need python3 or perl to store krfb's password"
-  # krfb listens on every address, so a guard rule drops the port for anyone but Metis.
+  # krfb listens on every address, so a guard rule drops the port for anyone but Open HL.
   command -v nft >/dev/null || pkg_install nftables || warn "no nft: port $PORT is only guarded if your firewall blocks it"
 elif [ "$MODE" = gnome ]; then
   say "2/5  Installing GNOME Remote Desktop"
   if command -v grdctl >/dev/null; then echo "   already installed"
   else pkg_install gnome-remote-desktop || die "could not install gnome-remote-desktop (see above)"; fi
-  grdctl --help 2>&1 | grep -qw vnc || die "this build of GNOME Remote Desktop has no VNC server (only RDP), which Metis cannot speak"
+  grdctl --help 2>&1 | grep -qw vnc || die "this build of GNOME Remote Desktop has no VNC server (only RDP), which Open HL cannot speak"
   # GNOME listens on every address, not just the tailnet one, so a guard
-  # rule drops the port for anyone but Metis.
+  # rule drops the port for anyone but Open HL.
   command -v nft >/dev/null || pkg_install nftables || warn "no nft: port $PORT is only guarded if your firewall blocks it"
 else
   say "2/5  Installing x11vnc"
@@ -352,8 +352,8 @@ fi
 
 # ── Password ─────────────────────────────────────────────────────────────────
 # VNC passwords stop at 8 characters; 8 random alphanumerics is ~47 bits, on
-# top of only answering Metis's address. A re-run keeps the existing password
-# so Metis stays paired.
+# top of only answering Open HL's address. A re-run keeps the existing password
+# so Open HL stays paired.
 install -d -m 700 "$CONF"
 OLD_ALLOW=""; OLD_PORT=""; OLD_INFO=""; OLD_CLIP=""
 if [ -f "$CONF/remote.env" ]; then
@@ -366,7 +366,7 @@ if [ "$NEW_PASSWORD" = 0 ]; then
   if [ -s "$CONF/password" ]; then PASS="$(cat "$CONF/password")"
   elif [ -s "$CONF/pairing.txt" ]; then
     # Installed by an older copy of this script: recover it from the pairing code.
-    b="$(sed 's/^metis-laptop://' "$CONF/pairing.txt" | tr -- '-_' '+/')"
+    b="$(sed 's/^openhl-laptop://' "$CONF/pairing.txt" | tr -- '-_' '+/')"
     while [ $(( ${#b} % 4 )) -ne 0 ]; do b="$b="; done
     PASS="$(printf '%s' "$b" | base64 -d 2>/dev/null | sed -n 's/.*"password":"\([A-Za-z0-9]*\)".*/\1/p' || true)"
   fi
@@ -386,7 +386,7 @@ cat > "$CONF/remote.env" <<EOF
 MODE=$MODE
 DESKUSER=$DESK_USER
 LISTEN=$TS_IP
-ALLOW=$METIS_IP
+ALLOW=$OPENHL_IP
 RFBPORT=$PORT
 INFOPORT=$INFO_PORT
 CLIPPORT=$CLIP_PORT
@@ -405,7 +405,7 @@ say "4/5  Starting the service"
 if [ "$MODE" = x11 ]; then
 cat > "$CONF/run.sh" <<'RUN'
 #!/bin/sh
-. /etc/metis-remote/remote.env
+. /etc/openhl-remote/remote.env
 export HOME=/root
 if [ -n "$DISPLAY_OVERRIDE" ]; then
   DISP="$DISPLAY_OVERRIDE"; AUTH=guess
@@ -427,7 +427,7 @@ else
   fi
   [ -n "$DISP" ] || DISP=:0
 fi
-# The monitor layout rides along in the desktop name so Metis's viewer can show
+# The monitor layout rides along in the desktop name so Open HL's viewer can show
 # one monitor at a time ("WxH+X+Y/OUTPUT,…" from xrandr). -xrandr exit makes
 # x11vnc quit when the layout changes, so systemd restarts it with a fresh one.
 MONS=""
@@ -437,16 +437,16 @@ if command -v xrandr >/dev/null; then
     awk 'NR > 1 { g = $3; gsub(/\/[0-9]+/, "", g); printf "%s%s/%s", (n++ ? "," : ""), g, $NF }')"
 fi
 DESKTOP="$(hostname)$DISP"
-[ -n "$MONS" ] && DESKTOP="$DESKTOP metis-monitors=$MONS"
+[ -n "$MONS" ] && DESKTOP="$DESKTOP openhl-monitors=$MONS"
 echo "serving display $DISP (auth $AUTH, monitors ${MONS:-unknown})" >&2
-exec "$X11VNC" -display "$DISP" -auth "$AUTH" -rfbauth /etc/metis-remote/passwd -listen "$LISTEN" -allow "$ALLOW" \
+exec "$X11VNC" -display "$DISP" -auth "$AUTH" -rfbauth /etc/openhl-remote/passwd -listen "$LISTEN" -allow "$ALLOW" \
   -rfbport "$RFBPORT" -no6 -noshm -forever -shared -noxdamage -repeat -norc -nolookup \
   -desktop "$DESKTOP" -xrandr exit
 RUN
 chmod 700 "$CONF/run.sh"
 cat > "$UNIT" <<EOF
 [Unit]
-Description=Metis remote desktop (x11vnc on the tailnet, Metis only)
+Description=Open HL remote desktop (x11vnc on the tailnet, Open HL only)
 After=network-online.target tailscaled.service display-manager.service
 Wants=network-online.target
 
@@ -460,13 +460,13 @@ WantedBy=multi-user.target
 EOF
 fi
 
-# Hardware and live usage for Metis's PC host card: a socket on the tailnet
-# address, Metis only, that answers each connection with one line of JSON from
+# Hardware and live usage for Open HL's PC host card: a socket on the tailnet
+# address, Open HL only, that answers each connection with one line of JSON from
 # info.sh and hangs up. (Not in the VNC desktop name: x11vnc cuts that at 127
 # characters.) FreeBind lets it start before Tailscale has its address.
 cat > "$CONF/info.sh" <<'INFO'
 #!/bin/sh
-# One line of JSON about this PC for Metis: what it is, and how busy it is now.
+# One line of JSON about this PC for Open HL: what it is, and how busy it is now.
 clean() { tr -d '"\\' | tr -s ' ' | sed 's/^ //;s/ $//'; }
 CPU="$(sed -n 's/^model name[[:space:]]*:[[:space:]]*//p' /proc/cpuinfo | head -n1 | sed 's/(R)//g;s/(TM)//g;s/ CPU//' | clean)"
 [ -n "$CPU" ] || CPU="$(lscpu 2>/dev/null | sed -n 's/^Model name:[[:space:]]*//p' | head -n1 | clean)"
@@ -495,13 +495,13 @@ INFO
 chmod 755 "$CONF/info.sh"
 cat > "$INFO_SOCKET" <<SOCK
 [Unit]
-Description=Metis remote desktop: hardware info for Metis
+Description=Open HL remote desktop: hardware info for Open HL
 
 [Socket]
 ListenStream=$TS_IP:$INFO_PORT
 FreeBind=yes
 Accept=yes
-IPAddressAllow=$METIS_IP
+IPAddressAllow=$OPENHL_IP
 IPAddressDeny=any
 
 [Install]
@@ -509,7 +509,7 @@ WantedBy=sockets.target
 SOCK
 cat > "$INFO_SERVICE" <<SVC
 [Unit]
-Description=Metis remote desktop: hardware info for Metis
+Description=Open HL remote desktop: hardware info for Open HL
 
 [Service]
 ExecStart=$CONF/info.sh
@@ -520,29 +520,29 @@ RuntimeMaxSec=10
 SVC
 systemctl daemon-reload
 if [ "$MODE" = x11 ]; then
-  systemctl disable --now metis-remote-guard >/dev/null 2>&1 || true; rm -f "$GUARD_UNIT"
-  systemctl enable metis-remote metis-remote-info.socket >/dev/null 2>&1
-  systemctl restart metis-remote metis-remote-info.socket
+  systemctl disable --now openhl-remote-guard >/dev/null 2>&1 || true; rm -f "$GUARD_UNIT"
+  systemctl enable openhl-remote openhl-remote-info.socket >/dev/null 2>&1
+  systemctl restart openhl-remote openhl-remote-info.socket
 else
   # x11vnc from an earlier run would only loop on "no X server"; retire it.
-  systemctl disable --now metis-remote >/dev/null 2>&1 || true; rm -f "$UNIT"
+  systemctl disable --now openhl-remote >/dev/null 2>&1 || true; rm -f "$UNIT"
   # Guard: krfb and GNOME's VNC listen on every address, so drop the port for anyone
-  # but Metis (IPv6 included). Loaded at boot before the desktop starts.
+  # but Open HL (IPv6 included). Loaded at boot before the desktop starts.
   if command -v nft >/dev/null; then
     cat > "$CONF/guard.nft" <<NFT
-table inet metis_remote
-delete table inet metis_remote
-table inet metis_remote {
+table inet openhl_remote
+delete table inet openhl_remote
+table inet openhl_remote {
   chain input {
     type filter hook input priority -10; policy accept;
-    tcp dport $PORT ip saddr != $METIS_IP drop
+    tcp dport $PORT ip saddr != $OPENHL_IP drop
     tcp dport $PORT meta nfproto ipv6 drop
   }
 }
 NFT
     cat > "$GUARD_UNIT" <<GUARD
 [Unit]
-Description=Metis remote desktop: only Metis may reach the VNC port
+Description=Open HL remote desktop: only Open HL may reach the VNC port
 Before=network-pre.target display-manager.service
 Wants=network-pre.target
 
@@ -550,25 +550,25 @@ Wants=network-pre.target
 Type=oneshot
 RemainAfterExit=yes
 ExecStart=$(command -v nft) -f $CONF/guard.nft
-ExecStop=$(command -v nft) delete table inet metis_remote
+ExecStop=$(command -v nft) delete table inet openhl_remote
 
 [Install]
 WantedBy=multi-user.target
 GUARD
     systemctl daemon-reload
-    systemctl enable metis-remote-guard >/dev/null 2>&1
-    systemctl restart metis-remote-guard
-    echo "   guard: port $PORT answers $METIS_IP only"
+    systemctl enable openhl-remote-guard >/dev/null 2>&1
+    systemctl restart openhl-remote-guard
+    echo "   guard: port $PORT answers $OPENHL_IP only"
   fi
   systemctl daemon-reload
-  systemctl enable metis-remote-info.socket >/dev/null 2>&1
-  systemctl restart metis-remote-info.socket
+  systemctl enable openhl-remote-info.socket >/dev/null 2>&1
+  systemctl restart openhl-remote-info.socket
   # A switch between the Wayland modes leaves the other server holding the port.
   if [ "$MODE" = kde ] && command -v grdctl >/dev/null; then as_user grdctl vnc disable >/dev/null 2>&1 || true; fi
   if [ "$MODE" = gnome ]; then as_user systemctl --user disable --now app-org.kde.krfb.service >/dev/null 2>&1 || true; fi
 fi
 if [ "$MODE" != kde ] && [ -f "$CLIP_SOCKET" ]; then
-  systemctl disable --now metis-remote-clip.socket >/dev/null 2>&1 || true
+  systemctl disable --now openhl-remote-clip.socket >/dev/null 2>&1 || true
   rm -f "$CLIP_SOCKET" "$CLIP_SERVICE"; rm -rf "$(dirname "$CLIP_SH")"; systemctl daemon-reload
 fi
 
@@ -607,7 +607,7 @@ if [ "$MODE" = kde ]; then
   install -d -o "$DESK_USER" -g "$(id -gn "$DESK_USER")" "$UHOME/.config" "$UHOME/.config/systemd" "$UHOME/.config/systemd/user"
   cat > "$UHOME/.config/systemd/user/app-org.kde.krfb.service" <<KRFB
 [Unit]
-Description=KDE Desktop Sharing (krfb) for Metis
+Description=KDE Desktop Sharing (krfb) for Open HL
 After=plasma-workspace.target
 PartOf=graphical-session.target
 
@@ -626,8 +626,8 @@ KRFB
 
   # Clipboard bridge. krfb uses Qt's clipboard, which Wayland only lets a
   # focused window touch, so on its own copy/paste never crosses. Klipper (the
-  # Plasma clipboard) can, over D-Bus: Metis talks to it through this socket
-  # (tailnet address, Metis only), running as the desktop user.
+  # Plasma clipboard) can, over D-Bus: Open HL talks to it through this socket
+  # (tailnet address, Open HL only), running as the desktop user.
   #   get          → the clipboard text
   #   set\n<text>  → replace it (text runs to end of input), answers "ok"
   #   watch        → "T <bytes>\n<text>" now and on every change, "." keep-alives
@@ -660,13 +660,13 @@ CLIP
   chmod 755 "$CLIP_SH"
   cat > "$CLIP_SOCKET" <<SOCK
 [Unit]
-Description=Metis remote desktop: clipboard bridge for Metis
+Description=Open HL remote desktop: clipboard bridge for Open HL
 
 [Socket]
 ListenStream=$TS_IP:$CLIP_PORT
 FreeBind=yes
 Accept=yes
-IPAddressAllow=$METIS_IP
+IPAddressAllow=$OPENHL_IP
 IPAddressDeny=any
 
 [Install]
@@ -674,7 +674,7 @@ WantedBy=sockets.target
 SOCK
   cat > "$CLIP_SERVICE" <<SVC
 [Unit]
-Description=Metis remote desktop: clipboard bridge for Metis
+Description=Open HL remote desktop: clipboard bridge for Open HL
 
 [Service]
 User=$DESK_USER
@@ -686,12 +686,12 @@ LogLevelMax=notice
 RuntimeMaxSec=12h
 SVC
   systemctl daemon-reload
-  systemctl enable metis-remote-clip.socket >/dev/null 2>&1
-  systemctl restart metis-remote-clip.socket
+  systemctl enable openhl-remote-clip.socket >/dev/null 2>&1
+  systemctl restart openhl-remote-clip.socket
   echo "   clipboard: bridged through Klipper on port $CLIP_PORT"
 elif [ "$MODE" = gnome ]; then
   # GNOME Remote Desktop, VNC side, in the user's session. Password auth with
-  # no prompt at the screen; no TLS layer (Metis's viewer speaks plain VNC
+  # no prompt at the screen; no TLS layer (Open HL's viewer speaks plain VNC
   # auth, and the traffic is inside WireGuard anyway).
   as_user grdctl vnc set-password "$PASS" >/dev/null || die "could not store the VNC password — is $DESK_USER's keyring unlocked?"
   # set-password can return 0 without storing anything; check it took.
@@ -706,8 +706,8 @@ elif [ "$MODE" = gnome ]; then
   as_user systemctl --user restart gnome-remote-desktop.service
 fi
 
-# Firewall: open the port to Metis only, on the tailnet interface only.
-if [ -n "$OLD_ALLOW" ] && { [ "$OLD_ALLOW" != "$METIS_IP" ] || [ "$OLD_PORT" != "$PORT" ]; }; then
+# Firewall: open the port to Open HL only, on the tailnet interface only.
+if [ -n "$OLD_ALLOW" ] && { [ "$OLD_ALLOW" != "$OPENHL_IP" ] || [ "$OLD_PORT" != "$PORT" ]; }; then
   close_firewall "$OLD_ALLOW" "${OLD_PORT:-5900}"
   [ -n "$OLD_INFO" ] && close_firewall "$OLD_ALLOW" "$OLD_INFO"
   [ -n "$OLD_CLIP" ] && close_firewall "$OLD_ALLOW" "$OLD_CLIP"
@@ -715,13 +715,13 @@ fi
 OPEN_PORTS="$PORT $INFO_PORT"; [ "$MODE" = kde ] && OPEN_PORTS="$OPEN_PORTS $CLIP_PORT"
 for P in $OPEN_PORTS; do
   if command -v ufw >/dev/null && ufw status 2>/dev/null | grep -q "Status: active"; then
-    ufw allow in on tailscale0 from "$METIS_IP" to any port "$P" proto tcp comment metis-remote >/dev/null
-    echo "   ufw: allowed $METIS_IP → port $P on tailscale0"
+    ufw allow in on tailscale0 from "$OPENHL_IP" to any port "$P" proto tcp comment openhl-remote >/dev/null
+    echo "   ufw: allowed $OPENHL_IP → port $P on tailscale0"
   fi
   if command -v firewall-cmd >/dev/null && firewall-cmd --state >/dev/null 2>&1; then
-    firewall-cmd -q --permanent --add-rich-rule "rule family=ipv4 source address=$METIS_IP port port=$P protocol=tcp accept"
+    firewall-cmd -q --permanent --add-rich-rule "rule family=ipv4 source address=$OPENHL_IP port port=$P protocol=tcp accept"
     firewall-cmd -q --reload
-    echo "   firewalld: allowed $METIS_IP → port $P"
+    echo "   firewalld: allowed $OPENHL_IP → port $P"
   fi
 done
 
@@ -744,32 +744,32 @@ elif [ "$MODE" = gnome ]; then
   as_user journalctl --user -u gnome-remote-desktop -n 25 --no-pager >&2 || true
 else
   warn "x11vnc is not listening yet. Its log:"
-  journalctl -u metis-remote -n 25 --no-pager >&2 || true
+  journalctl -u openhl-remote -n 25 --no-pager >&2 || true
   warn "if it says it cannot open the display, sign in to an X11 desktop or pass --display :0"
 fi
 
 JSON="$(printf '{"v":1,"name":"%s","host":"%s","port":%s,"password":"%s"}' "$NAME" "$TS_IP" "$PORT" "$PASS")"
-CODE="metis-laptop:$(printf '%s' "$JSON" | base64 -w0 | tr '+/' '-_' | tr -d '=')"
+CODE="openhl-laptop:$(printf '%s' "$JSON" | base64 -w0 | tr '+/' '-_' | tr -d '=')"
 printf '%s\n' "$CODE" > "$CONF/pairing.txt"; chmod 600 "$CONF/pairing.txt"
 
-say "Pairing code — paste it into Metis → PC host → Pair a PC"
+say "Pairing code — paste it into Open HL → PC host → Pair a PC"
 printf '\n  %s\n\n' "$CODE"
 echo "It is also kept in $CONF/pairing.txt (root only). Running this script again"
 echo "keeps this password; --new-password makes a new one to re-pair with."
 if [ "$SWITCHED" = 1 ]; then
   say "Reboot this PC to finish"
-  echo "The login screen and desktop come back up on Xorg, and Metis can reach both."
-  echo "Pairing now is fine; the PC shows offline in Metis until the reboot."
+  echo "The login screen and desktop come back up on Xorg, and Open HL can reach both."
+  echo "Pairing now is fine; the PC shows offline in Open HL until the reboot."
 fi
 if [ "$MODE" = kde ]; then
   say "KDE note"
-  echo "Metis reaches this PC while $DESK_USER is signed in (locked screen is fine)."
+  echo "Open HL reaches this PC while $DESK_USER is signed in (locked screen is fine)."
   echo "After a reboot it is offline until someone signs in; turn on automatic login"
   echo "on the login screen to cover reboots (krfb's password does not need the wallet)."
 fi
 if [ "$MODE" = gnome ]; then
   say "GNOME note"
-  echo "Metis reaches this PC while $DESK_USER is signed in (locked screen is fine)."
+  echo "Open HL reaches this PC while $DESK_USER is signed in (locked screen is fine)."
   echo "After a reboot it is offline until someone signs in. To cover reboots, turn on"
   echo "automatic login (Settings → System → Users) and give the login keyring an empty"
   echo "password (Passwords and Keys app) — GNOME keeps the VNC password in that keyring."

@@ -1,7 +1,7 @@
 #!/bin/bash
 # migrate.sh <user@host> [target-dir]
 #
-# Copies this Metis installation to another machine: code, all JSON stores,
+# Copies this Open HL installation to another machine: code, all JSON stores,
 # secrets and uploads. Nothing is deleted here — verify the target first, then
 # remove this copy by hand.
 #
@@ -10,7 +10,7 @@
 set -euo pipefail
 
 DEST="${1:?usage: migrate.sh <user@host> [target-dir]}"
-TARGET="${2:-\$HOME/Servers/Filebeam/Metis}"
+TARGET="${2:-\$HOME/Servers/Open-HL}"
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SSH_OPTS=(-o ConnectTimeout=10 -o StrictHostKeyChecking=accept-new)
 
@@ -27,7 +27,7 @@ echo "  node       : $NODEV"
 case "$NODEV" in
   none) echo "  ✗ node is not installed on the target — install Node 22+ first"; exit 1;;
   v1[0-9].*|v2[01].*)
-    echo "  ! node $NODEV is older than the 22+ Metis expects."
+    echo "  ! node $NODEV is older than the 22+ Open HL expects."
     if [ "${ALLOW_OLD_NODE:-0}" = 1 ]; then
       echo "    ALLOW_OLD_NODE=1 set — continuing."
     else
@@ -41,7 +41,7 @@ echo "  need/free  : $((NEED_KB/1024))M / $((FREE_KB/1024))M"
 [ "$FREE_KB" -gt "$NEED_KB" ] || { echo "  ✗ not enough space on target"; exit 1; }
 
 if ssh "${SSH_OPTS[@]}" "$DEST" "[ -e '$REMOTE_TARGET/server.js' ]"; then
-  echo "  ! $REMOTE_TARGET already contains a Metis install."
+  echo "  ! $REMOTE_TARGET already contains an Open HL install."
   read -rp "  overwrite it? [y/N] " a; [ "$a" = y ] || exit 1
 fi
 
@@ -82,21 +82,21 @@ BADMODE=$(ssh "${SSH_OPTS[@]}" "$DEST" "cd '$REMOTE_TARGET' && for f in .env .se
 
 say "Boot test on target (background timers stubbed — no mail poll, no social publish)"
 ssh "${SSH_OPTS[@]}" "$DEST" "cd '$REMOTE_TARGET' && \
-  PORT=39777 PASSWORD=migrate-check timeout 25 node -r ./tools/refactor-harness/preload.js server.js > /tmp/metis-boot.log 2>&1 &
+  PORT=39777 PASSWORD=migrate-check timeout 25 node -r ./tools/refactor-harness/preload.js server.js > /tmp/openhl-boot.log 2>&1 &
   sleep 6
   code=\$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 http://127.0.0.1:39777/login || echo 000)
   echo \"  GET /login -> \$code\"
-  C=\$(curl -s -i --max-time 10 -X POST -d 'password=migrate-check' http://127.0.0.1:39777/login | grep -i '^set-cookie' | sed 's/.*\(metis_session=[^;]*\).*/\1/')
+  C=\$(curl -s -i --max-time 10 -X POST -d 'password=migrate-check' http://127.0.0.1:39777/login | grep -i '^set-cookie' | sed 's/.*\(openhl_session=[^;]*\).*/\1/')
   for p in / /notes /mail /finance; do
     printf '  %s  %s\n' \"\$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 -H \"Cookie: \$C\" http://127.0.0.1:39777\$p)\" \"\$p\"
   done
   curl -s --max-time 10 -H \"Cookie: \$C\" http://127.0.0.1:39777/api/status; echo
-  echo '  --- boot log ---'; sed 's/^/  /' /tmp/metis-boot.log
+  echo '  --- boot log ---'; sed 's/^/  /' /tmp/openhl-boot.log
   pkill -f 'PORT=39777' 2>/dev/null; pkill -f 'node.*server.js' 2>/dev/null; true"
 
 say "Done"
 cat <<EOF
-  Metis is installed at $REMOTE_TARGET on $DEST.
+  Open HL is installed at $REMOTE_TARGET on $DEST.
 
   Nothing was removed from this machine.
 

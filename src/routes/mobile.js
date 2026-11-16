@@ -23,7 +23,7 @@ const SERIAL = /^[\w.:\-\[\]@ ]{1,120}$/;
 // are far bigger than readBody() is meant for.
 function receiveFile(req, limit = 4 * 1024 * 1024 * 1024) {
   return new Promise((resolve, reject) => {
-    const file = path.join(os.tmpdir(), "metis-mobile-" + crypto.randomBytes(6).toString("hex"));
+    const file = path.join(os.tmpdir(), "openhl-mobile-" + crypto.randomBytes(6).toString("hex"));
     const out = fs.createWriteStream(file, { mode: 0o600 });
     let n = 0;
     req.on("data", c => { n += c.length; if (n > limit) { req.destroy(); out.destroy(); fs.unlink(file, () => {}); reject(Object.assign(new Error("file too large"), { status: 413 })); } });
@@ -69,7 +69,7 @@ module.exports = async function mobileRoutes(ctx) {
     if (pathname === "/api/mobile/airplay" && req.method === "GET") return json(airplay.status());
     if (pathname === "/api/mobile/airplay" && req.method === "POST") {
       const b = await body();
-      const name = typeof b.name === "string" && b.name.trim() ? { name: b.name.trim().replace(/[^\w .'-]/g, "").slice(0, 40) || "Metis" } : {};
+      const name = typeof b.name === "string" && b.name.trim() ? { name: b.name.trim().replace(/[^\w .'-]/g, "").slice(0, 40) || "Open HL" } : {};
       return json(await airplay.setEnabled(b.enabled !== false, name));
     }
     if (pathname === "/api/mobile/airplay/pin" && req.method === "POST") return json(await airplay.newPin());

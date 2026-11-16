@@ -7,7 +7,7 @@
  * Runs an escalating matrix and reports exactly which layer fails:
  *   1. DNS          — does the host resolve?
  *   2. Plain HTTPS  — is the host reachable at all (voices list is a normal GET)?
- *   3. Raw TLS+WS, no ALPN            <- what Metis does today (the ECONNRESET)
+ *   3. Raw TLS+WS, no ALPN            <- what Open HL does today (the ECONNRESET)
  *   4. Raw TLS+WS, ALPN http/1.1      <- prime suspect
  *   5. Raw TLS+WS, ALPN + full Edge headers
  *   6. Node's built-in WebSocket      <- sets its own ALPN/headers

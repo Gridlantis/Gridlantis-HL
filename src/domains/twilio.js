@@ -2,7 +2,7 @@ const https = require("https");
 
 // ═══ TWILIO — the account behind Voicemail and Texts ═══════════════════════════
 // Read-only use of the REST API: both features poll it rather than taking
-// webhooks, so Metis works without being reachable from the internet.
+// webhooks, so Open HL works without being reachable from the internet.
 const ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID || "";
 const AUTH_TOKEN  = process.env.TWILIO_AUTH_TOKEN || "";
 const NUMBER      = process.env.TWILIO_NUMBER || "";   // only keep what reached this number; blank = any
@@ -13,7 +13,7 @@ const configured = () => !!(ACCOUNT_SID && AUTH_TOKEN);
 function twilioGet(url, hops = 3) {
   return new Promise((resolve, reject) => {
     const u = new URL(url, "https://api.twilio.com");
-    // No User-Agent: Twilio's edge answers 403 to "Metis/1.0". The media URL
+    // No User-Agent: Twilio's edge answers 403 to "OpenHL/1.0". The media URL
     // may redirect to storage on another host; the account credentials only
     // ever go to Twilio's API itself.
     const headers = {};

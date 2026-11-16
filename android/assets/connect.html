@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Metis</title>
+<title>Open HL</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#0b0b10;--surface:#12121a;--surface2:#17171f;--border:#23232f;--accent:#6d28d9;--text:#eaeaf2;--muted:#7a7a92;--red:#fb7185}
@@ -28,8 +28,8 @@ button{border-radius:10px;font-size:15px;font-weight:600;border:1px solid var(--
 </style>
 </head><body>
 <main class="card">
-  <div class="brand"><img src="icon.png" alt=""><div><div class="name">Metis</div><div class="tag">android</div></div></div>
-  <h1>Connect to your Metis server</h1>
+  <div class="brand"><img src="icon.png" alt=""><div><div class="name">Open HL</div><div class="tag">android</div></div></div>
+  <h1>Connect to your Open HL server</h1>
   <p class="sub">The address you use in the browser: a LAN IP, a Tailscale address, or a domain.</p>
   <div id="notice" class="notice" hidden></div>
   <form id="form" autocomplete="off">
@@ -44,7 +44,7 @@ button{border-radius:10px;font-size:15px;font-weight:600;border:1px solid var(--
 </main>
 <script>
 (function () {
-  var A = window.MetisConnect;
+  var A = window.OpenHLConnect;
   var q = new URLSearchParams(location.search);
   var notice = document.getElementById("notice");
   if (q.get("error")) { notice.textContent = q.get("error"); notice.hidden = false; }

@@ -15,7 +15,7 @@ const DEFAULT_LAT = process.env.WEATHER_LAT || "38.8951", DEFAULT_LON = process.
 async function tryWeatherGov(lat, lon) {
   const wxHeaders = {
     'Accept': 'application/geo+json',
-    'User-Agent': 'Metis/1.0 (https://github.com/metis-dashboard; metis@metis.local)'
+    'User-Agent': 'OpenHL/1.0 (https://github.com/openhl-dashboard; openhl@openhl.local)'
   };
   const safeJson = (raw, ctx) => {
     const t = (raw || '').trim();
@@ -108,7 +108,7 @@ async function fetchForecast(lat, lon) {
 
 async function weatherGovPeriods(lat, lon) {
   const headers = { 'Accept': 'application/geo+json',
-    'User-Agent': 'Metis/1.0 (https://github.com/metis-dashboard; metis@metis.local)' };
+    'User-Agent': 'OpenHL/1.0 (https://github.com/openhl-dashboard; openhl@openhl.local)' };
   const point = JSON.parse(await httpGet(`https://api.weather.gov/points/${lat},${lon}`, 8000, headers));
   const url = point.properties && point.properties.forecast;
   if (!url) throw new Error('No forecast URL in weather.gov response');

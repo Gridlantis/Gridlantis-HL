@@ -150,7 +150,7 @@ module.exports = async function monitorRoutes(ctx) {
     return json({ ok: true });
   }
   if (pathname === '/api/alerts/test' && req.method === 'POST') {
-    await sendAlert('Metis · test alert', 'This is a test alert from Metis. Your channel is working.', true);
+    await sendAlert('Open HL · test alert', 'This is a test alert from Open HL. Your channel is working.', true);
     return json({ ok: true, speakerAvailable: !!(AUDIO.speaker || AUDIO.mp3) });
   }
 };

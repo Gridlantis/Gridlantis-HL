@@ -105,7 +105,7 @@ const JOBS = new Map();   // id -> job (in memory; a restart abandons partial fi
 function fetchText(url, hops = 0) {
   return new Promise((resolve, reject) => {
     const mod = url.startsWith("https:") ? https : http;
-    const req = mod.get(url, { headers: { "User-Agent": "Metis-VMLab/1.0" }, timeout: 15000 }, res => {
+    const req = mod.get(url, { headers: { "User-Agent": "OpenHL-VMLab/1.0" }, timeout: 15000 }, res => {
       if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location && hops < 6) {
         res.resume(); return resolve(fetchText(new URL(res.headers.location, url).href, hops + 1));
       }
@@ -215,7 +215,7 @@ function downloadTo(job, url, dest, hops = 0) {
   return new Promise((resolve, reject) => {
     const mod = url.startsWith("https:") ? https : http;
     job.status = "downloading";
-    const req = mod.get(url, { headers: { "User-Agent": "Metis-VMLab/1.0" }, timeout: 30000 }, res => {
+    const req = mod.get(url, { headers: { "User-Agent": "OpenHL-VMLab/1.0" }, timeout: 30000 }, res => {
       if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location && hops < 8) {
         res.resume();
         return resolve(downloadTo(job, new URL(res.headers.location, url).href, dest, hops + 1));
@@ -277,11 +277,11 @@ function receiveUpload(req, name, meta) {
   });
 }
 
-// ── Browse Metis Files for bootable media ───────────────────────────────────
+// ── Browse Open HL Files for bootable media ───────────────────────────────────
 // Anything you drop in the Files app (or download straight into uploads/) is a
 // boot candidate. Walk a few levels deep and hand back paths the import
 // endpoint accepts, marking the ones already registered as images.
-// Where to look for bootable media you already have. Metis Files first, then
+// Where to look for bootable media you already have. Open HL Files first, then
 // any extra folders from VMLAB_MEDIA_DIRS (colon-separated) — e.g. the "OS
 // isos" folder on the big drive. Paths that do not exist are skipped, so an
 // unmounted drive just means one fewer group rather than an error.

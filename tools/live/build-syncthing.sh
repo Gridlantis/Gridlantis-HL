@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build Metis's patched Syncthing for live folders.
+# Build Open HL's patched Syncthing for live folders.
 #
 #   tools/live/build-syncthing.sh        # → live/dist/syncthing-<os>-<arch>-<VERSION>.{tar.gz,zip}
 #
@@ -12,17 +12,17 @@
 # folder's versioning instead of deleting it. Since every losing device now
 # makes its own copy, the same edit can end up copied two or three times, so
 # the patch also removes conflict copies whose content is identical to an
-# older copy of the same file (metis.2). No upstream fix exists (checked
+# older copy of the same file (openhl.2). No upstream fix exists (checked
 # 2026-11-15; #2605 introduced the delete on purpose).
 #
 # Downloads a pinned Go toolchain (checked against SHA-256) and the Syncthing
 # source at the tag into live/, applies the patch, runs Syncthing's own model and
-# versioner tests, and builds Linux amd64/arm64 and Windows amd64. Metis
+# versioner tests, and builds Linux amd64/arm64 and Windows amd64. Open HL
 # (src/domains/live/syncthing.js) runs and serves these builds.
 set -euo pipefail
 
 ST_TAG=v2.1.7
-BUILD_VERSION="$ST_TAG-metis.2"
+BUILD_VERSION="$ST_TAG-openhl.2"
 GO_VERSION=go1.27.4
 GO_SHA=7226736c2339719cda28fbf3a54d71aa63bcefe376e98cef00034268dab24840
 TARGETS="linux/amd64 linux/arm64 windows/amd64"
@@ -71,4 +71,4 @@ for t in $TARGETS; do
   mv -f "$SRC/syncthing-$os-$arch-$BUILD_VERSION.$ext" "$DIST/"
   echo "   $DIST/syncthing-$os-$arch-$BUILD_VERSION.$ext"
 done
-say "Done — restart Metis (systemctl --user restart metis) to roll it out"
+say "Done — restart Open HL (systemctl --user restart openhl) to roll it out"
