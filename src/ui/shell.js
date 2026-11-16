@@ -1,0 +1,146 @@
+/* Metis shell — status strip, sidebar behaviour. Loaded on every page with the nav. */
+(function () {
+  "use strict";
+  var root = document.documentElement;
+  var $ = function (id) { return document.getElementById(id); };
+
+  // ── Sidebar: collapse to a rail, open as a drawer on small screens ─────────
+  var collapse = $("m-collapse");
+  function paintCollapse() {
+    if (!collapse) return;
+    var rail = root.classList.contains("nav-rail");
+    collapse.title = rail ? "Expand sidebar" : "Collapse sidebar";
+    var i = collapse.querySelector("i"); if (i) i.className = rail ? "fa-solid fa-angles-right" : "fa-solid fa-angles-left";
+    var l = collapse.querySelector(".m-foot-l"); if (l) l.textContent = rail ? "Expand" : "Collapse";
+  }
+  if (collapse) collapse.addEventListener("click", function () {
+    root.classList.toggle("nav-rail");
+    try { localStorage.setItem("metis-nav", root.classList.contains("nav-rail") ? "rail" : "full"); } catch (e) {}
+    paintCollapse();
+    window.dispatchEvent(new Event("resize"));   // maps and charts re-measure
+  });
+  paintCollapse();
+  // Hide removes the sidebar entirely; on a desktop the menu button then shows
+  // it again. On phones the menu button stays the drawer toggle.
+  var menu = $("m-menu"), scrim = $("m-scrim"), hide = $("m-hide");
+  var phone = window.matchMedia("(max-width:760px)");
+  function setHidden(on) {
+    root.classList.toggle("nav-hidden", on);
+    try { localStorage.setItem("metis-nav-hidden", on ? "1" : "0"); } catch (e) {}
+    if (menu) { menu.setAttribute("aria-label", on && !phone.matches ? "Show sidebar" : "Open menu"); menu.title = on && !phone.matches ? "Show sidebar" : ""; }
+    window.dispatchEvent(new Event("resize"));
+  }
+  if (hide) hide.addEventListener("click", function () { setHidden(true); });
+  if (menu) {
+    menu.addEventListener("click", function () {
+      if (!phone.matches && root.classList.contains("nav-hidden")) setHidden(false);
+      else root.classList.toggle("nav-open");
+    });
+    if (root.classList.contains("nav-hidden") && !phone.matches) { menu.setAttribute("aria-label", "Show sidebar"); menu.title = "Show sidebar"; }
+  }
+  if (scrim) scrim.addEventListener("click", function () { root.classList.remove("nav-open"); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") root.classList.remove("nav-open"); });
+
+  // Inside the desktop or Android app there is nothing to download. The
+  // Android app has no address bar, so it gets a way back to its connect screen.
+  if (window.metisDesktop || window.metisAndroid) document.querySelectorAll(".metis-get-app").forEach(function (a) { a.style.display = "none"; });
+  if (window.metisAndroid) document.querySelectorAll(".metis-switch-server").forEach(function (b) {
+    b.hidden = false;
+    b.addEventListener("click", function () { window.metisAndroid.switchServer(); });
+  });
+
+  // "Get the app" dropdown: desktop or Android.
+  var apps = document.querySelector(".metis-get-app"), appsBtn = $("m-apps-btn");
+  if (apps && appsBtn) {
+    var setApps = function (on) { apps.classList.toggle("open", on); appsBtn.setAttribute("aria-expanded", on ? "true" : "false"); };
+    appsBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var tp = $("theme-popover"); if (tp) tp.classList.remove("open");
+      setApps(!apps.classList.contains("open"));
+      if (apps.classList.contains("open")) { var f = apps.querySelector(".m-apps-item"); if (f) f.focus(); }
+    });
+    document.addEventListener("click", function (e) { if (!apps.contains(e.target)) setApps(false); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && apps.classList.contains("open")) { setApps(false); appsBtn.focus(); } });
+  }
+
+  // ── Status strip ───────────────────────────────────────────────────────────
+  function set(id, text, state) {
+    var el = $(id); if (!el) return;
+    if (el.textContent !== text) {
+      if (el.dataset.seen) { el.classList.remove("changed"); void el.offsetWidth; el.classList.add("changed"); }
+      el.textContent = text;
+    }
+    el.dataset.seen = "1";
+    var cell = el.closest(".m-cell");
+    if (cell) { cell.classList.toggle("warn", state === "warn"); cell.classList.toggle("fault", state === "fault"); }
+  }
+  function level(pct, warn, fault) { return pct >= fault ? "fault" : pct >= warn ? "warn" : ""; }
+  function relTime(ms) {
+    var s = Math.round((ms - Date.now()) / 1000), a = Math.abs(s);
+    var t = a < 60 ? "now" : a < 3600 ? Math.round(a / 60) + " min" : a < 86400 ? Math.round(a / 3600) + " h" : Math.round(a / 86400) + " d";
+    return t === "now" ? t : (s >= 0 ? "in " + t : t + " ago");
+  }
+  function clip(s, n) { s = String(s || ""); return s.length > n ? s.slice(0, n - 1) + "…" : s; }
+
+  // A desktop notification when the newest voicemail or text changes while a
+  // page is open. The first pulse only records where things stand, and the tag
+  // lets the OS collapse the copies that several open tabs would each raise.
+  var newest = {};
+  function notifyNewest(kind, latest, seen, title, body, href) {
+    var sid = latest ? latest.sid : null;
+    if (kind in newest && sid && sid !== newest[kind] && !seen) {
+      try {
+        if ("Notification" in window && Notification.permission === "granted") {
+          var n = new Notification(title, { body: body, tag: "metis-" + kind + "-" + sid });
+          n.onclick = function () { try { window.focus(); } catch (e) {} location.href = href; n.close(); };
+        }
+      } catch (e) {}
+    }
+    newest[kind] = sid;
+  }
+  function badgeCount(id, n) {
+    var b = $(id);
+    if (b) { b.textContent = n; b.classList.toggle("on", n > 0); }
+  }
+
+  var last = null;
+  function paint(p) {
+    last = p;
+    set("pulse-cpu", Math.round(p.host.cpu) + "%", level(p.host.cpu, 75, 92));
+    set("pulse-mem", Math.round(p.host.mem) + "%", level(p.host.mem, 80, 93));
+    var down = p.nodes.total - p.nodes.online;
+    set("pulse-nodes", p.nodes.total ? p.nodes.online + "/" + p.nodes.total : "none", down > 0 ? "fault" : "");
+    set("pulse-vms", p.vms.running + " running", "");
+    set("pulse-mail", p.mail.unopened ? p.mail.unopened + " new" : "clear", "");
+    set("pulse-next", p.next ? relTime(p.next.at) + "  " + clip(p.next.title, 28) : "nothing set", "");
+    var badge = $("nav-count-mail");
+    if (badge) { badge.textContent = p.mail.unopened; badge.classList.toggle("on", p.mail.unopened > 0); }
+    var vm = p.voicemail || { unheard: 0, latest: null };
+    badgeCount("nav-count-voicemail", vm.unheard);
+    notifyNewest("voicemail", vm.latest, vm.latest && vm.latest.heard, "New voicemail",
+      "From " + (vm.latest && vm.latest.from || "unknown caller"), "/voicemail");
+    var tx = p.texts || { unread: 0, latest: null };
+    badgeCount("nav-count-texts", tx.unread);
+    notifyNewest("texts", tx.latest, tx.latest && tx.latest.read, "Text from " + (tx.latest && tx.latest.from || "unknown sender"),
+      tx.latest && tx.latest.body || "", "/texts");
+    var next = document.querySelector('[data-cell="next"]'); if (next && p.next) next.title = p.next.title;
+    window.dispatchEvent(new CustomEvent("metis:pulse", { detail: p }));
+  }
+  function poll() {
+    if (document.hidden) return;
+    fetch("/api/pulse").then(function (r) { if (r.status === 401) { location.href = "/login"; throw 0; } return r.json(); })
+      .then(paint).catch(function () {});
+  }
+  function clock() {
+    var d = new Date();
+    set("pulse-clock", d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" }) + "  " +
+      d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" }), "");
+    if (last && last.next) set("pulse-next", relTime(last.next.at) + "  " + clip(last.next.title, 28), "");
+  }
+  if ($("m-pulse")) {
+    poll(); clock();
+    setInterval(poll, 10000); setInterval(clock, 15000);
+    document.addEventListener("visibilitychange", function () { if (!document.hidden) poll(); });
+    window.metisPulse = { refresh: poll, last: function () { return last; } };
+  }
+})();

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Metis</title>
+<link rel="stylesheet" href="connect.css">
+</head><body>
+<div class="glow"></div>
+<main class="card">
+  <div class="brand"><img src="../build/icon.png" alt=""><div><div class="name">Metis</div><div class="tag">desktop</div></div></div>
+  <h1>Connect to your Metis server</h1>
+  <p class="sub">The address you use in the browser — a LAN IP, a Tailscale address, or a domain.</p>
+
+  <div id="notice" class="notice" hidden></div>
+
+  <form id="form" autocomplete="off">
+    <label for="url">Server address</label>
+    <div class="row">
+      <input id="url" placeholder="http://100.x.y.z:3000" spellcheck="false" autofocus>
+      <button id="go" type="submit" class="primary">Connect</button>
+    </div>
+    <div id="status" class="status"></div>
+    <div id="trust" class="trust" hidden>
+      <label><input type="checkbox" id="trust-cb"> Trust this server's certificate</label>
+      <div class="fp" id="fp"></div>
+    </div>
+  </form>
+
+  <section id="saved-wrap" hidden>
+    <div class="section-t">Recent servers</div>
+    <div id="saved"></div>
+  </section>
+
+  <details id="local" hidden>
+    <summary>This computer is the Metis host</summary>
+    <p class="sub">Start Metis from its folder with the app's built-in runtime, then open it. If Metis is already running as a service it is simply opened.</p>
+    <div class="row">
+      <input id="folder" placeholder="/home/you/Servers/Filebeam/Metis" spellcheck="false">
+      <button id="browse" type="button">Browse</button>
+    </div>
+    <button id="start-local" type="button" class="wide">Start and open Metis</button>
+    <div id="local-status" class="status"></div>
+  </details>
+
+  <div class="foot" id="foot"></div>
+</main>
+<script src="connect.js"></script>
+</body></html>

@@ -1,0 +1,65 @@
+# ── Secrets ──
+# Browser cookies the social agent saves after you sign in.
+/sessions/
+.env
+.env.*
+.session_secret
+mail_accounts.json
+settings.json
+settings.json.bak
+social.json
+laptops.json
+gcal.json
+flows.json
+.codex
+
+# ── App state / personal data (JSON stores) ──
+# Everything lives under data/ now; the root-level names below cover old installs
+# until Metis first starts and moves them.
+/data/
+*.json.bak
+notes.json
+note_folders.json
+mail_cache.json
+mail_state.json
+portfolio_history.json
+reminders.json
+quicklinks.json
+homeos.json
+finance.json
+social.json
+
+# ── Runtime / build ──
+node_modules/
+# Match whether it is a real directory or a symlink onto another drive:
+# a trailing slash would only match a directory.
+/uploads
+*.log
+social_media/
+repos/
+
+# scratch
+*.out
+
+# Remaining app state — data, not code. Keeps `git status` honest now that the
+# server itself is tracked.
+ai_peers.json
+app_spaces.json
+apps.json
+file_group_map.json
+file_groups.json
+links.json
+nodes.json
+poster_events.json
+webforms.json
+
+# VM Lab: disk images, QEMU runtime, VM state
+/vmlab/
+/desktop/node_modules/
+/desktop/dist/
+/mobile/
+/android/build/
+/android/dist/
+/live/
+
+!.env.example

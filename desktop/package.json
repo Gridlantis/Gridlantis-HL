@@ -1,0 +1,83 @@
+{
+  "name": "metis-desktop",
+  "productName": "Metis",
+  "version": "1.0.0",
+  "description": "Metis in its own window: the dashboard, VM Lab consoles with full keyboard capture and two-way clipboard.",
+  "author": "Metis",
+  "license": "UNLICENSED",
+  "homepage": "http://metis.local:3000",
+  "desktopName": "metis.desktop",
+  "private": true,
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "icon": "node tools/make-icon.js",
+    "dist": "electron-builder --linux --win --x64 --publish never",
+    "dist:linux": "electron-builder --linux --x64 --publish never",
+    "dist:win": "electron-builder --win --x64 --publish never",
+    "dist:win-installer": "electron-builder --win nsis --x64 --publish never"
+  },
+  "devDependencies": {
+    "electron": "44.3.0",
+    "electron-builder": "26.15.3"
+  },
+  "build": {
+    "appId": "local.metis.desktop",
+    "productName": "Metis",
+    "copyright": "Metis",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "connect/**",
+      "build/icon.png",
+      "package.json"
+    ],
+    "artifactName": "Metis-${version}-${os}-${arch}.${ext}",
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Utility",
+      "icon": "build/icon.png",
+      "maintainer": "Metis <metis@localhost>",
+      "synopsis": "Metis dashboard and VM Lab client",
+      "executableName": "metis",
+      "syncDesktopName": true
+    },
+    "deb": {
+      "depends": [
+        "libgtk-3-0 | libgtk-3-0t64",
+        "libnss3",
+        "libxss1",
+        "libxtst6",
+        "xdg-utils",
+        "libatspi2.0-0 | libatspi2.0-0t64",
+        "libuuid1",
+        "libsecret-1-0"
+      ]
+    },
+    "win": {
+      "target": [
+        "portable",
+        "zip"
+      ],
+      "icon": "build/icon.png",
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "artifactName": "Metis-Setup-${version}.${ext}"
+    },
+    "portable": {
+      "artifactName": "Metis-${version}-portable.${ext}"
+    }
+  }
+}

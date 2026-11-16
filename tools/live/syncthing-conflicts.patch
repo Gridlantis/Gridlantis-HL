@@ -1,0 +1,234 @@
+diff -ruN a/lib/model/folder_sendrecv.go b/lib/model/folder_sendrecv.go
+--- a/lib/model/folder_sendrecv.go	2026-11-15 14:18:49.317606380 -0500
++++ b/lib/model/folder_sendrecv.go	2026-11-15 14:18:49.319223000 -0500
+@@ -1753,6 +1753,11 @@
+ 
+ 	// Record the updated file in the index
+ 	dbUpdateChan <- dbUpdateJob{file, dbUpdateHandleFile}
++	if isConflict(file.Name) {
++		// Metis patch: a conflict copy arrived; check it for duplicates
++		// once the pull is done (see pullScannerRoutine).
++		scanChan <- file.Name
++	}
+ 	return nil
+ }
+ 
+@@ -1907,6 +1912,20 @@
+ 		toBeScanned[path] = struct{}{}
+ 	}
+ 
++	// Metis patch: the pull is done and the database is up to date; drop
++	// duplicate conflict copies of every file that got a new one.
++	bases := make(map[string]struct{})
++	for path := range toBeScanned {
++		if base, ok := conflictBase(path); ok {
++			bases[base] = struct{}{}
++		}
++	}
++	for base := range bases {
++		for _, removed := range f.dedupeConflicts(base) {
++			toBeScanned[removed] = struct{}{}
++		}
++	}
++
+ 	if len(toBeScanned) != 0 {
+ 		scanList := make([]string, 0, len(toBeScanned))
+ 		for path := range toBeScanned {
+@@ -1920,6 +1939,15 @@
+ func (f *sendReceiveFolder) moveForConflict(name, lastModBy string, scanChan chan<- string) error {
+ 	if isConflict(name) {
+ 		f.sl.Info("Conflict on existing conflict copy; not copying again", slogutil.FilePath(name))
++		// Metis patch: keep the replaced conflict copy in the version archive
++		// when the folder has one, instead of deleting it. Conflict copies are
++		// the losing side of a conflict; deleting one loses that edit for good.
++		if f.versioner != nil {
++			if err := f.inWritableDir(f.versioner.Archive, name); err != nil && !fs.IsNotExist(err) {
++				return fmt.Errorf("%s: %w", contextRemovingOldItem, err)
++			}
++			return nil
++		}
+ 		if err := f.mtimefs.Remove(name); err != nil && !fs.IsNotExist(err) {
+ 			return fmt.Errorf("%s: %w", contextRemovingOldItem, err)
+ 		}
+@@ -1934,7 +1962,11 @@
+ 	}
+ 
+ 	metricFolderConflictsTotal.WithLabelValues(f.ID).Inc()
+-	newName := conflictName(name, lastModBy)
++	// Metis patch: name the copy after the device making it too. Two devices
++	// that both lose to the same winner in the same second used to pick the
++	// identical name (time to the second + winner's ID); the copies then
++	// conflicted with each other and one was deleted above, losing an edit.
++	newName := conflictName(name, lastModBy+"-"+f.shortID.String())
+ 	err := f.mtimefs.Rename(name, newName)
+ 	if fs.IsNotExist(err) {
+ 		// We were supposed to move a file away but it does not exist. Either
+@@ -2283,6 +2315,86 @@
+ 	return strings.Contains(filepath.Base(name), ".sync-conflict-")
+ }
+ 
++// Metis patch: conflictBase returns the file a conflict copy was made from
++// ("a.sync-conflict-20261115-132950-XXXXXXX-YYYYYYY.txt" -> "a.txt").
++func conflictBase(name string) (string, bool) {
++	if !isConflict(name) {
++		return "", false
++	}
++	dir, base := filepath.Split(name)
++	i := strings.LastIndex(base, ".sync-conflict-")
++	rest := base[i+len(".sync-conflict-"):]
++	ext := ""
++	if j := strings.IndexByte(rest, '.'); j >= 0 {
++		ext = rest[j:]
++	}
++	return dir + base[:i] + ext, true
++}
++
++// Metis patch: dedupeConflicts removes conflict copies of base whose content
++// is identical to another copy's. When several devices each file away the
++// same losing version, each copy gets its own name (see moveForConflict), so
++// one edit can show up two or three times. Of each set of identical copies the
++// one with the lowest name (the oldest) is kept. Every device applies the same
++// rule, so they all keep the same one and never remove each other's last
++// copy. Removed copies go to the version archive when the folder has one.
++func (f *sendReceiveFolder) dedupeConflicts(base string) []string {
++	matches := existingConflicts(base, f.mtimefs)
++	if len(matches) < 2 {
++		return nil
++	}
++	slices.Sort(matches)
++	type copyInfo struct {
++		size int64
++		sum  [sha256.Size]byte
++	}
++	var kept []copyInfo
++	var removed []string
++	for _, name := range matches {
++		info, err := f.mtimefs.Lstat(name)
++		if err != nil || !info.IsRegular() {
++			continue
++		}
++		sum, err := f.fileSum(name)
++		if err != nil {
++			f.sl.Debug("Failed to hash conflict copy", slogutil.FilePath(name), slogutil.Error(err))
++			continue
++		}
++		c := copyInfo{info.Size(), sum}
++		if !slices.Contains(kept, c) {
++			kept = append(kept, c)
++			continue
++		}
++		if f.versioner != nil {
++			err = f.inWritableDir(f.versioner.Archive, name)
++		} else {
++			err = f.inWritableDir(f.mtimefs.Remove, name)
++		}
++		if err != nil && !fs.IsNotExist(err) {
++			f.sl.Warn("Failed to remove duplicate conflict copy", slogutil.FilePath(name), slogutil.Error(err))
++			continue
++		}
++		f.sl.Info("Removed duplicate conflict copy", slogutil.FilePath(name))
++		removed = append(removed, name)
++	}
++	return removed
++}
++
++func (f *sendReceiveFolder) fileSum(name string) ([sha256.Size]byte, error) {
++	var sum [sha256.Size]byte
++	fd, err := f.mtimefs.Open(name)
++	if err != nil {
++		return sum, err
++	}
++	defer fd.Close()
++	h := sha256.New()
++	if _, err := io.Copy(h, fd); err != nil {
++		return sum, err
++	}
++	copy(sum[:], h.Sum(nil))
++	return sum, nil
++}
++
+ func existingConflicts(name string, fs fs.Filesystem) []string {
+ 	ext := filepath.Ext(name)
+ 	matches, err := fs.Glob(name[:len(name)-len(ext)] + ".sync-conflict-????????-??????*" + ext)
+diff -ruN a/lib/model/metis_conflicts_test.go b/lib/model/metis_conflicts_test.go
+--- a/lib/model/metis_conflicts_test.go	1969-12-31 19:00:00.000000000 -0500
++++ b/lib/model/metis_conflicts_test.go	2026-11-15 14:18:49.319283943 -0500
+@@ -0,0 +1,78 @@
++// Metis patch: tests for conflict copy naming and deduplication.
++
++package model
++
++import (
++	"slices"
++	"testing"
++
++	"github.com/syncthing/syncthing/lib/fs"
++)
++
++func TestMetisConflictBase(t *testing.T) {
++	cases := map[string]string{
++		"a.sync-conflict-20261115-132950-SVVBUCW-VJ3L4B2.txt":      "a.txt",
++		"dir/x y.sync-conflict-20261115-132950-SVVBUCW-VJ3L4B2.md": "dir/x y.md",
++		"noext.sync-conflict-20261115-132950-SVVBUCW-VJ3L4B2":      "noext",
++		"a.tar.sync-conflict-20261115-132950-SVVBUCW-VJ3L4B2.gz":   "a.tar.gz",
++		"Ünï/ç.sync-conflict-20261115-132950-SVVBUCW.txt":          "Ünï/ç.txt",
++	}
++	for in, want := range cases {
++		got, ok := conflictBase(in)
++		if !ok || got != want {
++			t.Errorf("conflictBase(%q) = %q, %v; want %q", in, got, ok, want)
++		}
++	}
++	if _, ok := conflictBase("plain.txt"); ok {
++		t.Error("plain file taken for a conflict copy")
++	}
++}
++
++func metisWriteFile(t *testing.T, ffs fs.Filesystem, name, content string) {
++	t.Helper()
++	fd, err := ffs.Create(name)
++	if err != nil {
++		t.Fatal(err)
++	}
++	if _, err := fd.Write([]byte(content)); err != nil {
++		t.Fatal(err)
++	}
++	fd.Close()
++}
++
++func TestMetisDedupeConflicts(t *testing.T) {
++	_, f := setupSendReceiveFolder(t)
++	ffs := f.Filesystem()
++	files := map[string]string{
++		"conf.txt": "winner",
++		"conf.sync-conflict-20261115-132950-SVVBUCW-VJ3L4B2.txt":  "edit by hub", // kept (lowest of its set)
++		"conf.sync-conflict-20261115-132950-VJ3L4B2-WW6ZUIL.txt":  "edit by B",
++		"conf.sync-conflict-20261115-132951-SVVBUCW-Q34ZHGZ.txt":  "edit by A",
++		"conf.sync-conflict-20261115-132951-SVVBUCW-WW6ZUIL.txt":  "edit by hub", // duplicate
++		"conf.sync-conflict-20261115-132952-SVVBUCW-UBKVW56.txt":  "edit by A",   // duplicate
++		"conf.sync-conflict-20261115-132953-SVVBUCW-UBKVW56.txt":  "edit by A!",  // same size, other content
++		"other.sync-conflict-20261115-132950-SVVBUCW-VJ3L4B2.txt": "edit by hub", // other file: untouched
++	}
++	for n, c := range files {
++		metisWriteFile(t, ffs, n, c)
++	}
++	removed := f.dedupeConflicts("conf.txt")
++	slices.Sort(removed)
++	want := []string{"conf.sync-conflict-20261115-132951-SVVBUCW-WW6ZUIL.txt", "conf.sync-conflict-20261115-132952-SVVBUCW-UBKVW56.txt"}
++	if !slices.Equal(removed, want) {
++		t.Fatalf("removed %v, want %v", removed, want)
++	}
++	for n := range files {
++		_, err := ffs.Lstat(n)
++		if gone := fs.IsNotExist(err); gone != slices.Contains(want, n) {
++			t.Errorf("%s: gone=%v", n, gone)
++		}
++	}
++	// Idempotent: nothing more to remove, and a single copy is left alone.
++	if again := f.dedupeConflicts("conf.txt"); len(again) != 0 {
++		t.Errorf("second pass removed %v", again)
++	}
++	if r := f.dedupeConflicts("other.txt"); len(r) != 0 {
++		t.Errorf("single copy removed: %v", r)
++	}
++}
