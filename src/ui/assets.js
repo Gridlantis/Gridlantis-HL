@@ -429,7 +429,7 @@ const NAV_PAGES = [
    icon:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/><path d="m9 8.5-2 1.5 2 1.5M15 8.5l2 1.5-2 1.5"/></svg>`},
   {href:"/laptops", group:"Devices",   color:"#f472b6", title:"PC host",
    icon:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="13" height="10" rx="1.5"/><path d="M6 19.5h6M9 15v4.5"/><rect x="17.5" y="4" width="4" height="16" rx="1"/><path d="M19.5 7.5h.01"/></svg>`},
-  {href:"/mobile", group:"Systems",    color:"#a3e635", title:"Mobile host",
+  {href:"/mobile", group:"Devices",    color:"#a3e635", title:"Mobile host",
    icon:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="2.2"/><path d="M10.5 18.5h3"/><path d="m10.5 8.5 3 2-3 2"/></svg>`},
   {href:"/docker", group:"Systems",    color:"#38bdf8", title:"Containers",
    icon:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="4" height="4"/><rect x="8" y="11" width="4" height="4"/><rect x="13" y="11" width="4" height="4"/><rect x="8" y="6" width="4" height="4"/><path d="M3 15c0 3 2.5 4.5 6 4.5s8-1.6 9.3-5.2c2.2.3 3.2-1.3 2.7-2.3"/></svg>`},
