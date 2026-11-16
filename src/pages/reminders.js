@@ -327,7 +327,7 @@ $('rm-list').addEventListener('click', function(e){
 // The list has to follow what the alarm layer and the server tick are doing —
 // a reminder that fires or gets snoozed in another tab should show up here.
 try {
-  var es = new EventSource('/api/events');
+  var es = openhlEvents();
   es.addEventListener('reminders_changed', function(){ load(); });
   es.addEventListener('reminder_fire',     function(){ load(); });
   es.addEventListener('reminder_clear',    function(){ load(); });

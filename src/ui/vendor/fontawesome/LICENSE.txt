@@ -1,0 +1,11 @@
+Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com
+License - https://fontawesome.com/license/free
+
+Icons: CC BY 4.0 License (https://creativecommons.org/licenses/by/4.0/)
+Fonts: SIL OFL 1.1 License (https://scripts.sil.org/OFL)
+Code:  MIT License (https://opensource.org/licenses/MIT)
+
+Copyright 2023 Fonticons, Inc.
+
+Only the woff2 webfonts are kept; the .ttf fallbacks were removed from
+css/all.min.css since every browser Open HL supports reads woff2.

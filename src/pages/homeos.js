@@ -728,7 +728,7 @@ document.addEventListener('keydown', function(e){
 (function(){
   if (!('EventSource' in window)) return;
   try {
-    var es = new EventSource('/api/events');
+    var es = openhlEvents();
     es.addEventListener('homeos_state', function(){ load(); });
     es.addEventListener('homeos_event', function(ev){
       try {

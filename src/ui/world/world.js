@@ -958,7 +958,7 @@ async function refresh() {
 function live() {
   const el = $("w-live");
   const set = (on, text) => { el.classList.toggle("on", on); el.querySelector("span").textContent = text; };
-  const es = new EventSource("/api/events");
+  const es = openhlEvents();
   es.addEventListener("connected", () => set(true, "live"));
   es.addEventListener("error", () => set(false, "reconnecting"));
   es.addEventListener("activity", e => { try { onActivity(JSON.parse(e.data)); } catch {} });

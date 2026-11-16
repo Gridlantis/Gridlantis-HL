@@ -153,7 +153,7 @@ if ('Notification' in window && Notification.permission === 'default') {
 }
 
 try {
-  var es = new EventSource('/api/events');
+  var es = openhlEvents();
   es.addEventListener('voicemail_changed', function(e){
     var d = {}; try { d = JSON.parse(e.data); } catch(x){}
     if (d.added) showToast(d.added === 1 ? 'New voicemail' : d.added + ' new voicemails', 'info');

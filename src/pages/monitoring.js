@@ -629,7 +629,7 @@ async function loadSide(){
   renderHealth();
 }
 if ('EventSource' in window) {
-  try { var es = new EventSource('/api/events'); es.addEventListener('node_status', function(){ loadCore(); }); } catch(e){}
+  try { var es = openhlEvents(); es.addEventListener('node_status', function(){ loadCore(); }); } catch(e){}
 }
 function tickClock(){ setText('mon-clock', 'Last checked ' + (META.lastCheckAt ? hhmmss(new Date(META.lastCheckAt)) : 'not yet')); }
 setInterval(function(){ renderQueue(); tickClock(); }, 1000);

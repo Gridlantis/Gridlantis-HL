@@ -912,7 +912,7 @@ function loadNotes(){
   return fetch('/api/notes').then(function(r){ return r.json(); }).then(function(n){ NOTES = Array.isArray(n) ? n : []; if (F && !busy()) render(); });
 }
 try {
-  var es = new EventSource('/api/events');
+  var es = openhlEvents();
   es.addEventListener('flows_changed', function(ev){
     var d = {}; try { d = JSON.parse(ev.data); } catch(e){}
     if (d.client === CLIENT) return;

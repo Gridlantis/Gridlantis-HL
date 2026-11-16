@@ -346,7 +346,7 @@ function emptyRow(text){ return el('div', 'm-empty', text); }
   }
   if ('EventSource' in window) {
     try {
-      var es = new EventSource('/api/events');
+      var es = openhlEvents();
       es.addEventListener('node_status', function(e){ try { var d = JSON.parse(e.data); announce(d.name, d.online); } catch(err){} });
       es.addEventListener('todo_changed', function(){ if (window.__todoLoad) window.__todoLoad(); });
     } catch(e){}

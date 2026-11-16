@@ -153,7 +153,7 @@ if ('Notification' in window && Notification.permission === 'default') {
 }
 
 try {
-  var es = new EventSource('/api/events');
+  var es = openhlEvents();
   es.addEventListener('texts_changed', function(e){
     var d = {}; try { d = JSON.parse(e.data); } catch(x){}
     if (d.added) showToast(d.added === 1 ? 'New text' : d.added + ' new texts', 'info');

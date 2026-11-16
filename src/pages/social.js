@@ -1519,7 +1519,7 @@ el('btn-refresh').addEventListener('click', loadAll);
 (function(){
   if (!('EventSource' in window)) return;
   try {
-    var es = new EventSource('/api/events');
+    var es = openhlEvents();
     es.addEventListener('social_update', function(ev){
       try {
         var d = JSON.parse(ev.data);

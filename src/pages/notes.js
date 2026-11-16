@@ -5,7 +5,7 @@ function notesHtml() {
   const seedFolders = '[]';
   return `<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Open HL \xb7 Notes</title>${FONT}${FAVICON}<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<title>Open HL \xb7 Notes</title>${FONT}${FAVICON}
 <style>
 ${BASE_CSS}${NAV_CSS}${TOAST_CSS}${GAMEPAD_CSS}
 /* Notes keeps its own HUD typography inside the shared shell. */

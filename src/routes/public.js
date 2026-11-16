@@ -1,5 +1,6 @@
 
 const { PASSWORD } = require("../config");
+const assetRoutes = require("./assets");
 const { finishAuth: gcalFinishAuth } = require("../domains/gcal");
 const { finish: socialOauthFinish } = require("../domains/social/oauth");
 const { loginHtml } = require("../pages/login");
@@ -30,6 +31,10 @@ setInterval(() => {
 // Open HL page could have minted).
 module.exports = async function publicRoutes(ctx) {
   const { req, res, pathname, json, html, readBody } = ctx;
+
+  // Fonts, icons and the event-stream worker (see routes/assets.js).
+  await assetRoutes(ctx);
+  if (res.headersSent) return;
 
   // ── Login ───────────────────────────────────────────────────────────────────
   if (pathname === '/login') {

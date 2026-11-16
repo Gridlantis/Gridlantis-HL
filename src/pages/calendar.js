@@ -427,7 +427,7 @@ if (Q.get('gerr')) showToast(Q.get('gerr'), 'bad');
 if (Q.get('connected') || Q.get('gerr')) history.replaceState(null, '', '/calendar');
 
 try {
-  var es = new EventSource('/api/events');
+  var es = openhlEvents();
   es.addEventListener('reminders_changed', function(){ loadMonth(); });
   es.addEventListener('calendar_changed', function(){ refreshAll(); });
 } catch(e){}

@@ -1,0 +1,9 @@
+IBM Plex Sans, IBM Plex Sans Condensed and IBM Plex Mono
+  Copyright 2017 IBM Corp. — SIL Open Font License 1.1
+Space Mono
+  Copyright 2016 Google Inc. — SIL Open Font License 1.1
+Syne
+  Copyright 2017 The Syne Project Authors — SIL Open Font License 1.1
+
+Full license text: https://openfontlicense.org/open-font-license-official-text/
+Files downloaded from Google Fonts (woff2, split by unicode-range subset).

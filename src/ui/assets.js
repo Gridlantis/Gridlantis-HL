@@ -7,7 +7,95 @@
 //   • flat surfaces separated by 1px lines; panels 10px radius, controls 6px.
 //   • motion only when something changes (a status value, an opened panel).
 // Themes are variations of the same system, never different visual languages.
-const FONT = `<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">`;
+// The live-update stream, shared. Pages call openhlEvents() where they used to
+// call new EventSource('/api/events'); it returns an object with the same
+// addEventListener(name, fn) and hands listeners { type, data } with data the
+// same JSON string. Behind it every tab in the browser shares ONE connection:
+// browsers allow six per server over HTTP/1.1 and a stream holds one for as long
+// as its page is open, so a stream per page (or two) let a few tabs use every
+// slot and page loads queued behind them. In order of preference:
+//   1. a SharedWorker (ui/events-worker.js) holding the stream for all tabs;
+//   2. one leader tab holding it, chosen with a Web Lock, relaying over a
+//      BroadcastChannel (browsers without SharedWorker; needs HTTPS or localhost);
+//   3. one stream for this page alone.
+// Nothing connects until the first listener is added. Besides the server's
+// events, listeners can take "connected" and "error" as an EventSource gives
+// them; a "connected" listener added while the stream is up is told at once.
+const EVENTS_JS = `<script>(function(){
+  if (window.openhlEvents) return;
+  var L = {}, started = false, live = false, URL_ = '/api/events?wrap=1';
+  function emit(t, d){
+    if (t === 'connected') live = true; else if (t === 'error') live = false;
+    var fs = L[t]; if (!fs) return;
+    var ev = { type: t, data: d == null ? '{}' : d };
+    fs.slice().forEach(function(fn){ try { fn(ev); } catch(e){ setTimeout(function(){ throw e; }); } });
+  }
+  // This page's own stream; out(name, data) gets every event.
+  function stream(out){
+    var es, retry = 1000;
+    (function open(){
+      es = new EventSource(URL_);
+      es.onmessage = function(e){
+        var i = e.data.indexOf('\\n'); if (i < 0) return;
+        var t = e.data.slice(0, i); if (t === 'connected') retry = 1000;
+        out(t, e.data.slice(i + 1));
+      };
+      es.onerror = function(){
+        out('error', '{}');
+        if (es.readyState === 2) { setTimeout(open, retry); retry = Math.min(retry * 2, 30000); }
+      };
+    })();
+  }
+  function leader(){
+    var bc = new BroadcastChannel('openhl-events'), lead = false, live = false;
+    bc.onmessage = function(e){
+      var m = e.data || {};
+      if (m.q === 'state') { if (lead && live) bc.postMessage({ t: 'connected', d: '{}' }); return; }
+      if (!lead) emit(m.t, m.d);
+    };
+    bc.postMessage({ q: 'state' });
+    navigator.locks.request('openhl-events', function(){
+      lead = true;
+      stream(function(t, d){
+        if (t === 'connected') live = true; else if (t === 'error') live = false;
+        emit(t, d); bc.postMessage({ t: t, d: d });
+      });
+      return new Promise(function(){});   // hold the lock for the life of the page
+    });
+  }
+  function local(){
+    if (window.BroadcastChannel && navigator.locks) { try { return leader(); } catch(e){} }
+    if (window.EventSource) stream(emit);
+  }
+  function worker(){
+    var w = new SharedWorker('/ui/events-worker.js', { name: 'openhl-events' }), port = w.port, fell = false;
+    function fallback(){ if (fell) return; fell = true; try { port.close(); } catch(e){} local(); }
+    w.onerror = fallback;
+    port.onmessage = function(e){ var m = e.data || {}; if (m.t === 'unsupported') fallback(); else if (!fell) emit(m.t, m.d); };
+    port.start();
+    addEventListener('pagehide', function(){ if (!fell) port.postMessage('bye'); });
+    addEventListener('pageshow', function(e){ if (e.persisted && !fell) port.postMessage('hello'); });
+  }
+  function start(){
+    if (window.SharedWorker) { try { return worker(); } catch(e){} }
+    local();
+  }
+  var bus = {
+    addEventListener: function(t, fn){
+      (L[t] = L[t] || []).push(fn);
+      if (!started) { started = true; start(); }
+      // A page's own EventSource would announce "connected" to it; with the
+      // stream shared it may have opened before this listener existed.
+      else if (t === 'connected' && live) setTimeout(function(){ if (live) fn({ type: 'connected', data: '{}' }); });
+    },
+    removeEventListener: function(t, fn){ var fs = L[t]; if (fs) L[t] = fs.filter(function(f){ return f !== fn; }); },
+  };
+  window.openhlEvents = function(){ return bus; };
+})();</script>`;
+
+// The head every page shares: fonts, icons (both served by Open HL, see
+// routes/assets.js; bump ?v= when the files change) and the shared event stream.
+const FONT = `<link rel="stylesheet" href="/ui/vendor/fonts/fonts.css?v=1"><link rel="stylesheet" href="/ui/vendor/fontawesome/css/all.min.css?v=6.5.1">` + EVENTS_JS;
 const FAVICON = `<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%23151B23'/><path d='M16 46V18l16 18 16-18v28' fill='none' stroke='%2362A8E5' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/></svg>">`;
 
 // Every theme defines the same tokens. The legacy names at the end keep pages
@@ -317,11 +405,11 @@ const NAV_PAGES = [
    icon:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path fill-rule="evenodd" clip-rule="evenodd" d="M12.8682 4.63194C12.3302 4.32451 11.6698 4.32451 11.1318 4.63194L5.13176 8.06051C4.5865 8.37209 4.25 8.95194 4.25 9.57994V15.4193C4.25 16.0473 4.5865 16.6271 5.13176 16.9387L11.1318 20.3673C11.6698 20.6747 12.3302 20.6747 12.8682 20.3673L18.8682 16.9387C19.4135 16.6271 19.75 16.0473 19.75 15.4193V9.57994C19.75 8.95194 19.4135 8.37209 18.8682 8.06051L12.8682 4.63194ZM7.3556 9.64741C6.9909 9.45103 6.53605 9.58748 6.33967 9.95219C6.14329 10.3169 6.27975 10.7717 6.64445 10.9681L11.25 13.448V17.5001C11.25 17.9144 11.5858 18.2501 12 18.2501C12.4142 18.2501 12.75 17.9144 12.75 17.5001V13.448L17.3556 10.9681C17.7203 10.7717 17.8568 10.3169 17.6604 9.95219C17.464 9.58748 17.0092 9.45103 16.6444 9.64741L12 12.1483L7.3556 9.64741Z" fill="currentColor"></path></svg>`},
   {href:"/live", group:"Daily",     color:"#0ea5e9", title:"Live folders",
    icon:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8.5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M15.5 12.2a3.5 3.5 0 0 0-6.3-.9M8.5 15a3.5 3.5 0 0 0 6.3.9"/><path d="M9.2 9.6v1.8H11M14.8 17.6v-1.8H13"/></svg>`},
-  {href:"/mail", group:"Daily",      color:"#6366f1", title:"Mail",
+  {href:"/mail", group:"Messaging",      color:"#6366f1", title:"Mail",
    icon:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>`},
-  {href:"/voicemail", group:"Daily",  color:"#10b981", title:"Voicemail",
+  {href:"/voicemail", group:"Messaging",  color:"#10b981", title:"Voicemail",
    icon:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6.5" cy="12" r="3.5"/><circle cx="17.5" cy="12" r="3.5"/><path d="M6.5 15.5h11"/></svg>`},
-  {href:"/texts", group:"Daily",      color:"#14b8a6", title:"Texts",
+  {href:"/texts", group:"Messaging",      color:"#14b8a6", title:"Texts",
    icon:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-4.5 3.5V17H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z"/><path d="M7.5 9.5h9M7.5 12.5h6"/></svg>`},
   {href:"/monitoring", group:"Systems",color:"#ef4444", title:"Monitoring",
    icon:`<i class="fa-solid fa-heart-pulse"></i>`},
@@ -535,7 +623,7 @@ const ALARM_JS = `(function(){
   function boot(){
     bind(); pull();
     try {
-      var es = new EventSource('/api/events');
+      var es = openhlEvents();
       es.addEventListener('reminder_fire',  function(e){ try { ring(JSON.parse(e.data)); } catch(x){} });
       es.addEventListener('reminder_clear', function(e){ try { clear(JSON.parse(e.data).id); } catch(x){} });
     } catch(e){}
@@ -550,7 +638,7 @@ const ALARM_JS = `(function(){
 
 // Order of the sidebar. Pages are listed in NAV_PAGES in any order; this puts
 // them into groups people scan by task.
-const NAV_ORDER = ["/", "/notes", "/flows", "/mail", "/voicemail", "/texts", "/reminders", "/calendar", "/files", "/live", "/monitoring", "/vmlab", "/mobile", "/docker", "/world", "/homeos", "/laptops", "/finance", "/social", "/ai"];
+const NAV_ORDER = ["/", "/notes", "/flows", "/reminders", "/calendar", "/files", "/live", "/texts", "/voicemail", "/mail", "/monitoring", "/vmlab", "/mobile", "/docker", "/world", "/homeos", "/laptops", "/finance", "/social", "/ai"];
 
 function navBar(active) {
   const cur = active ? (active.charAt(0) === '/' ? active : '/' + active) : '';
@@ -625,7 +713,7 @@ function showToast(msg,type){
 }`;
 
 const SSE_JS = `(function(){
-  const sse=new EventSource('/api/events');
+  const sse=openhlEvents();
   sse.addEventListener('change',function(e){
     try{const d=JSON.parse(e.data);if(typeof window.__sseRefresh==='function')window.__sseRefresh(d);}catch(_){}
   });

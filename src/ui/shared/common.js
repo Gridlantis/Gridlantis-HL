@@ -107,15 +107,10 @@
 
   // Live updates pushed by the server.
   // `event` is the SSE event name the server broadcasts under: "vmlab" for VM
-  // Lab, "docker" for Containers. One EventSource per page is plenty.
+  // Lab, "docker" for Containers. The page's shared stream (openhlEvents, in the
+  // page head) reconnects by itself.
   function onServerEvents(fn, event) {
-    let es, retry = 1000;
-    function open() {
-      es = new EventSource("/api/events");
-      es.addEventListener(event || "vmlab", e => { retry = 1000; let d = {}; try { d = JSON.parse(e.data); } catch (x) {} fn(d); });
-      es.addEventListener("error", () => { es.close(); setTimeout(open, retry); retry = Math.min(retry * 2, 30000); });
-    }
-    open();
+    openhlEvents().addEventListener(event || "vmlab", e => { let d = {}; try { d = JSON.parse(e.data); } catch (x) {} fn(d); });
   }
 
   const OS_ICON = { windows: "fa-brands fa-windows", linux: "fa-brands fa-linux", android: "fa-brands fa-android", other: "fa-solid fa-microchip" };
