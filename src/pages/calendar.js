@@ -9,55 +9,84 @@ function calendarHtml() {
 <title>Open HL · Calendar</title>${FONT}${FAVICON}
 <style>
 ${BASE_CSS}${NAV_CSS}${TOAST_CSS}
-.cl-page{max-width:1280px;--rem:#fb923c;--gev:#4f8ff7;}
-.cl-nav{display:flex;align-items:center;gap:8px;}
-.cl-month{font:600 18px/1 var(--font-display);min-width:170px;text-align:center;}
-.cl-conn{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;margin-bottom:16px;color:var(--text-2);}
+.cl-page{max-width:1440px;--rem:#fb923c;--gev:#4f8ff7;--card-r:20px;}
+.cl-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px;}
+.cl-head h1{font:600 32px/1.1 var(--font-display);letter-spacing:-.01em;}
+.cl-head p{color:var(--muted);margin-top:4px;}
+.cl-conn{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 18px;margin-bottom:16px;color:var(--text-2);border-radius:16px;}
 .cl-conn .fa-google{color:var(--gev);}
 .cl-conn .grow{flex:1;min-width:200px;}
 .cl-conn b{color:var(--text);font-weight:600;}
 .cl-conn .err{color:var(--fault);}
+.cl-conn .m-btn{border-radius:17px;}
 .cl-setup{line-height:1.6;}
 .cl-setup ol{margin:6px 0 0 18px;}
 .cl-setup code{font-family:var(--font-mono);font-size:12.5px;background:var(--raised);padding:1px 5px;border-radius:4px;word-break:break-all;}
 .cl-paste{display:flex;gap:8px;width:100%;margin-top:4px;}
 .cl-paste input{flex:1;min-width:0;height:34px;background:var(--field);border:1px solid var(--line);border-radius:var(--r-ctl);padding:0 12px;color:var(--text);}
-.cl-layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:16px;align-items:start;}
-.cl-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));}
-.cl-dow{padding:10px 8px;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--line);}
-.cl-day{min-height:112px;padding:6px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);cursor:pointer;display:flex;flex-direction:column;gap:3px;min-width:0;background:none;text-align:left;color:inherit;font:inherit;border-top:0;border-left:0;}
-.cl-day:nth-child(7n+14){border-right:0;}
-.cl-day:hover{background:var(--raised);}
-.cl-day.out{color:var(--muted);}
-.cl-day.out .cl-num{opacity:.55;}
-.cl-day.sel{box-shadow:inset 0 0 0 2px var(--accent);}
-.cl-num{font-size:13px;font-weight:600;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:12px;flex:0 0 auto;}
-.cl-day.today .cl-num{background:var(--accent);color:var(--accent-ink);}
-.cl-chip{font-size:12px;line-height:1.3;padding:2px 6px;border-radius:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-left:3px solid var(--gev);background:color-mix(in srgb,var(--gev) 14%,transparent);}
-.cl-chip.rem{border-left-color:var(--rem);background:color-mix(in srgb,var(--rem) 14%,transparent);}
+
+.cl-shell{display:grid;grid-template-columns:minmax(0,1fr) 340px;border:1px solid var(--line);border-radius:var(--card-r);overflow:hidden;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--raised) 55%,var(--surface)),var(--surface));}
+.cl-main{padding:20px 22px 18px;min-width:0;}
+.cl-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap;}
+.cl-month{font:500 22px/1 var(--font-display);display:flex;align-items:center;gap:10px;}
+.cl-month span+span{color:var(--text-2);}
+.cl-nav{display:flex;align-items:center;gap:8px;}
+.rb{width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--bg);
+  border:1px solid var(--line);color:var(--text);font-size:12px;}
+.rb:hover{border-color:var(--line-strong);}
+.cl-today-btn{height:34px;padding:0 16px;border-radius:17px;background:var(--bg);border:1px solid var(--line);color:var(--text);font-size:13px;}
+.cl-today-btn:hover{border-color:var(--line-strong);}
+.cl-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;}
+.cl-dow{padding:0 4px 4px;font-size:12px;color:var(--muted);}
+.cl-day{min-height:112px;padding:9px 10px 8px;border:1px solid var(--line);border-radius:14px;cursor:pointer;display:flex;flex-direction:column;gap:3px;
+  min-width:0;text-align:left;color:inherit;font:inherit;position:relative;overflow:hidden;
+  background:color-mix(in srgb,var(--raised) 75%,transparent);transition:border-color .15s,background .15s;}
+.cl-day:hover{border-color:var(--line-strong);background:var(--raised);}
+.cl-day.out{background:transparent;color:var(--muted);}
+.cl-day.out .cl-num{opacity:.6;}
+.cl-day.today{border-color:color-mix(in srgb,var(--accent) 55%,var(--line));
+  background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 45%,var(--raised)) 0%,color-mix(in srgb,var(--accent) 14%,var(--raised)) 55%,var(--raised));
+  box-shadow:0 10px 30px color-mix(in srgb,var(--accent) 22%,transparent);}
+.cl-day.sel{border:1.5px dashed var(--accent);}
+.cl-day.today.sel{border-style:solid;}
+.cl-num{font:400 22px/1 var(--font-display);margin-bottom:auto;padding-bottom:6px;}
+.cl-chip{font-size:11.5px;line-height:1.35;display:flex;align-items:center;gap:5px;white-space:nowrap;overflow:hidden;color:var(--text-2);min-width:0;}
+.cl-chip::before{content:'';width:2px;height:10px;border-radius:1px;background:var(--gev);flex:0 0 auto;}
+.cl-chip .tx{overflow:hidden;text-overflow:ellipsis;}
+.cl-chip.rem::before{background:var(--rem);}
 .cl-chip.off{opacity:.55;}
-.cl-chip.focus{outline:2px solid var(--rem);outline-offset:1px;}
-.cl-chip time{color:var(--muted);margin-right:4px;font-variant-numeric:tabular-nums;}
-.cl-more{font-size:12px;color:var(--muted);padding-left:6px;}
-.cl-side{position:sticky;top:calc(var(--pulse-h) + 16px);}
-.cl-agenda{display:flex;flex-direction:column;}
-.cl-item{padding:12px 16px;border-top:1px solid var(--line);display:flex;gap:10px;}
-.cl-item.focus{background:color-mix(in srgb,var(--rem) 10%,transparent);}
-.cl-ico{flex:0 0 auto;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--gev);background:color-mix(in srgb,var(--gev) 15%,transparent);}
-.cl-item.rem .cl-ico{color:var(--rem);background:color-mix(in srgb,var(--rem) 15%,transparent);}
-.cl-body{flex:1;min-width:0;}
-.cl-t{font-weight:600;word-break:break-word;}
-.cl-meta{font-size:13px;color:var(--muted);margin-top:2px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
-.cl-n{font-size:13px;color:var(--text-2);margin-top:4px;white-space:pre-wrap;word-break:break-word;line-height:1.5;}
-.cl-acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
-.cl-acts .m-btn,.cl-acts select{height:28px;font-size:13px;padding:0 10px;}
-.cl-acts select{background:var(--field);border:1px solid var(--line);border-radius:var(--r-ctl);color:var(--text);}
-.cl-empty{padding:28px 16px;text-align:center;color:var(--muted);border-top:1px solid var(--line);line-height:1.6;}
-.cl-legend{display:flex;gap:14px;font-size:13px;color:var(--muted);padding:10px 16px;border-top:1px solid var(--line);}
-.cl-legend span::before{content:'';display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px;background:var(--gev);}
+.cl-chip.focus{color:var(--text);font-weight:600;}
+.cl-chip time{display:none;}
+.cl-more{font-size:11px;color:var(--muted);padding-left:7px;}
+.cl-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);padding:14px 2px 0;}
+.cl-legend span::before{content:'';display:inline-block;width:3px;height:11px;border-radius:2px;margin-right:7px;vertical-align:-1px;background:var(--gev);}
 .cl-legend .r::before{background:var(--rem);}
-.cl-legend{flex-wrap:wrap;}
-.cl-cals{margin:-6px 0 16px;padding:14px 16px;}
+
+.cl-side{border-left:1px solid var(--line);display:flex;flex-direction:column;min-width:0;background:color-mix(in srgb,var(--bg) 35%,transparent);}
+.cl-side-h{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:20px 18px 12px;}
+.cl-side-h h2{font:600 19px/1.2 var(--font-display);}
+.cl-side-h small{display:block;color:var(--muted);font-size:12.5px;margin-top:3px;}
+.cl-side-acts{display:flex;gap:6px;}
+.cl-agenda{display:flex;flex-direction:column;padding:0 14px 16px;overflow-y:auto;max-height:calc(100vh - var(--pulse-h) - 180px);}
+.cl-hour{font-size:12px;color:var(--muted);padding:12px 4px 6px;font-variant-numeric:tabular-nums;}
+.cl-item{position:relative;padding:16px 14px 12px;border-radius:14px;background:var(--raised);border:1px solid var(--line);margin-bottom:8px;}
+.cl-item::before{content:'';position:absolute;left:14px;right:14px;top:8px;height:4px;border-radius:2px;background:var(--gev);}
+.cl-item.rem::before{background:var(--rem);}
+.cl-item.focus{border-color:var(--rem);box-shadow:0 0 0 1px var(--rem);}
+.cl-t{font:600 15.5px/1.3 var(--font-display);word-break:break-word;margin-top:2px;}
+.cl-sub{font-size:12.5px;color:var(--muted);margin-top:1px;}
+.cl-meta{font-size:12.5px;color:var(--text-2);margin-top:10px;display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;}
+.cl-meta .w{display:inline-flex;align-items:center;gap:7px;}
+.cl-meta .dur{color:var(--muted);}
+.cl-n{font-size:12.5px;color:var(--text-2);margin-top:6px;white-space:pre-wrap;word-break:break-word;line-height:1.5;}
+.cl-acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
+.cl-acts .m-btn,.cl-acts select{height:28px;font-size:12.5px;padding:0 11px;border-radius:14px;}
+.cl-acts select{background:var(--field);border:1px solid var(--line);color:var(--text);}
+.cl-empty{padding:28px 10px;text-align:center;color:var(--muted);line-height:1.6;border:1px dashed var(--line);border-radius:14px;}
+.cl-new{height:34px;border-radius:17px;}
+
+.cl-cals{margin:-4px 0 16px;padding:14px 18px;border-radius:16px;}
 .cl-cals h3{font:600 15px/1.2 var(--font-display);margin:0 0 4px;}
 .cl-cals p{color:var(--text-2);margin:0 0 10px;line-height:1.55;}
 .cl-cals ol{margin:0 0 12px 18px;color:var(--text-2);line-height:1.6;}
@@ -69,32 +98,41 @@ ${BASE_CSS}${NAV_CSS}${TOAST_CSS}
 .cl-cal span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .cl-cal small{color:var(--muted);flex:0 0 auto;}
 .cl-cals .cl-acts{margin-top:12px;}
-@media(max-width:980px){.cl-layout{grid-template-columns:1fr;}.cl-side{position:static;}}
-@media(max-width:640px){.cl-day{min-height:64px;padding:4px;}.cl-chip{font-size:0;padding:0;height:6px;border-left-width:0;border-radius:3px;background:var(--gev);}.cl-chip.rem{background:var(--rem);}.cl-chip time{display:none;}.cl-month{min-width:0;font-size:16px;}}
+@media(max-width:1100px){.cl-shell{grid-template-columns:1fr;}.cl-side{border-left:0;border-top:1px solid var(--line);}.cl-agenda{max-height:none;}}
+@media(max-width:640px){
+  .cl-main{padding:14px 10px;} .cl-grid{gap:4px;}
+  .cl-day{min-height:58px;padding:5px;border-radius:10px;gap:2px;}
+  .cl-num{font-size:15px;padding-bottom:3px;}
+  .cl-chip{font-size:0;height:4px;gap:0;} .cl-chip::before{width:100%;height:4px;}
+  .cl-more{display:none;} .cl-dow{font-size:11px;text-align:center;padding:0 0 2px;}
+  .cl-month{font-size:18px;}
+}
 </style></head><body>
 ${navBar('/calendar')}
 <main class="m-page cl-page">
-  <div class="m-head">
-    <div><h1 class="m-title">Calendar</h1><p class="m-sub">Your reminders and Google Calendar, kept in sync.</p></div>
-    <div class="cl-nav">
-      <button class="m-btn icon" id="cl-prev" aria-label="Previous month"><i class="fa-solid fa-chevron-left"></i></button>
-      <div class="cl-month" id="cl-month" aria-live="polite"></div>
-      <button class="m-btn icon" id="cl-next" aria-label="Next month"><i class="fa-solid fa-chevron-right"></i></button>
-      <button class="m-btn" id="cl-today">Today</button>
-    </div>
+  <div class="cl-head">
+    <div><h1 id="cl-hello">Calendar</h1><p>Here's what's on your agenda. Reminders and Google Calendar, kept in sync.</p></div>
   </div>
 
   <div class="m-panel cl-conn" id="cl-conn"><i class="fa-brands fa-google"></i><span class="grow">Checking Google Calendar&hellip;</span></div>
   <div class="m-panel cl-cals" id="cl-cals" style="display:none"></div>
 
-  <div class="cl-layout">
-    <section class="m-panel" aria-label="Month">
+  <div class="cl-shell">
+    <section class="cl-main" aria-label="Month">
+      <div class="cl-bar">
+        <div class="cl-month" id="cl-month" aria-live="polite"></div>
+        <div class="cl-nav">
+          <button class="cl-today-btn" id="cl-today">Today</button>
+          <button class="rb" id="cl-prev" aria-label="Previous month"><i class="fa-solid fa-chevron-left"></i></button>
+          <button class="rb" id="cl-next" aria-label="Next month"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
       <div class="cl-grid" id="cl-grid"></div>
       <div class="cl-legend" id="cl-legend"><span class="r">Open HL reminder</span><span>Google Calendar</span></div>
     </section>
-    <aside class="m-panel cl-side" aria-labelledby="cl-day-t">
-      <div class="m-panel-h"><h2 class="m-panel-t" id="cl-day-t">Today</h2>
-        <a class="m-btn" id="cl-new" href="/reminders"><i class="fa-solid fa-plus"></i>Reminder</a></div>
+    <aside class="cl-side" aria-labelledby="cl-day-t">
+      <div class="cl-side-h"><div><h2 id="cl-day-t">Scheduled</h2><small id="cl-day-s"></small></div>
+        <a class="m-btn primary cl-new" id="cl-new" href="/reminders"><i class="fa-solid fa-plus"></i>Reminder</a></div>
       <div class="cl-agenda" id="cl-agenda"></div>
     </aside>
   </div>
@@ -167,9 +205,9 @@ function itemsByDay(){
 var BYDAY = {};
 function render(){
   BYDAY = itemsByDay();
-  $('cl-month').textContent = view.toLocaleDateString([], { month:'long', year:'numeric' });
+  $('cl-month').innerHTML = '<span>' + esc(view.toLocaleDateString([], { month:'long' })) + '</span><span>' + view.getFullYear() + '</span>';
   var todayK = dayKey(new Date()), selK = dayKey(sel), html = '';
-  var names = []; for (var w = 0; w < 7; w++) names.push(new Date(2024, 0, 7 + w).toLocaleDateString([], { weekday:'short' }));
+  var names = []; for (var w = 0; w < 7; w++) names.push(new Date(2024, 0, 7 + w).toLocaleDateString([], { weekday: innerWidth < 640 ? 'narrow' : 'long' }));
   names.forEach(function(n){ html += '<div class="cl-dow">' + esc(n) + '</div>'; });
   var d = new Date(gridStart);
   while (d < gridEnd) {
@@ -180,7 +218,7 @@ function render(){
     items.slice(0, 3).forEach(function(it){
       var title = it.kind === 'rem' ? it.r.title : it.e.title;
       var c = 'cl-chip' + (it.kind === 'rem' ? ' rem' : '') + (it.kind === 'rem' && !it.r.enabled ? ' off' : '') + (it.kind === 'rem' && it.r.id === FOCUS ? ' focus' : '');
-      html += '<span class="' + c + '"' + (it.kind === 'gev' ? colorStyle(it.e.color) : '') + '>' + (it.allDay ? '' : '<time>' + esc(fmtTime(it.at)) + '</time>') + esc(title) + '</span>';
+      html += '<span class="' + c + '"' + (it.kind === 'gev' ? colorStyle(it.e.color) : '') + '>' + (it.allDay ? '' : '<time>' + esc(fmtTime(it.at)) + '</time>') + '<span class="tx">' + esc(title) + '</span></span>';
     });
     if (items.length > 3) html += '<span class="cl-more">+' + (items.length - 3) + ' more</span>';
     html += '</button>';
@@ -190,29 +228,38 @@ function render(){
   renderAgenda();
 }
 
+function hourLabel(it){ if (it.allDay) return 'All day'; var d = new Date(it.at); return pad(d.getHours()) + ':00'; }
+function dur(ms){
+  var m = Math.round(ms / 60000); if (m <= 0) return '';
+  if (m < 60) return m + ' min';
+  var h = Math.floor(m / 60), r = m % 60;
+  return h + (h === 1 ? ' hour' : ' hours') + (r ? ' ' + r + ' min' : '');
+}
 function renderAgenda(){
   var k = dayKey(sel), items = BYDAY[k] || [];
   var isToday = k === dayKey(new Date());
-  $('cl-day-t').textContent = isToday ? 'Today' : sel.toLocaleDateString([], { weekday:'long', month:'long', day:'numeric' });
+  $('cl-day-t').textContent = isToday ? 'Today' : 'Scheduled';
+  $('cl-day-s').textContent = sel.toLocaleDateString([], { weekday:'short', day:'numeric', month:'short' }) +
+    (items.length ? ' · ' + items.length + (items.length === 1 ? ' item' : ' items') : '');
   var at = new Date(sel); at.setHours(9, 0, 0, 0);
   if (isToday) at = new Date(Date.now() + 15 * 60000);
   $('cl-new').href = '/reminders?at=' + at.getTime();
   if (!items.length) { $('cl-agenda').innerHTML = '<div class="cl-empty">Nothing on this day.</div>'; return; }
-  var now = Date.now();
+  var now = Date.now(), lastHour = null;
   $('cl-agenda').innerHTML = items.map(function(it, i){
+    var hl = hourLabel(it), head = '';
+    if (hl !== lastHour) { head = '<div class="cl-hour">' + hl + '</div>'; lastHour = hl; }
     if (it.kind === 'rem') {
       var r = it.r, link = LINKS[r.id];
       var rep = { daily:'Every day', weekdays:'Weekdays', weekly:'Every week' }[r.repeat];
-      return '<div class="cl-item rem' + (r.id === FOCUS ? ' focus' : '') + '" data-i="' + i + '">' +
-        '<div class="cl-ico"><i class="fa-regular fa-bell"></i></div><div class="cl-body">' +
-        '<div class="cl-t">' + esc(r.title) + '</div>' +
-        '<div class="cl-meta"><span>' + esc(fmtTime(it.at)) + '</span>' + (rep ? '<span>' + rep + '</span>' : '') +
-          (!r.enabled ? '<span>off</span>' : '') +
-          (r.gcalId ? '<span title="Synced to Google Calendar"><i class="fa-brands fa-google"></i> synced</span>' : '') + '</div>' +
+      var sub = [rep || 'Reminder', !r.enabled ? 'off' : '', r.gcalId ? 'synced to Google' : ''].filter(Boolean).join(' · ');
+      return head + '<div class="cl-item rem' + (r.id === FOCUS ? ' focus' : '') + '" data-i="' + i + '">' +
+        '<div class="cl-t">' + esc(r.title) + '</div><div class="cl-sub">' + esc(sub) + '</div>' +
         (r.note ? '<div class="cl-n">' + esc(r.note) + '</div>' : '') +
+        '<div class="cl-meta"><span class="w"><i class="fa-regular fa-bell"></i>' + esc(fmtTime(it.at)) + '</span></div>' +
         '<div class="cl-acts"><a class="m-btn" href="/reminders?edit=' + encodeURIComponent(r.id) + '"><i class="fa-solid fa-pen"></i>Edit</a>' +
           (link ? '<a class="m-btn" href="' + esc(link) + '" target="_blank" rel="noopener"><i class="fa-brands fa-google"></i>Open in Google</a>' : '') +
-        '</div></div></div>';
+        '</div></div>';
     }
     var e = it.e, end = e.end && !e.allDay ? Date.parse(e.end) : null;
     var when = it.allDay ? 'All day' : fmtTime(it.at) + (end ? ' – ' + fmtTime(end) : '');
@@ -220,13 +267,15 @@ function renderAgenda(){
       ? '<select data-remind="' + esc(e.id) + '" data-cal="' + esc(e.calendarId || '') + '" aria-label="Remind me"><option value="">Remind me&hellip;</option>' +
         '<option value="0">At start</option><option value="10">10 min before</option><option value="30">30 min before</option>' +
         '<option value="60">1 hour before</option><option value="1440">1 day before</option></select>' : '';
-    return '<div class="cl-item" data-i="' + i + '">' +
-      '<div class="cl-ico"' + colorStyle(e.color) + '><i class="fa-regular fa-calendar"></i></div><div class="cl-body">' +
-      '<div class="cl-t">' + esc(e.title) + '</div>' +
-      '<div class="cl-meta"><span>' + esc(when) + '</span>' + (e.calendar ? '<span>' + esc(e.calendar) + '</span>' : '') + (e.location ? '<span><i class="fa-solid fa-location-dot"></i> ' + esc(e.location) + '</span>' : '') + '</div>' +
+    var sub = [e.calendar, e.location].filter(Boolean).join(' · ');
+    var acts = (e.link ? '<a class="m-btn" href="' + esc(e.link) + '" target="_blank" rel="noopener"><i class="fa-brands fa-google"></i>Open in Google</a>' : '') + remind;
+    return head + '<div class="cl-item"' + colorStyle(e.color) + ' data-i="' + i + '">' +
+      '<div class="cl-t">' + esc(e.title) + '</div>' + (sub ? '<div class="cl-sub">' + esc(sub) + '</div>' : '') +
       (e.note ? '<div class="cl-n">' + esc(e.note) + '</div>' : '') +
-      '<div class="cl-acts">' + (e.link ? '<a class="m-btn" href="' + esc(e.link) + '" target="_blank" rel="noopener"><i class="fa-brands fa-google"></i>Open in Google</a>' : '') + remind + '</div>' +
-      '</div></div>';
+      '<div class="cl-meta"><span class="w"><i class="fa-regular fa-clock"></i>' + esc(when) + '</span>' +
+        (end ? '<span class="dur">' + esc(dur(end - it.at)) + '</span>' : '') + '</div>' +
+      (acts ? '<div class="cl-acts">' + acts + '</div>' : '') +
+      '</div>';
   }).join('');
   var f = document.querySelector('.cl-item.focus');
   if (f && FOCUS) { f.scrollIntoView({ block:'nearest' }); }

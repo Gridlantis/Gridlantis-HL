@@ -13,52 +13,117 @@ function homeHtml() {
 <title>Open HL · Home</title>${FONT}${FAVICON}
 <style>
 ${BASE_CSS}${NAV_CSS}${TOAST_CSS}
-.home-head{align-items:center;}
-.home-date{color:var(--muted);font-size:14px;margin-top:4px;display:flex;gap:14px;flex-wrap:wrap;}
-.home-date span+span::before{content:'';display:inline-block;width:1px;height:12px;background:var(--line-strong);margin-right:14px;vertical-align:-1px;}
-.search{position:relative;display:block;width:min(340px,100%);}
-.home-head .m-actions{flex-wrap:nowrap;}
-.search i{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;pointer-events:none;}
-.search .m-input{padding-left:34px;padding-right:34px;}
-.search .m-kbd{position:absolute;right:10px;top:50%;transform:translateY(-50%);}
-#voice-toggle.on{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 50%,var(--line));}
+/* ── Home · glass dashboard ─────────────────────────────────────────────── */
+.home{--card-r:22px;--glow:color-mix(in srgb,var(--accent) 22%,transparent);position:relative;}
+.home::before{content:'';position:absolute;top:-28px;left:0;right:0;height:420px;pointer-events:none;z-index:0;
+  background:radial-gradient(60% 70% at 18% 0%,color-mix(in srgb,var(--accent) 14%,transparent),transparent 70%),
+             radial-gradient(40% 60% at 92% 10%,color-mix(in srgb,var(--chart2) 10%,transparent),transparent 70%);}
+.home>*{position:relative;z-index:1;}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px 28px;align-items:end;margin:4px 0 26px;}
+.hero-top{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.crumbs{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:14px;flex-wrap:wrap;}
+.crumbs i{font-size:13px;}
+.crumbs .sep{opacity:.5;}
+.crumbs .now{color:var(--text);display:inline-flex;align-items:center;gap:8px;}
+.tools{display:flex;align-items:center;gap:10px;}
+.rbtn{width:44px;height:44px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;
+  background:var(--surface);border:1px solid var(--line);color:var(--text);text-decoration:none;font-size:16px;transition:border-color .15s,background .15s;}
+.rbtn:hover{border-color:var(--line-strong);background:var(--raised);}
+.rbtn.on{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 55%,var(--line));}
+.search{position:relative;display:block;width:min(320px,100%);}
+.search i{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none;}
+.search .m-input{height:44px;border-radius:22px;padding-left:42px;padding-right:38px;background:var(--surface);}
+.search .m-kbd{position:absolute;right:14px;top:50%;transform:translateY(-50%);}
+.hero h1{font:600 clamp(34px,5vw,56px)/1.05 var(--font-display);letter-spacing:-.02em;
+  background:linear-gradient(100deg,var(--accent),color-mix(in srgb,var(--accent) 45%,var(--text)) 55%,var(--text));
+  -webkit-background-clip:text;background-clip:text;color:transparent;}
+.hero-sub{color:var(--text-2);font-size:15.5px;margin-top:10px;display:flex;gap:14px;flex-wrap:wrap;}
+.hero-sub span+span::before{content:'';display:inline-block;width:1px;height:13px;background:var(--line-strong);margin-right:14px;vertical-align:-1px;}
+.pills{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px;}
+.pill{display:inline-flex;align-items:center;gap:9px;height:42px;padding:0 18px;border-radius:21px;background:var(--surface);
+  border:1px solid var(--line);color:var(--text);text-decoration:none;font-size:14px;white-space:nowrap;}
+.pill:hover{border-color:var(--line-strong);}
+.pill b{font-weight:600;}
+.pill .m-dot{box-shadow:0 0 0 3px color-mix(in srgb,currentColor 0%,transparent);}
+.pill.cta{background:color-mix(in srgb,var(--accent) 16%,var(--surface));border-color:color-mix(in srgb,var(--accent) 55%,var(--line));
+  box-shadow:0 8px 28px var(--glow);color:var(--accent);font-weight:500;}
+.ghost img{width:150px;height:150px;display:block;filter:drop-shadow(0 14px 28px var(--glow));}
 
-.span-7{grid-column:span 7;} .span-6{grid-column:span 6;} .span-5{grid-column:span 5;} .span-12{grid-column:span 12;}
-.stack{display:flex;flex-direction:column;gap:16px;min-width:0;}
-.stack>.m-panel{flex:0 0 auto;} .stack>.m-panel.grow{flex:1 1 auto;}
+.dash{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,380px);gap:18px;align-items:start;}
+.col{display:flex;flex-direction:column;gap:18px;min-width:0;}
+.card{background:linear-gradient(180deg,color-mix(in srgb,var(--raised) 70%,var(--surface)),var(--surface));
+  border:1px solid var(--line);border-radius:var(--card-r);min-width:0;overflow:hidden;}
+.card-h{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:20px 22px 14px;}
+.card-t{font:600 21px/1.2 var(--font-display);color:var(--text);}
+.card-t a{color:inherit;text-decoration:none;} .card-t a:hover{color:var(--accent);}
+.card-s{color:var(--muted);font-size:13px;margin-top:3px;}
+.card .m-item{padding:11px 22px;}
+.card .m-empty{padding:20px 22px;}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+
+/* Coming up: task cards */
+.tasks{display:flex;flex-direction:column;}
+.task{display:block;padding:18px 22px;border-top:1px solid var(--line);color:var(--text);text-decoration:none;position:relative;}
+.task:hover{background:color-mix(in srgb,var(--raised) 60%,transparent);}
+.task-day{display:flex;align-items:center;gap:8px;color:var(--accent);font-size:13.5px;}
+.task-day i{font-size:14px;}
+.task-row{display:flex;align-items:flex-start;gap:16px;margin-top:6px;}
+.task-mark{width:58px;height:58px;border-radius:16px;flex:0 0 auto;display:none;align-items:center;justify-content:center;font-size:24px;
+  color:#fff;background:linear-gradient(140deg,color-mix(in srgb,var(--accent) 85%,#fff),color-mix(in srgb,var(--accent) 70%,#000));
+  box-shadow:0 10px 26px var(--glow);}
+.task-t{font:600 18px/1.3 var(--font-display);}
+.task-d{color:var(--muted);font-size:14px;margin-top:3px;}
+.task-d b{color:var(--text-2);font-weight:500;}
+.task-f{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;}
+.task-time{display:inline-flex;align-items:center;gap:8px;color:var(--accent);font-size:14px;}
+.task-time i{color:var(--text);}
+.task-rel{height:30px;padding:0 12px;border-radius:15px;display:inline-flex;align-items:center;font-size:13px;color:var(--text-2);
+  background:var(--raised);border:1px solid var(--line);}
+.task.hot{background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 16%,var(--surface)),color-mix(in srgb,var(--accent) 6%,var(--surface)) 60%,color-mix(in srgb,var(--accent) 24%,var(--surface)));
+  box-shadow:inset 0 -40px 60px -30px color-mix(in srgb,var(--accent) 45%,transparent);}
+.task.hot .task-mark{display:flex;}
+.task.hot .task-t{font-size:20px;}
+.task.hot .task-rel{background:color-mix(in srgb,var(--accent) 22%,transparent);border-color:color-mix(in srgb,var(--accent) 45%,transparent);color:var(--text);}
+
+/* Needs attention: the glowing note card */
+.note-card{background:linear-gradient(170deg,color-mix(in srgb,var(--accent) 34%,var(--surface)) 0%,color-mix(in srgb,var(--accent) 12%,var(--surface)) 38%,var(--surface) 75%);
+  border-color:color-mix(in srgb,var(--accent) 30%,var(--line));}
+.note-card .m-item{border-top-color:color-mix(in srgb,var(--line) 70%,transparent);}
+.note-card .m-item-t{font-weight:500;}
 .attn .m-item{align-items:flex-start;}
 .attn .m-dot{margin-top:6px;}
-.attn-all{display:flex;align-items:center;gap:12px;padding:14px 16px;border-top:1px solid var(--line);color:var(--text-2);}
-.machine-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:0 16px 14px;}
-.machine-name{font:600 18px var(--font-display);}
+.attn-all{display:flex;align-items:flex-start;gap:12px;padding:4px 22px 22px;color:var(--text-2);}
+.attn-all .bar{width:3px;align-self:stretch;border-radius:2px;background:var(--accent);flex:0 0 auto;}
+.round-ic{width:40px;height:40px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--bg);
+  border:1px solid var(--line);color:var(--text);text-decoration:none;flex:0 0 auto;}
+.round-ic:hover{border-color:var(--line-strong);}
+
+/* This machine */
+.machine-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:0 22px 16px;}
+.machine-name{font:600 15px var(--font-display);color:var(--text-2);}
 .machine-up{color:var(--muted);font-size:13px;}
-.meters{display:grid;gap:14px;padding:0 16px 16px;}
-.machine-foot{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line);}
-.machine-foot a{padding:12px 16px;color:var(--text);text-decoration:none;}
-.machine-foot a+a{border-left:1px solid var(--line);}
-.machine-foot a:hover{background:var(--raised);}
-.machine-foot .k{display:block;color:var(--muted);font-size:13px;}
+.meters{display:grid;gap:16px;padding:0 22px 20px;}
+.meters .m-meter-t{height:14px;border-radius:8px;background:var(--bg);border:1px solid var(--line);}
+.meters .m-meter-t i{--mc:var(--accent);border-radius:7px;
+  background:repeating-linear-gradient(-55deg,var(--mc) 0 5px,color-mix(in srgb,var(--mc) 55%,transparent) 5px 10px);
+  box-shadow:0 0 14px color-mix(in srgb,var(--mc) 45%,transparent);}
+.meters .m-meter-t i.warn{--mc:var(--warn);} .meters .m-meter-t i.fault{--mc:var(--fault);}
+.machine-foot{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px 16px;}
+.machine-foot a{padding:12px 14px;color:var(--text);text-decoration:none;border-radius:14px;background:var(--bg);border:1px solid var(--line);}
+.machine-foot a:hover{border-color:var(--line-strong);}
+.machine-foot .k{display:block;color:var(--muted);font-size:12.5px;}
 .machine-foot .v{font:600 20px var(--font-display);}
-.when{min-width:74px;text-align:right;}
+
+.when{min-width:74px;text-align:right;color:var(--muted);font-size:13px;}
 .unread{font-weight:600;}
-.links{display:flex;flex-wrap:wrap;gap:8px;padding:0 16px 16px;}
-.link-chip{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 6px 0 4px;border-radius:var(--r-ctl);
-  background:var(--raised);border:1px solid var(--line);color:var(--text);text-decoration:none;font-size:13.5px;position:relative;}
-.link-chip:hover{border-color:var(--line-strong);}
-.link-chip .ic{width:26px;height:26px;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;
-  font:600 11px var(--font-display);color:#fff;}
-.link-chip .rm{width:22px;height:22px;border:0;background:none;color:var(--muted);border-radius:4px;font-size:12px;visibility:hidden;}
-.link-chip:hover .rm,.link-chip:focus-within .rm{visibility:visible;}
-.link-chip .rm:hover{color:var(--fault);background:var(--surface);}
-.link-add{border-style:dashed;color:var(--text-2);padding:0 12px;background:transparent;}
-.prev-row{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px;}
-.ghost{display:flex;justify-content:center;margin:-4px 0 18px;}
-.ghost img{width:180px;height:180px;filter:drop-shadow(0 12px 22px rgba(0,0,0,.35));transition:filter .25s,opacity .25s;}
-@media(prefers-reduced-motion:reduce){.row2{display:grid;grid-template-columns:2fr 1fr;gap:12px;}
+
+/* To do */
 .todo-add{display:flex;gap:8px;padding:0 16px 12px;}
+.todo-add .m-input{height:40px;border-radius:20px;padding:0 16px;}
+.todo-add .m-btn{width:40px;height:40px;border-radius:50%;padding:0;}
 .todo-scroll{max-height:420px;overflow-y:auto;}
-.todo-item{gap:6px;padding:4px 8px;align-items:flex-start;}
-.td-check,.td-rm{width:30px;height:30px;flex-shrink:0;border:0;background:none;border-radius:6px;cursor:pointer;color:var(--muted);}
+.card .todo-item{gap:6px;padding:4px 12px;align-items:flex-start;}
+.td-check,.td-rm{width:30px;height:30px;flex-shrink:0;border:0;background:none;border-radius:50%;cursor:pointer;color:var(--muted);}
 .td-check{font-size:17px;}
 .td-check:hover{color:var(--ok);background:var(--raised);}
 .td-check:focus-visible,.td-rm:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;}
@@ -70,84 +135,119 @@ ${BASE_CSS}${NAV_CSS}${TOAST_CSS}
 @media(hover:none){.td-rm{visibility:visible;}}
 .todo-item.done .td-check{color:var(--ok);}
 .todo-item.done .td-text{color:var(--muted);text-decoration:line-through;}
-.todo-foot{display:flex;justify-content:space-between;gap:8px;padding:6px 8px;border-top:1px solid var(--line);}
+.todo-foot{display:flex;justify-content:space-between;gap:8px;padding:8px 12px;border-top:1px solid var(--line);}
 .todo-foot[hidden]{display:none;}
-@media(max-width:1100px){.span-7,.span-5,.span-6{grid-column:span 12;}}
-@media(max-width:760px){.search{width:100%;} .home-head .m-actions{width:100%;flex-wrap:wrap;}}
+
+/* Quick links: round app icons */
+.links{display:flex;flex-wrap:wrap;gap:12px;padding:0 22px 22px;}
+.link-chip{display:inline-flex;align-items:center;gap:10px;height:46px;padding:0 8px 0 5px;border-radius:23px;
+  background:var(--bg);border:1px solid var(--line);color:var(--text);text-decoration:none;font-size:14px;position:relative;}
+.link-chip:hover{border-color:var(--line-strong);}
+.link-chip .ic{width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;
+  font:600 12px var(--font-display);color:#fff;}
+.link-chip .rm{width:26px;height:26px;border:0;background:none;color:var(--muted);border-radius:50%;font-size:12px;visibility:hidden;}
+.link-chip:hover .rm,.link-chip:focus-within .rm{visibility:visible;}
+.link-chip .rm:hover{color:var(--fault);background:var(--surface);}
+.link-add{border-style:dashed;color:var(--text-2);padding:0 18px;background:transparent;}
+.row2{display:grid;grid-template-columns:2fr 1fr;gap:12px;}
+.prev-row{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px;}
+
+@media(max-width:1180px){.dash{grid-template-columns:1fr;} .dash>.col:last-child{order:-1;}}
+@media(max-width:760px){
+  .hero{grid-template-columns:1fr;} .ghost{display:none;}
+  .tools{width:100%;} .search{flex:1;width:auto;}
+  .two{grid-template-columns:1fr;}
+  .card-h{padding:16px 16px 12px;} .task,.card .m-item{padding-left:16px;padding-right:16px;}
+  .task.hot .task-mark{display:none;}
+}
 </style></head><body>
 ${navBar("/")}
-<main class="m-page">
-  <div class="m-head home-head">
+<main class="m-page home">
+  <header class="hero">
+    <div class="hero-top">
+      <nav class="crumbs" aria-label="Where you are"><span><i class="fa-solid fa-house"></i> Open HL</span><span class="sep">/</span>
+        <span class="now"><i class="fa-regular fa-calendar"></i><span id="crumb-date"></span></span></nav>
+      <div class="tools">
+        <label class="search" for="home-search"><i class="fa-solid fa-magnifying-glass"></i>
+          <input class="m-input" id="home-search" placeholder="Go to a page or open a URL" autocomplete="off" aria-label="Go to a page or open a URL">
+          <span class="m-kbd" aria-hidden="true">/</span></label>
+        <a class="rbtn" href="/calendar" title="Calendar" aria-label="Calendar"><i class="fa-regular fa-calendar"></i></a>
+        <button class="rbtn" type="button" id="voice-toggle" onclick="toggleVoice()" title="Spoken alerts are off" aria-label="Spoken alerts"><i class="fa-solid fa-volume-xmark"></i></button>
+      </div>
+    </div>
     <div>
-      <h1 class="m-title" id="greeting">Good day</h1>
-      <div class="home-date"><span id="today"></span><span id="weather" hidden></span></div>
-    </div>
-    <div class="m-actions">
-      <label class="search" for="home-search"><i class="fa-solid fa-magnifying-glass"></i>
-        <input class="m-input" id="home-search" placeholder="Go to a page or open a URL" autocomplete="off" aria-label="Go to a page or open a URL">
-        <span class="m-kbd" aria-hidden="true">/</span></label>
-      <a class="m-btn icon" href="/calendar" title="Calendar" aria-label="Calendar"><i class="fa-regular fa-calendar"></i></a>
-      <button class="m-btn icon" type="button" id="voice-toggle" onclick="toggleVoice()" title="Spoken alerts are off" aria-label="Spoken alerts"><i class="fa-solid fa-volume-xmark"></i></button>
-    </div>
-  </div>
-  <div class="ghost"><img src="/home/ghost.gif" alt="" width="180" height="180"></div>
-
-  <div class="m-grid">
-    <div class="stack span-7">
-    <section class="m-panel attn" aria-labelledby="attn-t">
-      <div class="m-panel-h"><h2 class="m-panel-t" id="attn-t">Needs attention</h2><span class="m-panel-meta" id="attn-meta"></span></div>
-      <div id="attn-list"><div class="m-empty">Checking&hellip;</div></div>
-    </section>
-
-    <section class="m-panel grow" aria-labelledby="up-t">
-      <div class="m-panel-h"><h2 class="m-panel-t" id="up-t"><a href="/reminders">Coming up</a></h2><a class="m-btn ghost" href="/reminders">All reminders</a></div>
-      <div id="up-list"></div>
-    </section>
-
-    </div>
-    <div class="stack span-5">
-    <section class="m-panel" aria-labelledby="machine-t">
-      <div class="m-panel-h"><h2 class="m-panel-t" id="machine-t"><a href="/monitoring">This machine</a></h2><span class="m-panel-meta" id="machine-os"></span></div>
-      <div class="machine-top"><span class="machine-name" id="machine-name">&ndash;</span><span class="machine-up" id="machine-up"></span></div>
-      <div class="meters">
-        <div class="m-meter"><span class="m-meter-l">CPU</span><span class="m-meter-v" id="m-cpu">&ndash;</span><span class="m-meter-t"><i id="b-cpu" style="width:0"></i></span></div>
-        <div class="m-meter"><span class="m-meter-l">Memory</span><span class="m-meter-v" id="m-mem">&ndash;</span><span class="m-meter-t"><i id="b-mem" style="width:0"></i></span></div>
-        <div class="m-meter"><span class="m-meter-l">Disk</span><span class="m-meter-v" id="m-disk">&ndash;</span><span class="m-meter-t"><i id="b-disk" style="width:0"></i></span></div>
+      <h1 id="greeting">Good day</h1>
+      <div class="hero-sub"><span id="today"></span><span id="weather" hidden></span></div>
+      <div class="pills">
+        <a class="pill" href="/monitoring"><span class="m-dot ok" id="pill-attn-dot"></span><span id="pill-attn">All clear</span></a>
+        <a class="pill" href="/reminders"><i class="fa-regular fa-bell"></i><span id="pill-up">No reminders</span></a>
+        <a class="pill" href="#todo-t"><i class="fa-regular fa-circle-check"></i><span id="pill-todo">Nothing to do</span></a>
+        <a class="pill cta" id="pill-new" href="/reminders"><i class="fa-solid fa-plus"></i>New reminder</a>
       </div>
-      <div class="machine-foot">
-        <a href="/monitoring"><span class="k">Nodes online</span><span class="v" id="f-nodes">&ndash;</span></a>
-        <a href="/vmlab"><span class="k">VMs running</span><span class="v" id="f-vms">&ndash;</span></a>
-      </div>
-    </section>
+    </div>
+    <div class="ghost"><img src="/home/ghost.gif" alt="" width="150" height="150"></div>
+  </header>
 
-    <section class="m-panel grow" aria-labelledby="todo-t">
-      <div class="m-panel-h"><h2 class="m-panel-t" id="todo-t">To do</h2><span class="m-panel-meta" id="todo-meta"></span></div>
-      <form class="todo-add" id="todo-form" autocomplete="off">
-        <input class="m-input" id="todo-input" placeholder="Add a task" maxlength="300" aria-label="New task">
-        <button class="m-btn primary icon" type="submit" title="Add task" aria-label="Add task"><i class="fa-solid fa-plus"></i></button>
-      </form>
-      <div class="todo-scroll" id="todo-list"></div>
-      <div class="todo-foot" id="todo-foot" hidden>
-        <button class="m-btn ghost" type="button" id="todo-showdone"></button>
-        <button class="m-btn ghost" type="button" id="todo-clear">Clear done</button>
+  <div class="dash">
+    <div class="col">
+      <section class="card" aria-labelledby="up-t">
+        <div class="card-h"><div><h2 class="card-t" id="up-t"><a href="/reminders">Coming up</a></h2><div class="card-s" id="up-meta"></div></div>
+          <a class="round-ic" href="/reminders" title="All reminders" aria-label="All reminders"><i class="fa-solid fa-ellipsis"></i></a></div>
+        <div class="tasks" id="up-list"></div>
+      </section>
+      <div class="two">
+        <section class="card" aria-labelledby="notes-t">
+          <div class="card-h"><h2 class="card-t" id="notes-t"><a href="/notes">Recent notes</a></h2>
+            <a class="round-ic" href="/notes" title="Open notes" aria-label="Open notes"><i class="fa-solid fa-arrow-right"></i></a></div>
+          <div id="notes-list"></div>
+        </section>
+        <section class="card" aria-labelledby="mail-t">
+          <div class="card-h"><h2 class="card-t" id="mail-t"><a href="/mail">Important mail</a></h2>
+            <a class="round-ic" href="/mail" title="Open mail" aria-label="Open mail"><i class="fa-solid fa-arrow-right"></i></a></div>
+          <div id="mail-list"></div>
+        </section>
       </div>
-    </section>
+      <section class="card" aria-labelledby="links-t">
+        <div class="card-h"><div><h2 class="card-t" id="links-t">Quick links</h2><div class="card-s">Sites and pages you open often</div></div></div>
+        <div class="links" id="ql-rail"></div>
+      </section>
     </div>
 
-    <section class="m-panel span-6" aria-labelledby="notes-t">
-      <div class="m-panel-h"><h2 class="m-panel-t" id="notes-t"><a href="/notes">Recent notes</a></h2><a class="m-btn ghost" href="/notes">Open notes</a></div>
-      <div id="notes-list"></div>
-    </section>
+    <div class="col">
+      <section class="card note-card attn" aria-labelledby="attn-t">
+        <div class="card-h"><div><h2 class="card-t" id="attn-t">Needs attention</h2><div class="card-s" id="attn-meta"></div></div>
+          <a class="round-ic" href="/monitoring" title="Monitoring" aria-label="Monitoring"><i class="fa-solid fa-heart-pulse"></i></a></div>
+        <div id="attn-list"><div class="m-empty">Checking&hellip;</div></div>
+      </section>
 
-    <section class="m-panel span-6" aria-labelledby="mail-t">
-      <div class="m-panel-h"><h2 class="m-panel-t" id="mail-t"><a href="/mail">Important mail</a></h2><a class="m-btn ghost" href="/mail">Open mail</a></div>
-      <div id="mail-list"></div>
-    </section>
+      <section class="card" aria-labelledby="machine-t">
+        <div class="card-h"><div><h2 class="card-t" id="machine-t"><a href="/monitoring">This machine</a></h2><div class="card-s" id="machine-os"></div></div>
+          <a class="round-ic" href="/monitoring" title="Open monitoring" aria-label="Open monitoring"><i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+        <div class="machine-top"><span class="machine-name" id="machine-name">&ndash;</span><span class="machine-up" id="machine-up"></span></div>
+        <div class="meters">
+          <div class="m-meter"><span class="m-meter-l">CPU</span><span class="m-meter-v" id="m-cpu">&ndash;</span><span class="m-meter-t"><i id="b-cpu" style="width:0"></i></span></div>
+          <div class="m-meter"><span class="m-meter-l">Memory</span><span class="m-meter-v" id="m-mem">&ndash;</span><span class="m-meter-t"><i id="b-mem" style="width:0"></i></span></div>
+          <div class="m-meter"><span class="m-meter-l">Disk</span><span class="m-meter-v" id="m-disk">&ndash;</span><span class="m-meter-t"><i id="b-disk" style="width:0"></i></span></div>
+        </div>
+        <div class="machine-foot">
+          <a href="/monitoring"><span class="k">Nodes online</span><span class="v" id="f-nodes">&ndash;</span></a>
+          <a href="/vmlab"><span class="k">VMs running</span><span class="v" id="f-vms">&ndash;</span></a>
+        </div>
+      </section>
 
-    <section class="m-panel span-12" aria-labelledby="links-t">
-      <div class="m-panel-h"><h2 class="m-panel-t" id="links-t">Quick links</h2><span class="m-panel-meta">Sites and pages you open often</span></div>
-      <div class="links" id="ql-rail"></div>
-    </section>
+      <section class="card" aria-labelledby="todo-t">
+        <div class="card-h"><div><h2 class="card-t" id="todo-t">To do</h2><div class="card-s" id="todo-meta"></div></div></div>
+        <form class="todo-add" id="todo-form" autocomplete="off">
+          <input class="m-input" id="todo-input" placeholder="Add a task" maxlength="300" aria-label="New task">
+          <button class="m-btn primary icon" type="submit" title="Add task" aria-label="Add task"><i class="fa-solid fa-plus"></i></button>
+        </form>
+        <div class="todo-scroll" id="todo-list"></div>
+        <div class="todo-foot" id="todo-foot" hidden>
+          <button class="m-btn ghost" type="button" id="todo-showdone"></button>
+          <button class="m-btn ghost" type="button" id="todo-clear">Clear done</button>
+        </div>
+      </section>
+    </div>
   </div>
 </main>
 
@@ -189,6 +289,8 @@ function emptyRow(text){ return el('div', 'm-empty', text); }
     var g = (h < 5) ? 'Good night' : (h < 12) ? 'Good morning' : (h < 18) ? 'Good afternoon' : (h < 22) ? 'Good evening' : 'Good night';
     document.getElementById('greeting').textContent = g;
     document.getElementById('today').textContent = d.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+    document.getElementById('crumb-date').textContent = d.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+    document.getElementById('pill-new').href = '/reminders?at=' + (Math.ceil((Date.now() + 15 * 60000) / 300000) * 300000);
   }
   tick(); setInterval(tick, 60000);
   function loadWeather(){
@@ -246,19 +348,37 @@ function emptyRow(text){ return el('div', 'm-empty', text); }
     soon.forEach(function(r){ items.push(attnItem('info', r.title, 'Reminder ' + rel(r.at), '/reminders')); });
     var list = document.getElementById('attn-list'); list.textContent = '';
     if (!items.length){
-      var ok = el('div', 'attn-all'); ok.appendChild(el('span', 'm-dot ok')); ok.appendChild(el('span', null, 'Nothing needs you right now. All systems are up.'));
+      var ok = el('div', 'attn-all'); ok.appendChild(el('span', 'bar')); ok.appendChild(el('span', null, 'Nothing needs you right now. All systems are up.'));
       list.appendChild(ok);
     } else items.forEach(function(i){ list.appendChild(i); });
-    document.getElementById('attn-meta').textContent = items.length ? items.length + (items.length === 1 ? ' item' : ' items') : '';
+    document.getElementById('attn-meta').textContent = items.length ? items.length + (items.length === 1 ? ' item' : ' items') : 'All clear';
+    var worst = items.some(function(i){ return i.querySelector('.m-dot.fault'); }) ? 'fault' : items.some(function(i){ return i.querySelector('.m-dot.warn'); }) ? 'warn' : items.length ? 'info' : 'ok';
+    document.getElementById('pill-attn-dot').className = 'm-dot ' + worst;
+    document.getElementById('pill-attn').textContent = items.length ? items.length + ' need' + (items.length === 1 ? 's' : '') + ' attention' : 'All clear';
 
-    // Coming up
+    // Coming up: one card per reminder, the next one highlighted
     var up = document.getElementById('up-list'); up.textContent = '';
-    if (!(d.reminders || []).length) up.appendChild(emptyRow('No reminders scheduled.'));
-    (d.reminders || []).forEach(function(r){
-      var a = el('a', 'm-item'); a.href = '/reminders';
-      var main = el('span', 'm-item-main'); main.appendChild(el('span', 'm-item-t', r.title));
-      main.appendChild(el('span', 'm-item-s', new Date(r.at).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) + (r.repeat && r.repeat !== 'none' ? ', repeats ' + r.repeat : '')));
-      a.appendChild(main); a.appendChild(el('span', 'm-item-end when', rel(r.at)));
+    var rs = d.reminders || [];
+    document.getElementById('up-meta').textContent = rs.length ? rs.length + ' scheduled' : '';
+    document.getElementById('pill-up').textContent = rs.length ? rs.length + (rs.length === 1 ? ' reminder' : ' reminders') : 'No reminders';
+    if (!rs.length) up.appendChild(emptyRow('No reminders scheduled.'));
+    rs.forEach(function(r, i){
+      var at = new Date(r.at), now = new Date();
+      var tmr = new Date(now); tmr.setDate(tmr.getDate() + 1);
+      var day = at.toDateString() === now.toDateString() ? 'Today' : at.toDateString() === tmr.toDateString() ? 'Tomorrow'
+        : at.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
+      var a = el('a', 'task' + (i === 0 ? ' hot' : '')); a.href = '/reminders?edit=' + encodeURIComponent(r.id || '');
+      var dl = el('div', 'task-day'); dl.appendChild(el('i', 'fa-regular fa-circle')); dl.appendChild(el('span', null, day)); a.appendChild(dl);
+      var row = el('div', 'task-row');
+      var mk = el('span', 'task-mark'); mk.appendChild(el('i', 'fa-regular fa-bell')); row.appendChild(mk);
+      var body = el('div'); body.appendChild(el('div', 'task-t', r.title));
+      var rep = r.repeat && r.repeat !== 'none' ? 'Repeats ' + r.repeat : 'One-off reminder';
+      var ds = el('div', 'task-d'); ds.appendChild(el('b', null, 'Reminder: ')); ds.appendChild(document.createTextNode(r.note || rep)); body.appendChild(ds);
+      row.appendChild(body); a.appendChild(row);
+      var f = el('div', 'task-f');
+      var tm = el('span', 'task-time'); tm.appendChild(el('i', 'fa-regular fa-clock'));
+      tm.appendChild(el('span', null, at.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })));
+      f.appendChild(tm); f.appendChild(el('span', 'task-rel', rel(r.at))); a.appendChild(f);
       up.appendChild(a);
     });
 
@@ -424,7 +544,8 @@ function emptyRow(text){ return el('div', 'm-empty', text); }
     if (!open.length) list.appendChild(emptyRow(done.length ? 'All done.' : 'Nothing to do yet.'));
     open.forEach(function(t){ list.appendChild(row(t)); });
     if (showDone) done.forEach(function(t){ list.appendChild(row(t)); });
-    document.getElementById('todo-meta').textContent = open.length ? open.length + ' to do' : '';
+    document.getElementById('todo-meta').textContent = open.length ? open.length + ' to do' : (done.length ? 'All done' : '');
+    document.getElementById('pill-todo').textContent = open.length ? open.length + ' to do' : 'Nothing to do';
     document.getElementById('todo-foot').hidden = !done.length;
     document.getElementById('todo-showdone').textContent = showDone ? 'Hide done' : 'Show ' + done.length + ' done';
   }

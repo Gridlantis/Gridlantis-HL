@@ -638,7 +638,7 @@ const ALARM_JS = `(function(){
 
 // Order of the sidebar. Pages are listed in NAV_PAGES in any order; this puts
 // them into groups people scan by task.
-const NAV_ORDER = ["/", "/notes", "/flows", "/reminders", "/calendar", "/files", "/live", "/texts", "/voicemail", "/mail", "/monitoring", "/vmlab", "/mobile", "/docker", "/world", "/homeos", "/laptops", "/finance", "/social", "/ai"];
+const NAV_ORDER = ["/", "/notes", "/flows", "/reminders", "/calendar", "/files", "/live", "/texts", "/voicemail", "/mail", "/monitoring", "/vmlab", "/docker", "/world", "/homeos", "/laptops", "/mobile", "/finance", "/social", "/ai"];
 
 function navBar(active) {
   const cur = active ? (active.charAt(0) === '/' ? active : '/' + active) : '';

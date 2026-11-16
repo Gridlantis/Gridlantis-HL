@@ -33,7 +33,7 @@ function nodeCounts() {
 function upcomingReminders(limit) {
   const now = Date.now();
   return readReminders().filter(r => r.enabled !== false && reminderDueAt(r) > now - 60000)
-    .map(r => ({ id: r.id, title: r.title, at: reminderDueAt(r), repeat: r.repeat }))
+    .map(r => ({ id: r.id, title: r.title, note: r.note || "", at: reminderDueAt(r), repeat: r.repeat }))
     .sort((a, b) => a.at - b.at).slice(0, limit);
 }
 
