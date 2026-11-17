@@ -8,91 +8,11 @@ const { advertiseMdns } = require("./mdns");
 const { handleRequest } = require("./router");
 const { getOpenRouterKey } = require("./settings");
 
-// Loaded in original source order so startup side effects keep their sequence.
-require("./store");
-require("./domains/mail");
-require("./domains/weather");
-require("./session");
-require("./sse");
-require("./host");
-require("./domains/finance");
-require("./domains/quicklinks");
-require("./domains/todo");
-require("./audio");
-require("./alerts");
-require("./helpers");
-require("./net");
-require("./multipart");
-require("./ui/assets");
-require("./pages/login");
-require("./pages/welcome");
-require("./pages/home");
-require("./pages/homeos");
-require("./pages/social");
-require("./pages/reminders");
-require("./pages/monitoring");
-require("./pages/files");
-require("./pages/notes");
-require("./pages/ai");
-require("./pages/finance");
-require("./pages/mail");
-require("./domains/tts/paths");
-require("./domains/tts/edge");
-require("./domains/tts/piper");
-require("./domains/tts/index");
-require("./domains/ai");
-require("./zip");
-require("./domains/homeos/store");
-require("./domains/homeos/kasa");
-require("./domains/homeos/tuya");
-require("./domains/homeos/sonoff");
-require("./domains/homeos/wyze");
-require("./domains/homeos/blink");
-require("./domains/homeos/ring");
-require("./domains/homeos/camera");
-require("./domains/homeos/typhur");
-require("./domains/homeos/index");
-require("./domains/social/store");
-require("./domains/social/bluesky");
-require("./domains/social/mastodon");
-require("./domains/social/agent");
-require("./domains/social/publish");
-require("./domains/social/dedupe");
-require("./domains/social/schedule");
-require("./domains/social/ai");
-require("./domains/reminders");
-require("./domains/twilio");
-require("./domains/voicemail");
-require("./domains/texts");
-require("./routes/public");
-require("./routes/pages");
-require("./routes/tts");
-require("./routes/files");
-require("./routes/notes");
-require("./routes/ai");
-require("./routes/settings");
-require("./routes/mail");
-require("./routes/reminders");
-require("./routes/weather");
-require("./routes/system");
-require("./routes/finance");
-require("./routes/quicklinks");
-require("./routes/todo");
-require("./routes/monitor");
-require("./routes/homeos");
-require("./routes/social");
-require("./routes/events");
-require("./routes/jobsearch");
-require("./routes/folders");
-require("./routes/upload");
-require("./routes/status");
-require("./routes/cuttlefish");
-require("./routes/vmlab");
-require("./routes/docker");
-require("./routes/download");
-require("./routes/shell");
-require("./routes/voicemail");
-require("./routes/texts");
+// Every domain module (mail polling, reminders, the post queue, HomeOS, …)
+// starts its background work when first required. The router requires all
+// the routes and they require their domains, so loading the router starts
+// everything; each module only touches its own files and timers, so the order
+// they load in does not matter.
 
 // ── HTTP SERVER ───────────────────────────────────────────────────────────────
 // Router wrapped so no handler error (bad JSON, fs error, etc.) can kill the
