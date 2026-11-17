@@ -103,6 +103,11 @@ function writeIfChanged(file, text, mode) {
   return true;
 }
 
+// systemd splits ExecStart on spaces and expands %-specifiers, so a path like
+// ".../Metis Live/..." has to be quoted or it tries to run ".../Metis".
+const unitArg  = s => '"' + String(s).replace(/%/g, "%%").replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '"';
+const unitPath = s => String(s).replace(/%/g, "%%");
+
 async function ensureService(binaryChanged) {
   if (!fs.existsSync(path.join(HOME, "config.xml"))) {
     fs.mkdirSync(HOME, { recursive: true });
@@ -114,8 +119,8 @@ Description=Open HL live folders (Syncthing hub)
 After=network-online.target
 
 [Service]
-EnvironmentFile=${ENV_FILE}
-ExecStart=${BIN} serve --home ${HOME} --no-browser --no-restart --gui-address=${GUI.host}:${GUI.port}
+EnvironmentFile=${unitPath(ENV_FILE)}
+ExecStart=${unitArg(BIN)} serve --home ${unitArg(HOME)} --no-browser --no-restart --gui-address=${GUI.host}:${GUI.port}
 Restart=on-failure
 RestartSec=5
 
