@@ -482,7 +482,7 @@ var USER_NAME = ${scriptString(userName())};
     try { localStorage.setItem('openhl-voice', voiceOn ? '1' : '0'); } catch(e){}
     paintVoice();
     showToast(voiceOn ? 'Spoken alerts on' : 'Spoken alerts off', 'ok');
-    if (voiceOn) { speak('Spoken alerts on. Watching nodes and A.I.'); try { if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission(); } catch(e){} }
+    if (voiceOn) { speak('Spoken alerts on. Watching nodes and AI.'); try { if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission(); } catch(e){} }
   };
   paintVoice();
   function notify(title, body){ try { if ('Notification' in window && Notification.permission === 'granted') new Notification(title, { body: body }); } catch(e){} }
