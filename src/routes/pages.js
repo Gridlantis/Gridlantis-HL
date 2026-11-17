@@ -9,6 +9,7 @@ const { homeosHtml } = require("../pages/homeos");
 const { mailHtml } = require("../pages/mail");
 const { monitoringHtml } = require("../pages/monitoring");
 const { notesHtml } = require("../pages/notes");
+const { personalizeHtml } = require("../pages/personalize");
 const { remindersHtml } = require("../pages/reminders");
 const { socialHtml } = require("../pages/social");
 const { textsHtml } = require("../pages/texts");
@@ -54,4 +55,5 @@ module.exports = async function pageRoutes(ctx) {
   if (pathname === '/reminders') return html(remindersHtml());
   if (pathname === '/voicemail') return html(voicemailHtml());
   if (pathname === '/texts')     return html(textsHtml());
+  if (pathname === '/personalize') return html(personalizeHtml());
 };

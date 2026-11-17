@@ -1,3 +1,4 @@
+const { scriptString, userName } = require("../profile");
 const { BASE_CSS, FAVICON, FONT, NAV_CSS, TOAST_CSS, TOAST_JS, navBar } = require("../ui/assets");
 
 // ─── HOME ────────────────────────────────────────────────────────────────────
@@ -273,12 +274,13 @@ ${TOAST_JS}
 function el(tag, cls, text){ var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined && text !== null) e.textContent = text; return e; }
 function emptyRow(text){ return el('div', 'm-empty', text); }
 
+var USER_NAME = ${scriptString(userName())};
 // ═══ GREETING · DATE · WEATHER ═══════════════════════════════════════════════
 (function(){
   function tick(){
     var d = new Date(), h = d.getHours();
     var g = (h < 5) ? 'Good night' : (h < 12) ? 'Good morning' : (h < 18) ? 'Good afternoon' : (h < 22) ? 'Good evening' : 'Good night';
-    document.getElementById('greeting').textContent = g;
+    document.getElementById('greeting').textContent = USER_NAME ? g + ', ' + USER_NAME : g;
     document.getElementById('today').textContent = d.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
     document.getElementById('crumb-date').textContent = d.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
     document.getElementById('pill-new').href = '/reminders?at=' + (Math.ceil((Date.now() + 15 * 60000) / 300000) * 300000);
@@ -661,7 +663,8 @@ function qlSave(){
     { href:'/monitoring', k:['monitoring','monitor','uptime','status','health','services'] },
     { href:'/vmlab',      k:['vm','vms','vm lab','virtual machine','virtualbox','qemu','iso','boot'] },
     { href:'/finance',    k:['finance','money','budget','stocks','portfolio','bank'] },
-    { href:'/reminders',  k:['reminders','reminder','alarm','alarms','remind','timer'] }
+    { href:'/reminders',  k:['reminders','reminder','alarm','alarms','remind','timer'] },
+    { href:'/personalize', k:['personalize','personalise','theme','themes','name','profile','appearance'] }
   ];
   var inp = document.getElementById('home-search');
   inp.addEventListener('keydown', function(e){

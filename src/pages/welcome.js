@@ -1,7 +1,10 @@
+const { userName } = require("../profile");
+const { esc } = require("../helpers");
 const { BASE_CSS, FAVICON, FONT, LEGACY_THEMES, THEMES } = require("../ui/assets");
 
 // ─── WELCOME PAGE ─────────────────────────────────────────────────────────────
 function welcomeHtml() {
+  const name = userName();
   return `<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Open HL</title>${FONT}${FAVICON}
@@ -20,7 +23,7 @@ body{display:grid;place-items:center;padding:24px;}
 .checks li.done{color:var(--text-2);}
 </style></head><body>
 <main class="boot" aria-live="polite">
-  <h1>Welcome back</h1>
+  <h1>Welcome back${name ? ", " + esc(name) : ""}</h1>
   <p>Checking this machine before opening your dashboard.</p>
   <ul class="checks">
     <li id="c-host"><span class="m-dot"></span><b>Server</b><span>&hellip;</span></li>

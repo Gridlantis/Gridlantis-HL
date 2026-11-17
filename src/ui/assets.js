@@ -320,6 +320,12 @@ html.nav-rail .m-nav-scroll,html.nav-rail .m-nav-foot{padding-left:8px;padding-r
 .theme-chip:hover{border-color:var(--line-strong);}
 .theme-chip.active{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);}
 .theme-dot{width:12px;height:12px;border-radius:4px;flex-shrink:0;}
+.theme-more{display:grid;grid-template-columns:auto 1fr auto;grid-template-rows:auto auto;column-gap:10px;align-items:center;
+  padding:9px 10px;margin-top:2px;border-top:1px solid var(--line);color:var(--text);text-decoration:none;border-radius:var(--r-ctl);}
+.theme-more:hover{background:var(--raised);}
+.theme-more>i:first-child{grid-row:1/3;color:var(--accent);width:18px;text-align:center;}
+.theme-more span{font-weight:600;font-size:13.5px;} .theme-more small{grid-column:2;color:var(--muted);font-size:12px;}
+.theme-more>i:last-child{grid-row:1/3;grid-column:3;color:var(--muted);font-size:11px;}
 .m-apps-chev{margin-left:auto;font-size:10px!important;width:auto!important;transition:transform .15s;}
 .openhl-get-app.open .m-apps-chev{transform:rotate(180deg);}
 .m-apps-menu{position:fixed;left:calc(var(--nav-w) + 8px);bottom:12px;z-index:9999;display:none;width:240px;
@@ -687,6 +693,7 @@ function navBar(active) {
     <div class="theme-popover-title">Theme</div>
     <div><div class="theme-section-label">Dark</div><div class="theme-grid" id="theme-dark-grid"></div></div>
     <div><div class="theme-section-label">Light</div><div class="theme-grid" id="theme-light-grid"></div></div>
+    <a class="theme-more" href="/personalize"><i class="fa-solid fa-sliders"></i><span>Personalize</span><small>Your name and themes</small><i class="fa-solid fa-chevron-right"></i></a>
   </div>
   <div class="openhl-get-app">
     <button class="m-foot-btn" id="m-apps-btn" type="button" title="Get the app" aria-haspopup="menu" aria-expanded="false" aria-controls="m-apps-menu"><i class="fa-solid fa-download"></i><span class="m-foot-l">Get the app</span><i class="fa-solid fa-chevron-up m-apps-chev"></i></button>
