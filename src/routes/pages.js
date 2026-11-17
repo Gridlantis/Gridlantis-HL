@@ -16,6 +16,10 @@ const { voicemailHtml } = require("../pages/voicemail");
 const { welcomeHtml } = require("../pages/welcome");
 
 const GHOST_GIF = path.join(__dirname, "../ui/home/ghost.gif");
+// Page scripts too big to live inside their page's template string
+// (src/ui/pages/<page>.js). Behind the login like the pages that load them,
+// and revalidated on every load so an update shows up without a hard refresh.
+const PAGE_JS = path.join(__dirname, "../ui/pages");
 
 // The HTML pages.
 module.exports = async function pageRoutes(ctx) {
@@ -26,6 +30,14 @@ module.exports = async function pageRoutes(ctx) {
     res.writeHead(200, { "Content-Type": "image/gif", "Content-Length": fs.statSync(GHOST_GIF).size,
       "Cache-Control": "public, max-age=86400" });
     return fs.createReadStream(GHOST_GIF).pipe(res);
+  }
+
+  const js = pathname.match(/^\/ui\/pages\/([\w-]+\.js)$/);
+  if (js) {
+    let st; try { st = fs.statSync(path.join(PAGE_JS, js[1])); } catch { st = null; }
+    if (!st || !st.isFile()) { res.writeHead(404, { "Content-Type": "text/plain" }); return res.end("Not found"); }
+    res.writeHead(200, { "Content-Type": "text/javascript; charset=utf-8", "Content-Length": st.size, "Cache-Control": "no-cache" });
+    return fs.createReadStream(path.join(PAGE_JS, js[1])).pipe(res);
   }
 
   // ── Pages ───────────────────────────────────────────────────────────────────
