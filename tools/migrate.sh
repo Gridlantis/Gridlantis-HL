@@ -47,7 +47,7 @@ fi
 
 say "Transferring (~$((NEED_KB/1024))M)"
 # -a preserves the 0600 modes on .env, .session_secret, mail_accounts.json,
-# settings.json and social.json. Backups and scratch files are left behind.
+# and settings.json. Backups and scratch files are left behind.
 # Anchored to the transfer root with a leading slash. Unanchored patterns also
 # match inside uploads/, which silently dropped the .git and node_modules of
 # projects the user had uploaded through the file browser.
@@ -74,13 +74,13 @@ if [ "$LOCAL_SUM" = "$REMOTE_SUM" ]; then echo "  ✓ code checksums match"
 else echo "  ✗ CODE CHECKSUM MISMATCH"; exit 1; fi
 
 echo "  secret file modes on target:"
-ssh "${SSH_OPTS[@]}" "$DEST" "cd '$REMOTE_TARGET' && for f in .env .session_secret data/mail/mail_accounts.json data/settings.json data/social/social.json data/laptops/laptops.json data/calendar/gcal.json; do
+ssh "${SSH_OPTS[@]}" "$DEST" "cd '$REMOTE_TARGET' && for f in .env .session_secret data/mail/mail_accounts.json data/settings.json data/laptops/laptops.json data/calendar/gcal.json; do
   [ -e \"\$f\" ] && printf '    %-22s %s\n' \"\$f\" \"\$(stat -c%a \"\$f\")\"; done"
-BADMODE=$(ssh "${SSH_OPTS[@]}" "$DEST" "cd '$REMOTE_TARGET' && for f in .env .session_secret data/mail/mail_accounts.json data/settings.json data/social/social.json data/laptops/laptops.json data/calendar/gcal.json; do
+BADMODE=$(ssh "${SSH_OPTS[@]}" "$DEST" "cd '$REMOTE_TARGET' && for f in .env .session_secret data/mail/mail_accounts.json data/settings.json data/laptops/laptops.json data/calendar/gcal.json; do
   [ -e \"\$f\" ] && [ \"\$(stat -c%a \"\$f\")\" != 600 ] && echo \"\$f\"; done" || true)
 [ -z "$BADMODE" ] || { echo "  ✗ these are not 0600 on the target: $BADMODE"; exit 1; }
 
-say "Boot test on target (background timers stubbed — no mail poll, no social publish)"
+say "Boot test on target (background timers stubbed — no mail poll)"
 ssh "${SSH_OPTS[@]}" "$DEST" "cd '$REMOTE_TARGET' && \
   PORT=39777 PASSWORD=migrate-check timeout 25 node -r ./tools/refactor-harness/preload.js server.js > /tmp/openhl-boot.log 2>&1 &
   sleep 6
@@ -103,5 +103,5 @@ cat <<EOF
   To start it there:   ssh $DEST 'cd $REMOTE_TARGET && node server.js'
 
   Before running it there full time, stop this one — two instances polling the
-  same mail and social accounts will fight over the same remote state.
+  same mail accounts will fight over the same remote state.
 EOF

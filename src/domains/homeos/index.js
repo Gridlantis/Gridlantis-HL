@@ -61,13 +61,4 @@ async function homeosPollRun() {
 setTimeout(homeosPoll, 8000);
 setInterval(homeosPoll, parseInt(process.env.HOMEOS_POLL_MS || "10000", 10));
 
-// ═══ SOCIAL AUTOPOST ══════════════════════════════════════════════════════════
-// Two delivery paths, picked per platform:
-//   · NATIVE  — Bluesky + Mastodon publish over their official, free, sanctioned
-//               APIs straight from here. No browser, no npm, no ToS grey area.
-//   · AGENT   — everything else goes to the Playwright sidecar (social_agent.js),
-//               which drives a real logged-in browser profile. Heavier, fragile,
-//               and against most platforms' automation terms — see SOCIAL.md.
-// The queue, scheduler, rate limiting and history are shared by both.
-
 module.exports = { HOMEOS_ADAPTERS, homeosPoll, homeosPollPromise, homeosPollRun, probeOne };

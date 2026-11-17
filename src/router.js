@@ -26,7 +26,6 @@ const ROUTES = [
   require("./routes/todo"),
   require("./routes/monitor"),
   require("./routes/homeos"),
-  require("./routes/social"),
   require("./routes/jobsearch"),
   require("./routes/events"),
   require("./routes/folders"),

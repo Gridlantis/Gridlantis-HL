@@ -13,7 +13,7 @@
  *
  * The server it boots runs from a throwaway copy of the code and data/, with
  * VM Lab and uploads pointed at empty folders and background timers stubbed,
- * so it cannot touch the live install's state, VMs, mail or social queue.
+ * so it cannot touch the live install's state, VMs or mail.
  *
  * Usage:  node tools/lint-pages.js [password] [port]
  */
@@ -22,7 +22,7 @@ const { execSync, spawn } = require('child_process');
 
 const PASSWORD = process.argv[2] || process.env.PASSWORD || 'test';
 const PORT     = parseInt(process.argv[3] || process.env.LINT_PORT || '3999', 10);
-const PAGES = ['/', '/welcome', '/social', '/homeos', '/files', '/notes', '/ai',
+const PAGES = ['/', '/welcome', '/homeos', '/files', '/notes', '/ai',
                '/mail', '/calendar', '/flows', '/monitoring', '/finance',
                '/reminders', '/voicemail', '/texts', '/vmlab', '/laptops', '/mobile', '/docker'];
 // Full-screen viewers for one VM, PC or phone. Their pages are static shells: the

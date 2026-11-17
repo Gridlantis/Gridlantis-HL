@@ -747,9 +747,4 @@ setInterval(load, 15000);
 }
 
 
-// ─── SOCIAL PAGE ───────────────────────────────────────────────────────────────
-// Three independent dashboards (Personal / Business / Project by default, all
-// renameable). Each carries its own Compose, Accounts, Emails and Queue. The
-// browser agent is shared infrastructure and appears once, outside the tabs.
-
 module.exports = { homeosHtml };

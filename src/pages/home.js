@@ -692,7 +692,6 @@ function qlSave(){
     { href:'/files',      k:['files','file','filebeam','uploads','transfer'] },
     { href:'/mail',       k:['mail','email','inbox','gmail','messages'] },
     { href:'/ai',         k:['ai','chat','assistant','llm','ollama','models'] },
-    { href:'/social',     k:['social','post','tweet','bluesky','mastodon','linkedin','publish','schedule'] },
     { href:'/homeos',     k:['homeos','smart home','lights','plugs','kasa','wyze','ring','blink','sonoff','gosund','typhur','air fryer'] },
     { href:'/monitoring', k:['monitoring','monitor','uptime','status','health','services'] },
     { href:'/vmlab',      k:['vm','vms','vm lab','virtual machine','virtualbox','qemu','iso','boot'] },

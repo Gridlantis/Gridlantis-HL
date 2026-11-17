@@ -2,7 +2,6 @@
 const { PASSWORD } = require("../config");
 const assetRoutes = require("./assets");
 const { finishAuth: gcalFinishAuth } = require("../domains/gcal");
-const { finish: socialOauthFinish } = require("../domains/social/oauth");
 const { loginHtml } = require("../pages/login");
 const { SESSION_TTL_MS, makeSession } = require("../session");
 
@@ -79,15 +78,6 @@ module.exports = async function publicRoutes(ctx) {
     const { setupScript } = require('./laptops');
     res.writeHead(200, { 'Content-Type': 'text/x-shellscript; charset=utf-8', 'Cache-Control': 'no-cache' });
     return res.end(setupScript());
-  }
-
-  // ── Facebook/Instagram and LinkedIn OAuth callback ──────────────────────────
-  // Same one-time state check as the calendar callback below.
-  if (pathname === '/api/social/oauth/callback' && req.method === 'GET') {
-    let loc;
-    try { const r = await socialOauthFinish(ctx.parsed.searchParams); loc = '/social?pick=' + r.provider + '&dashboard=' + encodeURIComponent(r.dashboardId); }
-    catch (e) { loc = '/social?serr=' + encodeURIComponent(e.message); }
-    res.writeHead(302, { Location: loc }); return res.end();
   }
 
   // ── Google Calendar OAuth callback ──────────────────────────────────────────

@@ -1,13 +1,10 @@
 # ── Secrets ──
-# Browser cookies the social agent saves after you sign in.
-/sessions/
 .env
 .env.*
 .session_secret
 mail_accounts.json
 settings.json
 settings.json.bak
-social.json
 laptops.json
 gcal.json
 flows.json
@@ -27,7 +24,6 @@ reminders.json
 quicklinks.json
 homeos.json
 finance.json
-social.json
 
 # ── Runtime / build ──
 node_modules/
@@ -35,7 +31,6 @@ node_modules/
 # a trailing slash would only match a directory.
 /uploads
 *.log
-social_media/
 repos/
 
 # scratch

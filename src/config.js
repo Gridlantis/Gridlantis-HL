@@ -83,7 +83,7 @@ const DATA_LAYOUT = {
   "finance.json": "finance",      "portfolio_history.json": "finance",
   "file_groups.json": "files",    "file_group_map.json": "files",
   "links.json": "links",          "quicklinks.json": "links",       "todo.json": "todo",
-  "reminders.json": "reminders",  "gcal.json": "calendar",          "social.json": "social",
+  "reminders.json": "reminders",  "gcal.json": "calendar",
   "homeos.json": "homeos",        "nodes.json": "monitor",          "laptops.json": "laptops",
   "flows.json": "flows",          "webforms.json": "webforms",      "ai_peers.json": "ai",
   "settings.json": "",

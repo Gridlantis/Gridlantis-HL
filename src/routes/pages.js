@@ -11,7 +11,6 @@ const { monitoringHtml } = require("../pages/monitoring");
 const { notesHtml } = require("../pages/notes");
 const { personalizeHtml } = require("../pages/personalize");
 const { remindersHtml } = require("../pages/reminders");
-const { socialHtml } = require("../pages/social");
 const { textsHtml } = require("../pages/texts");
 const { voicemailHtml } = require("../pages/voicemail");
 const { welcomeHtml } = require("../pages/welcome");
@@ -51,7 +50,6 @@ module.exports = async function pageRoutes(ctx) {
   // ── Pages ───────────────────────────────────────────────────────────────────
   if (pathname === '/')          return html(homeHtml());
   if (pathname === '/homeos')    return html(homeosHtml());
-  if (pathname === '/social')    return html(socialHtml());
   if (pathname === '/monitoring') return html(monitoringHtml());
   if (pathname === '/welcome')   return html(welcomeHtml());
   if (pathname === '/files')     return html(filesHtml());

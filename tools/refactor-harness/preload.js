@@ -1,5 +1,5 @@
-// Neutralize module-level background timers (mail poll, social publish scheduler,
-// reminder tick, HomeOS poll, portfolio sampler) so the golden-capture instance
+// Neutralize module-level background timers (mail poll, reminder tick,
+// HomeOS poll, portfolio sampler) so the golden-capture instance
 // only renders pages and never acts on the world. Real timers are restored on
 // nextTick, i.e. right after server.js finishes loading, so request handling
 // (and its own timeouts) behaves normally.

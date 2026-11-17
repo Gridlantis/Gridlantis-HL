@@ -439,8 +439,6 @@ const NAV_PAGES = [
    icon:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="5" rx="1"/><rect x="14" y="16" width="7" height="5" rx="1"/><path d="m17.5 8.5 3 3-3 3-3-3z"/><path d="M10 5.5h4.5a3 3 0 0 1 3 3M17.5 14.5V16M6.5 8v8.5a2 2 0 0 0 2 2H14"/></svg>`},
   {href:"/calendar", group:"Daily", color:"#4f8ff7", title:"Calendar",
    icon:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M8 14h2M14 14h2M8 17h2"/></svg>`},
-  {href:"/social", group:"Intel and money",    color:"#e879f9", title:"Social",
-   icon:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/><path d="M8.3 10.8 15.7 6.4M8.3 13.2l7.4 4.4"/></svg>`},
   {href:"/vmlab", group:"Systems",     color:"#2dd4bf", title:"VM Lab",
    icon:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/><path d="m9 8.5-2 1.5 2 1.5M15 8.5l2 1.5-2 1.5"/></svg>`},
   {href:"/laptops", group:"Devices",   color:"#f472b6", title:"PC host",
@@ -652,7 +650,7 @@ const ALARM_JS = `(function(){
 
 // Order of the sidebar. Pages are listed in NAV_PAGES in any order; this puts
 // them into groups people scan by task.
-const NAV_ORDER = ["/", "/notes", "/flows", "/reminders", "/calendar", "/files", "/live", "/texts", "/voicemail", "/mail", "/monitoring", "/vmlab", "/docker", "/homeos", "/laptops", "/mobile", "/finance", "/social", "/ai"];
+const NAV_ORDER = ["/", "/notes", "/flows", "/reminders", "/calendar", "/files", "/live", "/texts", "/voicemail", "/mail", "/monitoring", "/vmlab", "/docker", "/homeos", "/laptops", "/mobile", "/finance", "/ai"];
 
 function navBar(active) {
   const cur = active ? (active.charAt(0) === '/' ? active : '/' + active) : '';
