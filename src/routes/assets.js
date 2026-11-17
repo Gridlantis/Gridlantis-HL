@@ -9,6 +9,9 @@ const UI = path.join(__dirname, "../ui");
 const ROOTS = {
   "/ui/vendor/fonts/": path.join(UI, "vendor/fonts"),
   "/ui/vendor/fontawesome/": path.join(UI, "vendor/fontawesome"),
+  // three.js and the addons Halo needs (the home page's 3D helper). The version
+  // is in the folder name, so a new copy gets a new URL and the year-long cache holds.
+  "/ui/vendor/three-0.170.0/": path.join(UI, "vendor/three-0.170.0"),
 };
 const MIME = { ".css": "text/css; charset=utf-8", ".woff2": "font/woff2", ".js": "text/javascript; charset=utf-8" };
 

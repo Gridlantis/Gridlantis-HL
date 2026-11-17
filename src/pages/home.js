@@ -48,7 +48,37 @@ ${BASE_CSS}${NAV_CSS}${TOAST_CSS}
 .pill .m-dot{box-shadow:0 0 0 3px color-mix(in srgb,currentColor 0%,transparent);}
 .pill.cta{background:color-mix(in srgb,var(--accent) 16%,var(--surface));border-color:color-mix(in srgb,var(--accent) 55%,var(--line));
   box-shadow:0 8px 28px var(--glow);color:var(--accent);font-weight:500;}
-.ghost img{width:150px;height:150px;display:block;filter:drop-shadow(0 14px 28px var(--glow));}
+/* Halo: the 3D helper (src/ui/pages/halo.js) */
+.home>.hero{z-index:3;}
+.halo{position:relative;align-self:end;}
+.halo-btn{display:block;width:150px;height:150px;padding:0;border:0;border-radius:50%;background:none;cursor:pointer;position:relative;}
+.halo-btn:focus-visible{outline:2px solid var(--accent);outline-offset:4px;}
+.halo-btn canvas{width:100%;height:100%;display:block;filter:drop-shadow(0 14px 28px var(--glow));opacity:0;transition:opacity .4s;}
+.halo.ready .halo-btn canvas{opacity:1;}
+.halo-btn .fallback{display:none;position:absolute;inset:0;align-items:center;justify-content:center;font-size:64px;color:var(--accent);}
+.halo.no-gl .halo-btn canvas{display:none;} .halo.no-gl .halo-btn .fallback{display:flex;}
+.halo-name{position:absolute;left:50%;bottom:-4px;transform:translateX(-50%);font:600 12px/1 var(--font-display);letter-spacing:.08em;
+  text-transform:uppercase;color:var(--accent);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:4px 9px;pointer-events:none;}
+.halo-panel{position:absolute;right:0;top:calc(100% + 12px);z-index:30;width:min(400px,calc(100vw - 32px));max-height:min(70vh,560px);overflow:auto;
+  background:var(--surface);border:1px solid var(--line-strong);border-radius:18px;padding:18px;box-shadow:0 18px 50px rgba(0,0,0,.35);}
+.halo-panel::before{content:'';position:absolute;top:-7px;right:66px;width:12px;height:12px;background:var(--surface);
+  border-left:1px solid var(--line-strong);border-top:1px solid var(--line-strong);transform:rotate(45deg);}
+.halo-say{display:block;font-size:15px;color:var(--text);margin:0 0 14px;line-height:1.45;}
+.halo-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+.halo-pick{width:100%;height:42px;}
+.halo-info:empty{display:none;}
+.halo-info{margin-top:14px;font-size:14px;color:var(--text-2);}
+.halo-about{margin:0 0 12px;line-height:1.5;}
+.halo-h{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.halo-keys{list-style:none;margin:0 0 12px;padding:0;display:flex;flex-direction:column;gap:8px;}
+.halo-keys li{display:flex;flex-direction:column;gap:3px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--raised);}
+.halo-keys code{font:600 13px/1.3 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--accent);overflow-wrap:anywhere;}
+.halo-keys span{color:var(--text);line-height:1.4;}
+.halo-keys small{color:var(--muted);font-size:12.5px;}
+.halo-note{display:flex;gap:9px;align-items:baseline;margin:0 0 8px;line-height:1.45;}
+.halo-note i{color:var(--accent);font-size:13px;flex:0 0 auto;}
+.halo-go{display:inline-flex;align-items:center;gap:8px;margin-top:4px;color:var(--accent);text-decoration:none;font-weight:500;}
+.halo-go:hover{text-decoration:underline;}
 
 .dash{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,380px);gap:18px;align-items:start;}
 .col{display:flex;flex-direction:column;gap:18px;min-width:0;}
@@ -155,7 +185,8 @@ ${BASE_CSS}${NAV_CSS}${TOAST_CSS}
 
 @media(max-width:1180px){.dash{grid-template-columns:1fr;} .dash>.col:last-child{order:-1;}}
 @media(max-width:760px){
-  .hero{grid-template-columns:1fr;} .ghost{display:none;}
+  .hero{grid-template-columns:minmax(0,1fr) auto;} .halo{grid-row:2;grid-column:2;align-self:start;}
+  .halo-btn{width:92px;height:92px;} .halo-name{font-size:10px;padding:3px 7px;} .halo-panel::before{right:38px;}
   .tools{width:100%;} .search{flex:1;width:auto;}
   .two{grid-template-columns:1fr;}
   .card-h{padding:16px 16px 12px;} .task,.card .m-item{padding-left:16px;padding-right:16px;}
@@ -186,7 +217,12 @@ ${navBar("/")}
         <a class="pill cta" id="pill-new" href="/reminders"><i class="fa-solid fa-plus"></i>New reminder</a>
       </div>
     </div>
-    <div class="ghost"><img src="/home/ghost.gif" alt="" width="150" height="150"></div>
+    <div class="halo" id="halo">
+      <button class="halo-btn" type="button" id="halo-btn" aria-haspopup="dialog" aria-expanded="false" aria-controls="halo-panel" aria-label="Halo, your helper" title="Halo, your helper">
+        <canvas id="halo-canvas" aria-hidden="true"></canvas><span class="fallback" aria-hidden="true"><i class="fa-solid fa-robot"></i></span>
+        <span class="halo-name" aria-hidden="true">Halo</span></button>
+      <div class="halo-panel" id="halo-panel" role="dialog" hidden></div>
+    </div>
   </header>
 
   <div class="dash">
@@ -689,6 +725,8 @@ function qlSave(){
 document.addEventListener('keydown', function(e){ if (e.key === 'Escape') qlClose(); });
 
 </script>
+<script type="importmap">{"imports":{"three":"/ui/vendor/three-0.170.0/three.module.min.js","three/addons/":"/ui/vendor/three-0.170.0/addons/"}}</script>
+<script type="module" src="/ui/pages/halo.js"></script>
 </body></html>`;
 }
 

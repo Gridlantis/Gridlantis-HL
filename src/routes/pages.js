@@ -16,7 +16,9 @@ const { textsHtml } = require("../pages/texts");
 const { voicemailHtml } = require("../pages/voicemail");
 const { welcomeHtml } = require("../pages/welcome");
 
-const GHOST_GIF = path.join(__dirname, "../ui/home/ghost.gif");
+// Halo, the home page's 3D helper: the model and its textures.
+const HALO_DIR = path.join(__dirname, "../ui/home/halo");
+const HALO_MIME = { ".fbx": "application/octet-stream", ".jpg": "image/jpeg" };
 // Page scripts too big to live inside their page's template string
 // (src/ui/pages/<page>.js). Behind the login like the pages that load them,
 // and revalidated on every load so an update shows up without a hard refresh.
@@ -27,10 +29,15 @@ module.exports = async function pageRoutes(ctx) {
   const { res, pathname, html } = ctx;
 
   // ── Home page art ───────────────────────────────────────────────────────────
-  if (pathname === '/home/ghost.gif') {
-    res.writeHead(200, { "Content-Type": "image/gif", "Content-Length": fs.statSync(GHOST_GIF).size,
+  if (pathname.startsWith('/home/halo/')) {
+    let rel; try { rel = decodeURIComponent(pathname.slice('/home/halo/'.length)); } catch { rel = ""; }
+    const file = path.resolve(HALO_DIR, rel);
+    let st = null;
+    if (file.startsWith(HALO_DIR + path.sep) && HALO_MIME[path.extname(file)]) { try { st = fs.statSync(file); } catch {} }
+    if (!st || !st.isFile()) { res.writeHead(404, { "Content-Type": "text/plain" }); return res.end("Not found"); }
+    res.writeHead(200, { "Content-Type": HALO_MIME[path.extname(file)], "Content-Length": st.size,
       "Cache-Control": "public, max-age=86400" });
-    return fs.createReadStream(GHOST_GIF).pipe(res);
+    return fs.createReadStream(file).pipe(res);
   }
 
   const js = pathname.match(/^\/ui\/pages\/([\w-]+\.js)$/);

@@ -84,9 +84,15 @@ function makeCopy() {
     const r = await req(p, { headers: { Cookie: ck } });
     if (r.s !== 200) { console.log(`✗ ${p}  HTTP ${r.s}`); fail++; continue; }
     let bad = 0;
-    const scripts = [...r.b.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi)].map(m => m[1]);
+    const scripts = [...r.b.matchAll(/<script(?![^>]*\bsrc=)([^>]*)>([\s\S]*?)<\/script>/gi)].map(m => m[2]);
+    const types = [...r.b.matchAll(/<script(?![^>]*\bsrc=)([^>]*)>[\s\S]*?<\/script>/gi)].map(m => (m[1].match(/\btype="([^"]+)"/) || [])[1] || '');
     scripts.forEach((s, i) => {
       if (!s.trim()) return;
+      // Import maps and JSON blocks are data, not code: they only have to parse.
+      if (types[i] === 'importmap' || /json/.test(types[i])) {
+        try { JSON.parse(s); } catch (e) { bad++; console.log(`  ✗ ${p} inline ${types[i]} #${i}:\n      ${e.message}`); }
+        return;
+      }
       const f = path.join(tmp, p.replace(/\W/g, '_') + i + '.js');
       fs.writeFileSync(f, s);
       try { execSync(`node --check ${f}`, { stdio: 'pipe' }); }
