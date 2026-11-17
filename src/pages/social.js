@@ -398,9 +398,6 @@ function fmtWhen(iso){
   if (d.toDateString() === tm.toDateString()) return 'tomorrow ' + time;
   return d.toLocaleDateString([], { weekday: 'short', day: 'numeric', month: 'short' }) + ', ' + time;
 }
-function ago(iso){ if(!iso) return ''; var s=Math.round((Date.now()-new Date(iso))/1000);
-  if(s<60) return s+'s ago'; if(s<3600) return Math.round(s/60)+'m ago';
-  if(s<86400) return Math.round(s/3600)+'h ago'; return Math.round(s/86400)+'d ago'; }
 function qs(extra){ return '?dashboard=' + encodeURIComponent(DASH || '') + (extra || ''); }
 function dashName(){ var d = DASHBOARDS.filter(function(x){ return x.id===DASH; })[0]; return d ? d.name : ''; }
 
@@ -574,7 +571,7 @@ function renderAutopilot(){
   if (AP.news && AP.news.enabled && !NEWS.configured) line('<span class="bad">News is on but there is no freenewsapi.io key yet. Add it in the News card.</span>');
   if (AP.lastNews) line('Last story: ' + (AP.lastNews.url ? '<a href="' + esc(AP.lastNews.url) + '" target="_blank" rel="noopener">' + esc(AP.lastNews.title) + '</a>' : esc(AP.lastNews.title)) +
     (AP.lastNews.publisher ? ' (' + esc(AP.lastNews.publisher) + ')' : ''));
-  if (AP.lastRunAt) line('Last post written ' + esc(ago(AP.lastRunAt)) + (AP.lastWhy ? ' \u00b7 <i>' + esc(AP.lastWhy) + '</i>' : ''));
+  if (AP.lastRunAt) line('Last post written ' + esc(timeAgo(AP.lastRunAt)) + (AP.lastWhy ? ' \u00b7 <i>' + esc(AP.lastWhy) + '</i>' : ''));
   if (AP.lastError) line('<span class="bad">Last run failed: ' + esc(AP.lastError) + '. It retries every 30 minutes.</span>');
 }
 function pinfo(id){ return PLATFORMS.filter(function(p){ return p.id === id; })[0] || { id: id, label: id, via: 'native' }; }
@@ -746,7 +743,7 @@ async function newsList(fresh){
       var row = document.createElement('div'); row.className = 'nw' + (used.indexOf(a.uuid) > -1 ? ' used' : '');
       var t = document.createElement('div'); t.className = 'nw-t'; t.textContent = a.title;
       var m = document.createElement('div'); m.className = 'nw-m';
-      m.textContent = (a.publisher || 'unknown source') + (a.publishedAt ? ' \u00b7 ' + ago(a.publishedAt) : '');
+      m.textContent = (a.publisher || 'unknown source') + (a.publishedAt ? ' \u00b7 ' + timeAgo(a.publishedAt) : '');
       t.appendChild(m);
       var b = document.createElement('button'); b.className = 'btn sm'; b.textContent = 'Summarise';
       b.title = 'Write drafts about this article in the AI copilot';
@@ -1107,7 +1104,7 @@ async function loadQueue(){
       // posts showing the backoff time, which read like a schedule you set.
       var when = document.createElement('span');
       if (q.status === 'posted' || q.status === 'partial'){
-        when.textContent = 'posted ' + fmtWhen(q.finishedAt) + ' \u00b7 ' + ago(q.finishedAt);
+        when.textContent = 'posted ' + fmtWhen(q.finishedAt) + ' \u00b7 ' + timeAgo(q.finishedAt);
       } else if (q.status === 'failed'){
         when.textContent = 'failed ' + fmtWhen(q.finishedAt || q.createdAt);
       } else if (q.status === 'posting'){
@@ -1125,7 +1122,7 @@ async function loadQueue(){
       // The time it was written is separate from the time it goes out.
       if (q.createdAt && q.status !== 'posted'){
         var cr = document.createElement('span');
-        cr.textContent = 'written ' + ago(q.createdAt);
+        cr.textContent = 'written ' + timeAgo(q.createdAt);
         cr.style.opacity = '.65';
         m.appendChild(cr);
       }
@@ -1286,7 +1283,6 @@ function oauthCard(p){
   }
   return d;
 }
-function esc(t){ var x = document.createElement('div'); x.textContent = t == null ? '' : String(t); return x.innerHTML; }
 // After signing in: choose the Page (and Instagram) or the company page for this dashboard.
 function pendingBox(){
   var box = document.createElement('div');
@@ -1396,7 +1392,7 @@ function accountCard(p){
     d.appendChild(f);
   } else {
     var st = document.createElement('span'); st.className = 'hint';
-    st.textContent = p.sessionAge ? ago(p.sessionAge) : 'no session';
+    st.textContent = p.sessionAge ? timeAgo(p.sessionAge) : 'no session';
     st.title = 'Browser sessions are shared across all three dashboards';
     h.appendChild(st);
     d.appendChild(h);

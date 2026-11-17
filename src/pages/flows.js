@@ -211,7 +211,6 @@ var HIST = [], FUT = [], snapOn = true, CLIP = null;
 var saveT = null, inflight = null, dirty = false, interacting = false, editing = null;
 
 function $(id){ return document.getElementById(id); }
-function esc(s){ var d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
 function uid(p){ return p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
 function snapV(v){ return snapOn ? Math.round(v / GRID) * GRID : Math.round(v); }
 function nodeById(id){ for (var i = 0; i < F.nodes.length; i++) if (F.nodes[i].id === id) return F.nodes[i]; return null; }
@@ -399,16 +398,10 @@ function moveNodeEls(ids){
 }
 
 // ── flow list ───────────────────────────────────────────────────────────────
-function ago(iso){
-  var s = (Date.now() - Date.parse(iso)) / 1000;
-  if (s < 60) return 'just now'; if (s < 3600) return Math.round(s / 60) + ' min ago';
-  if (s < 86400) return Math.round(s / 3600) + ' h ago';
-  return new Date(iso).toLocaleDateString([], { month:'short', day:'numeric' });
-}
 function renderList(){
   $('fs-flows').innerHTML = FLOWS.length ? FLOWS.map(function(f){
     return '<div class="fs-fl' + (F && F.id === f.id ? ' on' : '') + '" data-flow="' + esc(f.id) + '"><i class="fa-solid fa-diagram-project" style="color:var(--muted)"></i>' +
-      '<div class="fs-fl-b"><div class="fs-fl-n">' + esc(f.name) + '</div><div class="fs-fl-m">' + f.nodes + ' items &middot; ' + ago(f.updated) + '</div></div>' +
+      '<div class="fs-fl-b"><div class="fs-fl-n">' + esc(f.name) + '</div><div class="fs-fl-m">' + f.nodes + ' items &middot; ' + timeAgo(f.updated) + '</div></div>' +
       '<button class="fs-fl-x" data-del="' + esc(f.id) + '" title="Delete flow" aria-label="Delete flow"><i class="fa-solid fa-trash"></i></button></div>';
   }).join('') : '<div style="padding:10px 14px;color:var(--muted)">No flows yet.</div>';
 }

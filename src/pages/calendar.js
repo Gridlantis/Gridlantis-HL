@@ -142,7 +142,6 @@ ${navBar('/calendar')}
 ${TOAST_JS}
 
 function $(id){ return document.getElementById(id); }
-function esc(s){ var d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
 function pad(n){ return (n < 10 ? '0' : '') + n; }
 function dayKey(d){ return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()); }
 function parseKey(k){ var p = k.split('-'); return new Date(+p[0], +p[1]-1, +p[2]); }
@@ -281,13 +280,6 @@ function renderAgenda(){
   if (f && FOCUS) { f.scrollIntoView({ block:'nearest' }); }
 }
 
-function ago(ms){
-  var s = Math.round((Date.now() - ms) / 1000);
-  if (s < 60) return 'just now';
-  if (s < 3600) return Math.round(s / 60) + ' min ago';
-  if (s < 86400) return Math.round(s / 3600) + ' h ago';
-  return new Date(ms).toLocaleString();
-}
 // From a machine other than the host, Google's redirect to localhost fails in
 // that browser; the page then offers a box for pasting that address.
 function isRemote(s){
@@ -378,7 +370,7 @@ function renderConn(){
     return;
   }
   el.innerHTML = '<i class="fa-brands fa-google"></i><div class="grow">Synced with <b>' + esc(s.account || 'Google Calendar') + '</b>' +
-    (s.lastSync ? ' &middot; ' + ago(s.lastSync) : '') + err + '</div>' +
+    (s.lastSync ? ' &middot; ' + timeAgo(s.lastSync) : '') + err + '</div>' +
     '<button class="m-btn" id="cl-pick"><i class="fa-regular fa-calendar-check"></i>Calendars' +
       (s.shown && s.shown.length > 1 ? ' (' + s.shown.length + ')' : '') + '</button>' +
     '<button class="m-btn" id="cl-sync"><i class="fa-solid fa-rotate"></i>Sync now</button>' +

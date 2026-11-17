@@ -95,7 +95,24 @@ const EVENTS_JS = `<script>(function(){
 
 // The head every page shares: fonts, icons (both served by Open HL, see
 // routes/assets.js; bump ?v= when the files change) and the shared event stream.
-const FONT = `<link rel="stylesheet" href="/ui/vendor/fonts/fonts.css?v=1"><link rel="stylesheet" href="/ui/vendor/fontawesome/css/all.min.css?v=6.5.1">` + EVENTS_JS;
+// Small helpers every page script can use. esc() is for text going into HTML,
+// attributes included, so it escapes quotes too. timeAgo() takes ms or an ISO
+// string and reads "just now", "5 min ago", "in 3 h", "2 d ago", then a date.
+const HELPERS_JS = `<script>
+function esc(s){ return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function timeAgo(t){
+  var ms = typeof t === 'number' ? t : Date.parse(t);
+  if (t == null || t === '' || isNaN(ms)) return '';
+  var s = Math.round((ms - Date.now()) / 1000), a = Math.abs(s), v;
+  if (a < 60) return 'just now';
+  if (a < 3600) v = Math.round(a / 60) + ' min';
+  else if (a < 86400) v = Math.round(a / 3600) + ' h';
+  else if (a < 86400 * 14) v = Math.round(a / 86400) + ' d';
+  else return new Date(ms).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  return s >= 0 ? 'in ' + v : v + ' ago';
+}
+</script>`;
+const FONT = `<link rel="stylesheet" href="/ui/vendor/fonts/fonts.css?v=1"><link rel="stylesheet" href="/ui/vendor/fontawesome/css/all.min.css?v=6.5.1">` + HELPERS_JS + EVENTS_JS;
 // The Open HL monogram: an upright L with a sideways H over its upper right.
 // LOGO_SVG is the bare mark (sidebar); the favicon puts it on the app tile.
 const LOGO_PATHS = "<path d='M15 22V49H48' fill='none' stroke='%COLOR_L%' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/>" +

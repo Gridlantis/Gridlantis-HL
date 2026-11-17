@@ -271,15 +271,6 @@ ${navBar("/")}
 <script>
 ${TOAST_JS}
 function el(tag, cls, text){ var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined && text !== null) e.textContent = text; return e; }
-function rel(ms){
-  var s = Math.round((ms - Date.now()) / 1000), a = Math.abs(s), t;
-  if (a < 60) return 'just now';
-  if (a < 3600) t = Math.round(a / 60) + ' min';
-  else if (a < 86400) t = Math.round(a / 3600) + ' h';
-  else if (a < 86400 * 14) t = Math.round(a / 86400) + ' d';
-  else return new Date(ms).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-  return s >= 0 ? 'in ' + t : t + ' ago';
-}
 function emptyRow(text){ return el('div', 'm-empty', text); }
 
 // ═══ GREETING · DATE · WEATHER ═══════════════════════════════════════════════
@@ -345,7 +336,7 @@ function emptyRow(text){ return el('div', 'm-empty', text); }
     if (d.mail.unopened) items.push(attnItem('info', d.mail.unopened + ' important ' + (d.mail.unopened === 1 ? 'email' : 'emails') + ' unread', 'From senders you marked important', '/mail'));
     if (d.bank && d.bank.staleDays >= 30) items.push(attnItem('warn', 'Bank balance is ' + d.bank.staleDays + ' days old', 'Update it so Finance totals stay accurate', '/finance'));
     var soon = (d.reminders || []).filter(function(r){ return r.at - Date.now() < 3600000; });
-    soon.forEach(function(r){ items.push(attnItem('info', r.title, 'Reminder ' + rel(r.at), '/reminders')); });
+    soon.forEach(function(r){ items.push(attnItem('info', r.title, 'Reminder ' + timeAgo(r.at), '/reminders')); });
     var list = document.getElementById('attn-list'); list.textContent = '';
     if (!items.length){
       var ok = el('div', 'attn-all'); ok.appendChild(el('span', 'bar')); ok.appendChild(el('span', null, 'Nothing needs you right now. All systems are up.'));
@@ -378,7 +369,7 @@ function emptyRow(text){ return el('div', 'm-empty', text); }
       var f = el('div', 'task-f');
       var tm = el('span', 'task-time'); tm.appendChild(el('i', 'fa-regular fa-clock'));
       tm.appendChild(el('span', null, at.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })));
-      f.appendChild(tm); f.appendChild(el('span', 'task-rel', rel(r.at))); a.appendChild(f);
+      f.appendChild(tm); f.appendChild(el('span', 'task-rel', timeAgo(r.at))); a.appendChild(f);
       up.appendChild(a);
     });
 
@@ -389,7 +380,7 @@ function emptyRow(text){ return el('div', 'm-empty', text); }
       var a = el('a', 'm-item'); a.href = '/notes';
       var main = el('span', 'm-item-main'); main.appendChild(el('span', 'm-item-t', n.title));
       main.appendChild(el('span', 'm-item-s', n.folder || 'No folder'));
-      a.appendChild(main); a.appendChild(el('span', 'm-item-end when', rel(Date.parse(n.updated))));
+      a.appendChild(main); a.appendChild(el('span', 'm-item-end when', timeAgo(Date.parse(n.updated))));
       nl.appendChild(a);
     });
 
@@ -402,7 +393,7 @@ function emptyRow(text){ return el('div', 'm-empty', text); }
       var main = el('span', 'm-item-main'); main.appendChild(el('span', 'm-item-t' + (m.opened ? '' : ' unread'), m.subject));
       main.appendChild(el('span', 'm-item-s', m.from));
       a.appendChild(main);
-      if (m.date) a.appendChild(el('span', 'm-item-end when', rel(Date.parse(m.date))));
+      if (m.date) a.appendChild(el('span', 'm-item-end when', timeAgo(Date.parse(m.date))));
       ml.appendChild(a);
     });
   }

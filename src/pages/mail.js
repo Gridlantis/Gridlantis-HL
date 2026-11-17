@@ -143,7 +143,7 @@ function fmtDate(ms){
   if (sameDay) return d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'});
   return d.toLocaleDateString(undefined,{month:'short',day:'numeric'});
 }
-function esc(t){ var d = document.createElement('div'); d.textContent = t == null ? '' : String(t); return d; }
+function textEl(t){ var d = document.createElement('div'); d.textContent = t == null ? '' : String(t); return d; }
 
 async function loadAccounts(){
   try {
@@ -186,10 +186,10 @@ async function loadMessages(){
       var top = document.createElement('div'); top.className='top';
       var from = document.createElement('div'); from.className='from';
       if (m.important) { var st = document.createElement('i'); st.className='fa-solid fa-star ml-star'; st.title='Important'; from.appendChild(st); }
-      from.appendChild(esc(m.fromName || m.fromEmail));
+      from.appendChild(textEl(m.fromName || m.fromEmail));
       var dt = document.createElement('span'); dt.className='when'; dt.textContent = fmtDate(m.date);
       top.appendChild(from); top.appendChild(dt);
-      var subj = document.createElement('div'); subj.className='subj'; subj.appendChild(esc(m.subject || '(no subject)'));
+      var subj = document.createElement('div'); subj.className='subj'; subj.appendChild(textEl(m.subject || '(no subject)'));
       var meta = document.createElement('div'); meta.className='meta';
       var tag = document.createElement('span'); tag.className='m-badge'; tag.textContent = m.accountName || 'mail';
       meta.appendChild(tag);

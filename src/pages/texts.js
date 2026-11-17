@@ -62,7 +62,6 @@ ${TOAST_JS}
 var TX = { items: [], status: {}, configured: true };
 var fresh = {};   // unread when seen on this visit; stays highlighted until reload
 function $(id){ return document.getElementById(id); }
-function esc(s){ var d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
 
 // +13135551234 -> (313) 555-1234; anything else is shown as Twilio gave it.
 function fmtNum(n){
@@ -77,10 +76,6 @@ function fmtWhen(ms){
   if (d.toDateString() === new Date(n.getTime() - 86400000).toDateString()) return 'Yesterday ' + t;
   return d.toLocaleDateString([], { weekday:'short', month:'short', day:'numeric' }) + ' ' + t;
 }
-function ago(ms){
-  var s = Math.round((Date.now() - ms) / 1000);
-  return s < 60 ? 'just now' : s < 3600 ? Math.round(s / 60) + ' min ago' : Math.round(s / 3600) + ' h ago';
-}
 
 function paintStatus(){
   var st = TX.status || {}, el = $('tx-status');
@@ -88,7 +83,7 @@ function paintStatus(){
   $('tx-poll').disabled = !TX.configured;
   el.classList.toggle('bad', st.ok === false);
   el.textContent = !TX.configured ? '' : st.ok === false ? 'Last check failed: ' + st.error
-    : st.lastPoll ? 'Checked ' + ago(st.lastPoll) : 'Waiting for the first check';
+    : st.lastPoll ? 'Checked ' + timeAgo(st.lastPoll) : 'Waiting for the first check';
 }
 
 function render(){

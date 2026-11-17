@@ -120,7 +120,6 @@ ${TOAST_JS}
 
 var REM = [], RING = {}, editing = null;
 function $(id){ return document.getElementById(id); }
-function esc(s){ var d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
 function pad(n){ return (n < 10 ? '0' : '') + n; }
 
 // ── time formatting ─────────────────────────────────────────────────────────

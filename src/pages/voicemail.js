@@ -60,7 +60,6 @@ ${TOAST_JS}
 
 var VM = { items: [], status: {}, configured: true };
 function $(id){ return document.getElementById(id); }
-function esc(s){ var d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
 
 // +13135551234 -> (313) 555-1234; anything else is shown as Twilio gave it.
 function fmtNum(n){
@@ -76,10 +75,6 @@ function fmtWhen(ms){
   return d.toLocaleDateString([], { weekday:'short', month:'short', day:'numeric' }) + ' ' + t;
 }
 function fmtDur(s){ s = Math.round(s || 0); return s < 60 ? s + ' s' : Math.floor(s / 60) + ' min ' + (s % 60) + ' s'; }
-function ago(ms){
-  var s = Math.round((Date.now() - ms) / 1000);
-  return s < 60 ? 'just now' : s < 3600 ? Math.round(s / 60) + ' min ago' : Math.round(s / 3600) + ' h ago';
-}
 
 function paintStatus(){
   var st = VM.status || {}, el = $('vm-status');
@@ -87,7 +82,7 @@ function paintStatus(){
   $('vm-poll').disabled = !VM.configured;
   el.classList.toggle('bad', st.ok === false);
   el.textContent = !VM.configured ? '' : st.ok === false ? 'Last check failed: ' + st.error
-    : st.lastPoll ? 'Checked ' + ago(st.lastPoll) : 'Waiting for the first check';
+    : st.lastPoll ? 'Checked ' + timeAgo(st.lastPoll) : 'Waiting for the first check';
 }
 
 function render(){
