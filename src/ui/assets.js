@@ -159,6 +159,21 @@ const THEMES = {
     line: "#263630", "line-strong": "#34483F", text: "#D9EEE3", "text-2": "#B7D3C5", muted: "#86A395",
     accent: "#62D5B0", "accent-ink": "#07130E", "accent-soft": "rgba(98,213,176,.13)",
     ok: "#8ED36B", warn: "#E3C04F", fault: "#EA6A5F", chart2: "#7FB2F0" }),
+  amethyst: theme("Amethyst", true, {
+    bg: "#19151F", "bg-nav": "#15111B", surface: "#1F1A27", raised: "#282131", field: "#15111B",
+    line: "#382E44", "line-strong": "#4A3E58", text: "#ECE6F3", "text-2": "#CFC5DC", muted: "#A094B0",
+    accent: "#B69CF0", "accent-ink": "#150F20", "accent-soft": "rgba(182,156,240,.14)",
+    ok: "#6FC48F", warn: "#E2AE4C", fault: "#EC6B72", chart2: "#F08DC0" }),
+  blossom: theme("Blossom", true, {
+    bg: "#1E1519", "bg-nav": "#1A1115", surface: "#241A1F", raised: "#2E2128", field: "#1A1115",
+    line: "#42303A", "line-strong": "#563F4B", text: "#F3E6EC", "text-2": "#DCC6D0", muted: "#B095A2",
+    accent: "#F08DB8", "accent-ink": "#22101A", "accent-soft": "rgba(240,141,184,.14)",
+    ok: "#79C894", warn: "#E8B055", fault: "#F07A66", chart2: "#A99CF0" }),
+  ocean: theme("Ocean", true, {
+    bg: "#0F1820", "bg-nav": "#0C141B", surface: "#132029", raised: "#1A2933", field: "#0C141B",
+    line: "#253845", "line-strong": "#334A59", text: "#DDEBF2", "text-2": "#BCD2DD", muted: "#87A2B0",
+    accent: "#4FC3D9", "accent-ink": "#061419", "accent-soft": "rgba(79,195,217,.14)",
+    ok: "#6CCB8E", warn: "#E5B04E", fault: "#EC6E66", chart2: "#A99CF0" }),
   contrast: theme("High contrast", true, {
     bg: "#090C10", "bg-nav": "#06080B", surface: "#10151B", raised: "#19202A", field: "#06080B",
     line: "#4E5B6B", "line-strong": "#7B8898", text: "#FFFFFF", "text-2": "#E8EDF2", muted: "#C3CBD4",
@@ -168,11 +183,25 @@ const THEMES = {
     bg: "#EDF0F3", "bg-nav": "#E4E8ED", surface: "#FFFFFF", raised: "#F3F5F8", field: "#FFFFFF",
     line: "#D3DAE2", "line-strong": "#B9C3CE", text: "#16202B", "text-2": "#2F3B48", muted: "#5B6877",
     accent: "#1D6BB5", "accent-ink": "#FFFFFF", "accent-soft": "rgba(29,107,181,.10)",
-    ok: "#1B8550", warn: "#A8650A", fault: "#C3372F", chart2: "#6E4FC9" }),
+    ok: "#1B8550", warn: "#A8650A", fault: "#C3372F", chart2: "#6E4FC9" }),  lavender: theme("Lavender", false, {
+    bg: "#F1EEF6", "bg-nav": "#E9E4F1", surface: "#FFFFFF", raised: "#F6F3FA", field: "#FFFFFF",
+    line: "#DBD3E6", "line-strong": "#C3B8D3", text: "#1E1828", "text-2": "#382F45", muted: "#645877",
+    accent: "#6A45C2", "accent-ink": "#FFFFFF", "accent-soft": "rgba(106,69,194,.10)",
+    ok: "#1B8550", warn: "#A8650A", fault: "#C3372F", chart2: "#B4366F" }),
+  petal: theme("Petal", false, {
+    bg: "#F7EEF2", "bg-nav": "#F1E4EA", surface: "#FFFFFF", raised: "#FBF4F7", field: "#FFFFFF",
+    line: "#E8D3DD", "line-strong": "#D6B8C6", text: "#2A1820", "text-2": "#46303A", muted: "#765966",
+    accent: "#B8346E", "accent-ink": "#FFFFFF", "accent-soft": "rgba(184,52,110,.10)",
+    ok: "#1B8550", warn: "#A8650A", fault: "#C0392B", chart2: "#6E4FC9" }),
+  sand: theme("Sand", false, {
+    bg: "#F3EFE8", "bg-nav": "#ECE6DC", surface: "#FFFDF9", raised: "#F8F4EE", field: "#FFFDF9",
+    line: "#DFD6C8", "line-strong": "#C9BCA9", text: "#241D14", "text-2": "#3E3428", muted: "#6B5E4D",
+    accent: "#9A5B12", "accent-ink": "#FFFFFF", "accent-soft": "rgba(154,91,18,.10)",
+    ok: "#1B7A48", warn: "#A8650A", fault: "#C3372F", chart2: "#6E4FC9" }),
 };
 // Names from the old theme picker, so a saved choice lands somewhere sensible.
 const LEGACY_THEMES = { void: "slate", midnight: "slate", glass: "slate", tech: "slate", forest: "phosphor", hacker: "phosphor",
-  crimson: "nightshift", rose: "nightshift", amber: "nightshift", paper: "daylight", latte: "daylight", neo: "daylight" };
+  crimson: "blossom", rose: "blossom", amber: "nightshift", paper: "daylight", latte: "daylight", neo: "daylight" };
 
 const BASE_CSS = `
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}

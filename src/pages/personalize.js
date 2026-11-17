@@ -3,7 +3,7 @@ const { NAME_MAX, userName } = require("../profile");
 const { BASE_CSS, FAVICON, FONT, NAV_CSS, THEMES, TOAST_CSS, TOAST_JS, navBar } = require("../ui/assets");
 
 // ─── PERSONALIZE ─────────────────────────────────────────────────────────────
-// Reached from the theme menu in the sidebar. The name is saved on the server
+// Reached from the Personalize button in the sidebar. The name is saved on the server
 // (every device greets the same person); the theme stays per browser, as the
 // sidebar picker always kept it.
 //
