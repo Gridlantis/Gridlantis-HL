@@ -92,7 +92,6 @@ require("./routes/vmlab");
 require("./routes/docker");
 require("./routes/download");
 require("./routes/shell");
-require("./routes/world");
 require("./routes/voicemail");
 require("./routes/texts");
 

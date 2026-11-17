@@ -7,7 +7,6 @@ const { mastoPost } = require("./mastodon");
 const { fbPost, igPost } = require("./meta");
 const { SOCIAL_MIN_GAP_MS, SOCIAL_PLATFORMS, SOCIAL_TICK_MS, getDashboard, mediaList, readSocial, writeSocial } = require("./store");
 const { broadcast } = require("../../sse");
-const { activity } = require("../../activity");
 
 // A renewed LinkedIn token has to outlive this post.
 function saveAccount(dashboardId, acct) {
@@ -78,15 +77,12 @@ async function socialTick() {
       const results = live.results || {};
       for (const p of live.platforms) {
         if (results[p] && results[p].ok) continue;   // don't re-post a success on retry
-        const key = live.id + ":" + p;
-        activity("social", "send", { target: p, phase: "start", key, label: "Posting to " + SOCIAL_PLATFORMS[p]?.label });
         try {
           const r = await publishTo(p, live);
           results[p] = { ok: true, url: r.url || null, at: new Date().toISOString() };
         } catch (e) {
           results[p] = { ok: false, error: e.message, at: new Date().toISOString() };
         }
-        activity("social", "send", { target: p, phase: "done", key, ok: results[p].ok, label: (results[p].ok ? "Posted to " : "Post failed on ") + SOCIAL_PLATFORMS[p]?.label });
       }
       const after = readSocial();
       const slot = after.queue.find(q => q.id === live.id);

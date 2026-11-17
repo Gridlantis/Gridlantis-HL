@@ -1,4 +1,3 @@
-const { activity } = require("../activity");
 const { httpGet } = require("../net");
 
 // ── Current conditions, with a short-lived cache ──────────────────────────────
@@ -70,7 +69,6 @@ async function fetchWeather(lat, lon) {
   const key = lat + ',' + lon;
   const hit = WEATHER_CACHE.get(key);
   if (hit && Date.now() - hit.at < WEATHER_TTL_MS) return hit.data;
-  activity("weather", "fetch", { target: "weather", label: "Fetching the weather" });
   try {
     const wx = await tryWeatherGov(lat, lon);
     WEATHER_CACHE.set(key, { at: Date.now(), data: wx });

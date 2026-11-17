@@ -1,4 +1,3 @@
-const { activity } = require("../activity");
 const https = require("https");
 
 const { httpGet } = require("../net");
@@ -22,17 +21,8 @@ const AI_TOTAL_MS  = parseInt(process.env.AI_TIMEOUT_MS      || '900000', 10);  
 // Keep the model resident so the SECOND request does not pay the load cost again.
 const AI_KEEP_ALIVE = process.env.AI_KEEP_ALIVE || '30m';
 
-// Each model call is one errand on /world: out to the model host and back.
-function aiErrand(target, model, run) {
-  const key = "ai:" + Date.now() + ":" + Math.random().toString(36).slice(2, 6);
-  activity("ai", "think", { target, phase: "start", key, label: "Asking " + (model || target) });
-  return run().then(
-    v => { activity("ai", "think", { target, phase: "done", key, ok: true, label: (model || target) + " answered" }); return v; },
-    e => { activity("ai", "think", { target, phase: "done", key, ok: false, label: (model || target) + " failed" }); throw e; });
-}
-
 function callOllama(host, model, messages, system, ms = 0) {
-  return aiErrand("ollama", model, () => callOllamaRaw(host, model, messages, system, ms));
+  return callOllamaRaw(host, model, messages, system, ms);
 }
 function callOllamaRaw(host, model, messages, system, ms = 0) {
   return new Promise((resolve, reject) => {
@@ -116,7 +106,7 @@ async function callAI(provider, model, messages, system, ms = 0, opts = {}) {
 }
 
 function callOpenRouter(messages, model, system, ms = 120000) {
-  return aiErrand("openrouter", model || "openrouter/auto", () => callOpenRouterRaw(messages, model, system, ms));
+  return callOpenRouterRaw(messages, model, system, ms);
 }
 async function callOpenRouterRaw(messages, model, system, ms = 120000) {
   const KEY = getOpenRouterKey();

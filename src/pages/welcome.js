@@ -32,7 +32,6 @@ body{display:grid;place-items:center;padding:24px;}
   </ul>
 </main>
 <script>
-try{var a=new Audio('https://assets.mixkit.co/active_storage/sfx/2690/2690-preview.mp3');a.volume=0.5;a.play().catch(function(){});}catch(e){}
 (function(){
   var started = Date.now(), leave = function(){ location.replace('/'); };
   function mark(id, state, text, delay){

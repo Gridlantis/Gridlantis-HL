@@ -1,4 +1,3 @@
-const { activity } = require("../activity");
 const fs = require("fs");
 const path = require("path");
 const tls = require("tls");
@@ -340,14 +339,10 @@ async function pollAllMail() {
   if (mailPolling) return; mailPolling = true;
   try {
     for (const acct of MAIL_ACCOUNTS) {
-      const key = "mail:" + acct.id + ":" + Date.now();
-      activity("mail", "check", { target: acct.name || acct.email, phase: "start", key, label: "Checking " + (acct.name || acct.email) });
       try {
         const msgs = await imapSyncAccount(acct); const added = ingestMessages(acct, msgs); MAIL_STATUS[acct.id] = { ok: true, at: Date.now() };
-        activity("mail", "check", { target: acct.name || acct.email, phase: "done", key, ok: true, count: added, label: added ? added + " new in " + (acct.name || acct.email) : "No new mail in " + (acct.name || acct.email) });
       }
       catch (e) {
-        activity("mail", "check", { target: acct.name || acct.email, phase: "done", key, ok: false, label: "Mail check failed: " + (acct.name || acct.email) });
         MAIL_STATUS[acct.id] = { ok: false, at: Date.now(), error: e.message }; console.error("[Mail]", acct.email, "-", e.message); }
     }
     purgeMail();

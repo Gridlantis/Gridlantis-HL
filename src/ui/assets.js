@@ -442,8 +442,6 @@ const NAV_PAGES = [
    icon:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="2.2"/><path d="M10.5 18.5h3"/><path d="m10.5 8.5 3 2-3 2"/></svg>`},
   {href:"/docker", group:"Systems",    color:"#38bdf8", title:"Containers",
    icon:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="4" height="4"/><rect x="8" y="11" width="4" height="4"/><rect x="13" y="11" width="4" height="4"/><rect x="8" y="6" width="4" height="4"/><path d="M3 15c0 3 2.5 4.5 6 4.5s8-1.6 9.3-5.2c2.2.3 3.2-1.3 2.7-2.3"/></svg>`},
-  {href:"/world", group:"Systems",     color:"#22d3ee", title:"Open HL World",
-   icon:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9z"/><path d="M4 7.5 12 12l8-4.5M12 12v9"/></svg>`},
 ];
 
 // ── GLOBAL ALARM LAYER ───────────────────────────────────────────────────────
@@ -647,7 +645,7 @@ const ALARM_JS = `(function(){
 
 // Order of the sidebar. Pages are listed in NAV_PAGES in any order; this puts
 // them into groups people scan by task.
-const NAV_ORDER = ["/", "/notes", "/flows", "/reminders", "/calendar", "/files", "/live", "/texts", "/voicemail", "/mail", "/monitoring", "/vmlab", "/docker", "/world", "/homeos", "/laptops", "/mobile", "/finance", "/social", "/ai"];
+const NAV_ORDER = ["/", "/notes", "/flows", "/reminders", "/calendar", "/files", "/live", "/texts", "/voicemail", "/mail", "/monitoring", "/vmlab", "/docker", "/homeos", "/laptops", "/mobile", "/finance", "/social", "/ai"];
 
 function navBar(active) {
   const cur = active ? (active.charAt(0) === '/' ? active : '/' + active) : '';

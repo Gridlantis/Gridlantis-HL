@@ -39,7 +39,6 @@ const ROUTES = [
   require("./routes/live"),
   require("./routes/mobile"),
   require("./routes/download"),
-  require("./routes/world"),
   require("./routes/voicemail"),
   require("./routes/texts"),
 ];

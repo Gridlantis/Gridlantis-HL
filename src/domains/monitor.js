@@ -7,7 +7,6 @@ const { httpGet, httpPost, probePort } = require("../net");
 const { SETTINGS } = require("../settings");
 const { discordBotChecks, remoteBotChecks } = require("./discord-bots");
 const { broadcast } = require("../sse");
-const { activity } = require("../activity");
 const { readJSON, writeJSONFile } = require("../store");
 
 const NODES_FILE = dataFile("nodes.json");
@@ -104,7 +103,6 @@ async function nodeChecksRun() {
     const recovery = !(SETTINGS.alerts && SETTINGS.alerts.recovery === false);
     if (!ev.online || recovery) sendAlert(ev.online ? "Open HL · node recovered" : "Open HL · NODE OFFLINE", ev.name + (ev.online ? " is back online" : " is offline"), !ev.online);
   }
-  activity("monitor", "sweep", { count: Object.keys(cur).length, online: onlineNow, ms: Date.now() - t0, label: "Checked " + Object.keys(cur).length + " nodes, " + onlineNow + " online" });
   monitorPrimed = true;
 }
 
