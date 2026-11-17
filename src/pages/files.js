@@ -11,7 +11,7 @@ ${BASE_CSS}${NAV_CSS}${TOAST_CSS}${GAMEPAD_CSS}
 .group-item{display:flex;align-items:center;gap:10px;height:34px;padding:0 8px;border-radius:var(--r-ctl);cursor:pointer;color:var(--text-2);font-weight:500;}
 .group-item i{width:16px;text-align:center;color:var(--muted);}
 .group-item:hover{background:var(--raised);color:var(--text);}
-.group-item.active{background:var(--raised);color:var(--text);box-shadow:inset 2px 0 0 var(--accent);}
+.group-item.active{background:var(--raised);color:var(--text);}
 .group-item.active i{color:var(--accent);}
 .group-count{font-size:12.5px;color:var(--muted);margin-left:auto;flex-shrink:0;}
 .del-group{visibility:hidden;background:transparent;border:none;color:var(--muted);font-size:12px;padding:2px 4px;border-radius:4px;flex-shrink:0;}

@@ -20,7 +20,7 @@ ${BASE_CSS}${NAV_CSS}${TOAST_CSS}
 .ml-purge{padding:10px 16px;border-top:1px solid var(--line);}
 .ml-msg{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-top:1px solid var(--line);cursor:pointer;background:none;}
 .ml-msg:hover{background:var(--raised);}
-.ml-msg.sel{background:var(--raised);box-shadow:inset 2px 0 0 var(--accent);}
+.ml-msg.sel{background:var(--raised);}
 .ml-msg .udot{width:8px;height:8px;border-radius:50%;background:var(--accent);margin-top:7px;flex:0 0 auto;}
 .ml-msg.opened .udot{background:transparent;}
 .ml-msg .body{flex:1;min-width:0;}

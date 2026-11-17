@@ -22,9 +22,9 @@ ${BASE_CSS}${NAV_CSS}${TOAST_CSS}
 .fs-list{border-right:1px solid var(--line);}
 .fs-insp{border-left:1px solid var(--line);}
 .fs-side-h{display:flex;align-items:center;justify-content:space-between;padding:14px 14px 10px;font:600 15px/1.2 var(--font-display);}
-.fs-fl{display:flex;align-items:center;gap:8px;padding:8px 14px;cursor:pointer;border-left:2px solid transparent;}
+.fs-fl{display:flex;align-items:center;gap:8px;padding:8px 14px;cursor:pointer;}
 .fs-fl:hover{background:var(--raised);}
-.fs-fl.on{background:var(--raised);border-left-color:var(--accent);}
+.fs-fl.on{background:var(--raised);}
 .fs-fl-b{flex:1;min-width:0;}
 .fs-fl-n{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .fs-fl-m{font-size:12px;color:var(--muted);}

@@ -64,8 +64,7 @@ body{
   clip-path:polygon(9px 0,100% 0,100% calc(100% - 9px),calc(100% - 9px) 100%,0 100%,0 9px);
   background:color-mix(in srgb,var(--surface2) 60%,transparent);}
 .folder-item:hover{background:color-mix(in srgb,var(--glow) 14%,transparent);color:var(--text);}
-.folder-item.active{background:color-mix(in srgb,var(--glow) 24%,transparent);color:var(--text);
-  box-shadow:inset 2px 0 0 var(--glow);}
+.folder-item.active{background:color-mix(in srgb,var(--glow) 24%,transparent);color:var(--text);}
 .folder-emoji{font-size:14px;flex-shrink:0;cursor:pointer;user-select:none;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;
   border-radius:5px;color:var(--glow);transition:background .12s;}
 .folder-emoji i{font-size:13px;}

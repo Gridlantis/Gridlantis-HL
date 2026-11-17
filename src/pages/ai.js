@@ -11,7 +11,7 @@ ${BASE_CSS}${NAV_CSS}${TOAST_CSS}${GAMEPAD_CSS}
 .peer-list{display:flex;flex-direction:column;}
 .peer-card{padding:12px 16px;border-top:1px solid var(--line);cursor:pointer;}
 .peer-card:hover{background:var(--raised);}
-.peer-card.active{background:var(--raised);box-shadow:inset 2px 0 0 var(--accent);}
+.peer-card.active{background:var(--raised);}
 .peer-header{display:flex;align-items:center;gap:10px;}
 .peer-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0;}
 .peer-dot.online{background:var(--ok);} .peer-dot.offline{background:var(--fault);}
