@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 
 const { dataFile, pipeline, UPLOAD_DIR } = require("../config");
+const { insideDir } = require("../helpers");
 const { parseMultipart } = require("../multipart");
 const { buildZip, collectFiles } = require("../zip");
 const live = require("../domains/live");
@@ -14,6 +15,11 @@ const live = require("../domains/live");
 // folder's versions (live.archiveBeforeChange), so it shows up in Restore.
 const LIVE_ROOT = path.join(UPLOAD_DIR, "Live folders");
 const SYNC_INTERNAL = /^(\.stfolder|\.stignore|\.stversions)$|^\.syncthing\..*\.tmp$|^~syncthing~/;
+// Every path in a request is relative to uploads/ and must stay inside it.
+// Delete and rename also refuse uploads/ itself: an empty path used to mean
+// "the whole folder".
+const UPLOAD_ROOT = path.resolve(UPLOAD_DIR);
+const inUploads = rel => insideDir(UPLOAD_DIR, rel);
 const isLiveRootOrFolder = p => { const r = path.resolve(p); return r === LIVE_ROOT || path.dirname(r) === LIVE_ROOT; };
 
 // File browser: listing, upload, mkdir, delete, rename, preview, download.
@@ -22,8 +28,8 @@ module.exports = async function fileRoutes(ctx) {
 
   // ── Files API ────────────────────────────────────────────────────────────────
   if (pathname === '/api/files' && req.method === 'GET') {
-    const sub = parsed.searchParams.get('dir') || '';
-    const dir = sub ? path.join(UPLOAD_DIR, sub) : UPLOAD_DIR;
+    const dir = inUploads(parsed.searchParams.get('dir'));
+    if (!dir) return json({ error: 'Invalid path' }, 400);
     let entries;
     try { entries = fs.readdirSync(dir, { withFileTypes: true }); }
     catch { return json({ error: 'Cannot read directory' }, 400); }
@@ -57,8 +63,8 @@ module.exports = async function fileRoutes(ctx) {
   }
 
   if (pathname === '/api/files/upload' && req.method === 'POST') {
-    const dir = parsed.searchParams.get('dir') ? path.join(UPLOAD_DIR, parsed.searchParams.get('dir')) : UPLOAD_DIR;
-    if (!path.resolve(dir).startsWith(UPLOAD_DIR)) return json({ error: 'Invalid path' }, 400);
+    const dir = inUploads(parsed.searchParams.get('dir'));
+    if (!dir) return json({ error: 'Invalid path' }, 400);
     const ct = req.headers['content-type'] || '';
     const boundary = ct.split('boundary=')[1];
     if (!boundary) return json({ error: 'No boundary' }, 400);
@@ -76,8 +82,8 @@ module.exports = async function fileRoutes(ctx) {
 
   if (pathname === '/api/files/mkdir' && req.method === 'POST') {
     const body = JSON.parse((await readBody()).toString());
-    const dir  = body.dir ? path.join(UPLOAD_DIR, body.dir) : UPLOAD_DIR;
-    if (!path.resolve(dir).startsWith(UPLOAD_DIR)) return json({ error: 'Invalid path' }, 400);
+    const dir  = inUploads(body.dir);
+    if (!dir) return json({ error: 'Invalid path' }, 400);
     const name = (body.name || '').replace(/[^a-zA-Z0-9_\-. ]/g, '');
     if (!name) return json({ error: 'Invalid name' }, 400);
     try { fs.mkdirSync(path.join(dir, name)); return json({ ok: true }); }
@@ -86,8 +92,8 @@ module.exports = async function fileRoutes(ctx) {
 
   if (pathname === '/api/files/delete' && req.method === 'POST') {
     const body = JSON.parse((await readBody()).toString());
-    const target = path.join(UPLOAD_DIR, body.path || '');
-    if (!target.startsWith(UPLOAD_DIR)) return json({ error: 'Invalid path' }, 400);
+    const target = inUploads(body.path);
+    if (!target || target === UPLOAD_ROOT) return json({ error: 'Invalid path' }, 400);
     if (isLiveRootOrFolder(target)) return json({ error: 'That is a live folder — remove it on the Live folders page' }, 400);
     try {
       const stat = fs.statSync(target);
@@ -100,20 +106,20 @@ module.exports = async function fileRoutes(ctx) {
 
   if (pathname === '/api/files/rename' && req.method === 'POST') {
     const body = JSON.parse((await readBody()).toString());
-    const from = path.join(UPLOAD_DIR, body.from || '');
-    const to   = path.join(UPLOAD_DIR, body.to   || '');
-    if (!from.startsWith(UPLOAD_DIR) || !to.startsWith(UPLOAD_DIR)) return json({ error: 'Invalid path' }, 400);
+    const from = inUploads(body.from);
+    const to   = inUploads(body.to);
+    if (!from || !to || from === UPLOAD_ROOT || to === UPLOAD_ROOT) return json({ error: 'Invalid path' }, 400);
     if (isLiveRootOrFolder(from)) return json({ error: 'That is a live folder — rename it on the Live folders page' }, 400);
     try {
-      if (fs.existsSync(to) && path.resolve(to) !== path.resolve(from)) await live.archiveBeforeChange(to);
+      if (fs.existsSync(to) && to !== from) await live.archiveBeforeChange(to);
       fs.renameSync(from, to); return json({ ok: true });
     } catch(e) { return json({ error: e.message }, e.status || 400); }
   }
 
   if (pathname === '/api/files/preview') {
     // Serves files inline with correct MIME type for browser rendering (PDF, images, etc.)
-    const filePath = path.join(UPLOAD_DIR, parsed.searchParams.get('path') || '');
-    if (!filePath.startsWith(UPLOAD_DIR)) return json({ error: 'Invalid path' }, 403);
+    const filePath = inUploads(parsed.searchParams.get('path'));
+    if (!filePath) return json({ error: 'Invalid path' }, 403);
     const MIME = {
       pdf: 'application/pdf',
       jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png',
@@ -142,8 +148,8 @@ module.exports = async function fileRoutes(ctx) {
   }
 
   if (pathname === '/api/files/download') {
-    const filePath = path.join(UPLOAD_DIR, parsed.searchParams.get('path') || '');
-    if (!filePath.startsWith(UPLOAD_DIR)) return json({ error: 'Invalid path' }, 403);
+    const filePath = inUploads(parsed.searchParams.get('path'));
+    if (!filePath) return json({ error: 'Invalid path' }, 403);
     try {
       const stat = fs.statSync(filePath);
       if (stat.isDirectory()) {
