@@ -112,7 +112,7 @@ function timeAgo(t){
   return s >= 0 ? 'in ' + v : v + ' ago';
 }
 </script>`;
-const FONT = `<link rel="stylesheet" href="/ui/vendor/fonts/fonts.css?v=1"><link rel="stylesheet" href="/ui/vendor/fontawesome/css/all.min.css?v=6.5.1">` + HELPERS_JS + EVENTS_JS;
+const FONT = `<link rel="stylesheet" href="/ui/vendor/fonts/fonts.css?v=2"><link rel="stylesheet" href="/ui/vendor/fontawesome/css/all.min.css?v=6.5.1">` + HELPERS_JS + EVENTS_JS;
 // The Open HL monogram: an upright L with a sideways H over its upper right.
 // LOGO_SVG is the bare mark (sidebar); the favicon puts it on the app tile.
 const LOGO_PATHS = "<path d='M15 22V49H48' fill='none' stroke='%COLOR_L%' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/>" +
@@ -209,6 +209,8 @@ const BASE_CSS = `
   ${Object.entries(THEMES.slate.vars).map(([k, v]) => "--" + k + ":" + v + ";").join("")}
   --font-ui:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
   --font-display:'IBM Plex Sans Condensed','IBM Plex Sans',system-ui,sans-serif;
+  --font-brand:'Dendritic Voltage','IBM Plex Sans Condensed',system-ui,sans-serif;
+  --font-nav:'Oxanium','IBM Plex Sans',system-ui,sans-serif;
   --font-mono:'IBM Plex Mono',ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
   --r-panel:10px;--r-ctl:6px;
   --nav-w:232px;--pulse-h:44px;--app-h:100vh;
@@ -308,11 +310,12 @@ html.nav-hidden .m-cell.menu{display:flex;}
   border-right:1px solid var(--line);display:flex;flex-direction:column;}
 .m-brand{height:var(--pulse-h);flex-shrink:0;display:flex;align-items:center;gap:10px;padding:0 18px;border-bottom:1px solid var(--line);
   text-decoration:none;color:var(--text);}
-.m-brand-name{font:600 19px/1 var(--font-display);letter-spacing:.01em;}
+.m-brand-name{font:400 21px/1 var(--font-brand);letter-spacing:.02em;}
 .m-logo{width:26px;height:26px;flex-shrink:0;color:var(--text);}
 .m-logo path{stroke:currentColor;} .m-logo path+path{stroke:var(--accent);}
 .m-nav-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:8px 10px 12px;scrollbar-width:thin;}
-.m-group-h{font:500 12.5px/1 var(--font-display);color:var(--muted);padding:16px 10px 8px;}
+.m-group-h{font:500 12.5px/1 var(--font-nav);color:var(--muted);padding:16px 10px 8px;}
+.m-link,.m-foot-btn,.m-apps-item{font-family:var(--font-nav);}
 .m-link{display:flex;align-items:center;gap:12px;height:36px;padding:0 10px;border-radius:var(--r-ctl);color:var(--text-2);
   text-decoration:none;font-weight:500;position:relative;white-space:nowrap;}
 .m-link svg,.m-link i{width:18px;height:18px;font-size:15px;flex-shrink:0;color:var(--muted);display:flex;align-items:center;justify-content:center;}
