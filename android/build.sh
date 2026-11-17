@@ -11,8 +11,8 @@
 # update over the old app when both are signed with the same key.
 set -euo pipefail
 
-VERSION="1.0.1"
-VERSION_CODE=2
+VERSION="1.1.0"
+VERSION_CODE=3
 MIN_SDK=24
 TARGET_SDK=34
 
@@ -45,9 +45,11 @@ echo "→ resources"
   --version-code $VERSION_CODE --version-name $VERSION "$B/res.zip"
 
 echo "→ java"
-javac -nowarn -source 11 -target 11 -encoding UTF-8 -Xlint:-options -classpath "$JAR" -d "$B/classes" \
-  $(find "$HERE/src" "$B/gen" -name '*.java')
-"$BT/d8" --release --min-api $MIN_SDK --lib "$JAR" --output "$B/dex" $(find "$B/classes" -name '*.class')
+# Arrays, not $(find ...): the repo path may contain spaces.
+mapfile -d '' SOURCES < <(find "$HERE/src" "$B/gen" -name '*.java' -print0)
+javac -nowarn -source 11 -target 11 -encoding UTF-8 -Xlint:-options -classpath "$JAR" -d "$B/classes" "${SOURCES[@]}"
+mapfile -d '' CLASSES < <(find "$B/classes" -name '*.class' -print0)
+"$BT/d8" --release --min-api $MIN_SDK --lib "$JAR" --output "$B/dex" "${CLASSES[@]}"
 (cd "$B/dex" && zip -q -u "$B/unsigned.apk" classes.dex)
 
 echo "→ sign"

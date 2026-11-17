@@ -392,6 +392,7 @@ const THEME_JS = `(function(){
     var th=THEMES[name];
     Object.entries(th.vars).forEach(function(kv){root.style.setProperty('--'+kv[0],kv[1]);});
     root.style.colorScheme=th.dark?'dark':'light';
+    try{ if(window.openhlAndroid&&window.openhlAndroid.setTheme) window.openhlAndroid.setTheme(th.vars['bg-nav'],th.vars.bg,th.dark); }catch(e){}
   }
   var saved='slate';
   try{ saved=pick(localStorage.getItem('openhl-theme')); if(localStorage.getItem('openhl-nav')==='rail') root.classList.add('nav-rail'); if(localStorage.getItem('openhl-nav-hidden')==='1') root.classList.add('nav-hidden'); }catch(e){}

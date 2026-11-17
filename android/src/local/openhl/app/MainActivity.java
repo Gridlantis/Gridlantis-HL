@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.net.http.SslCertificate;
 import android.net.http.SslError;
@@ -47,6 +48,7 @@ public class MainActivity extends Activity {
     private static final String CONNECT_PAGE = "file:///android_asset/connect.html";
     private static final int REQ_FILE = 1, REQ_PERMS = 2, REQ_STORAGE = 3;
     private static final int MAX_SERVERS = 8;
+    private static final int DEFAULT_BG = 0xff151b23;   // Slate, the default theme
 
     private WebView web;
     private SharedPreferences prefs;
@@ -63,8 +65,9 @@ public class MainActivity extends Activity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
         web = new WebView(this);
-        web.setBackgroundColor(0xff0b0b10);
+        web.setBackgroundColor(DEFAULT_BG);
         setContentView(web);
+        setBars(DEFAULT_BG, DEFAULT_BG, true);
 
         WebSettings s = web.getSettings();
         s.setJavaScriptEnabled(true);
@@ -154,6 +157,7 @@ public class MainActivity extends Activity {
     private void showConnect(String error) {
         serverOrigin = null;
         prefs.edit().remove("last").apply();
+        setBars(DEFAULT_BG, DEFAULT_BG, true);
         String url = CONNECT_PAGE + (error == null ? "" : "?error=" + Uri.encode(error));
         web.loadUrl(url);
         web.postDelayed(web::clearHistory, 400);
@@ -190,6 +194,27 @@ public class MainActivity extends Activity {
         @JavascriptInterface public void switchServer() {
             if (onServerPage()) runOnUiThread(() -> showConnect(null));
         }
+        // The page's theme colours the status and navigation bars, with dark
+        // or light icons to suit.
+        @JavascriptInterface public void setTheme(String top, String bottom, boolean dark) {
+            if (!onServerPage()) return;
+            int t, b;
+            try { t = Color.parseColor(top); b = Color.parseColor(bottom); } catch (Exception e) { return; }
+            runOnUiThread(() -> { web.setBackgroundColor(b); setBars(t, b, dark); });
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    private void setBars(int top, int bottom, boolean dark) {
+        getWindow().setStatusBarColor(top | 0xff000000);
+        getWindow().setNavigationBarColor(bottom | 0xff000000);
+        View d = getWindow().getDecorView();
+        int f = d.getSystemUiVisibility() & ~(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
+        if (!dark) {
+            f |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+            if (Build.VERSION.SDK_INT >= 26) f |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+        }
+        d.setSystemUiVisibility(f);
     }
 
     // ── Navigation ───────────────────────────────────────────────────────────
