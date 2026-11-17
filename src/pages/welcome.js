@@ -1,5 +1,3 @@
-const { GOOGLE_CALENDAR_EMBED } = require("../config");
-const { esc } = require("../helpers");
 const { BASE_CSS, FAVICON, FONT, LEGACY_THEMES, THEMES } = require("../ui/assets");
 
 // ─── WELCOME PAGE ─────────────────────────────────────────────────────────────
@@ -57,21 +55,4 @@ body{display:grid;place-items:center;padding:24px;}
 }
 
 
-// ─── HOME PAGE ────────────────────────────────────────────────────────────────
-function calendarSection() {
-  if (!GOOGLE_CALENDAR_EMBED) {
-    return `<div class="cal-placeholder">
-      <div class="cal-placeholder-ico">📅</div>
-      <div class="cal-placeholder-title">Google Calendar</div>
-      <div class="cal-placeholder-sub">Add <code>GOOGLE_CALENDAR_EMBED_URL</code> to your .env to enable the calendar widget.</div>
-    </div>`;
-  }
-  return `<iframe src="${esc(GOOGLE_CALENDAR_EMBED)}" style="border:0;width:100%;height:420px;border-radius:10px;" frameborder="0" scrolling="no"></iframe>`;
-}
-
-// Dashboard-shell home: left feature rail · hero + module cards · quick-link
-// side cards · animated AI core · far-right website rail. All client JS below
-// obeys the template-literal constraint (no backticks, no dollar-brace, no
-// backslashes — String.fromCharCode / char-class regexes instead).
-
-module.exports = { calendarSection, welcomeHtml };
+module.exports = { welcomeHtml };

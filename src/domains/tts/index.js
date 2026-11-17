@@ -56,14 +56,6 @@ async function ttsSynth(text, cfg) {
   } catch {}
 })();
 
-function mp3Args(cmd) {
-  if (cmd === "mpg123") return ["-q", "-"];
-  if (cmd === "ffplay") return ["-nodisp", "-autoexit", "-loglevel", "quiet", "-"];
-  if (cmd === "mpv")    return ["--really-quiet", "--no-video", "-"];
-  if (cmd === "cvlc")   return ["--play-and-exit", "--intf", "dummy", "-"];
-  return ["-"];
-}
-
 // Fallback chain: whatever the settings say, then down the ladder, then espeak.
 // Never go silent just because one engine is unavailable.
 function playAudio(buf, isWav) {
@@ -128,4 +120,4 @@ const TTS_VOICES = [
 ];
 // ═══ TTS:END ═══
 
-module.exports = { TTS_VOICES, mp3Args, playAudio, speakServer, ttsSettings, ttsSynth };
+module.exports = { TTS_VOICES, playAudio, speakServer, ttsSettings, ttsSynth };

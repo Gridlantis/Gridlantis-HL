@@ -18,7 +18,6 @@ require("./host");
 require("./domains/finance");
 require("./domains/quicklinks");
 require("./domains/todo");
-require("./ui/icons");
 require("./audio");
 require("./alerts");
 require("./helpers");

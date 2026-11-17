@@ -67,22 +67,5 @@ const writeJSON   = (f,d) => {
   const t = typeMap[path.basename(f,'.json')];
   if (t) broadcast('change', {type:t});
 };
-const readNotes   = () => readJSON(NOTES_FILE);
-const writeNotes  = d  => writeJSON(NOTES_FILE, d);
-const readFolders = () => readJSON(FOLDERS_FILE);
-const writeFolders= d  => writeJSON(FOLDERS_FILE, d);
-const readLinks   = () => readJSON(LINKS_FILE);
-const writeLinks  = d  => writeJSON(LINKS_FILE, d);
-const readWebforms   = () => readJSON(WEBFORMS_FILE);
-const writeWebforms  = d  => writeJSON(WEBFORMS_FILE, d);
-const readFileGroups = () => readJSON(FILE_GROUPS_FILE);
-const writeFileGroups= d  => writeJSON(FILE_GROUPS_FILE, d);
-const readAiPeers    = () => readJSON(AI_PEERS_FILE);
-const writeAiPeers   = d  => writeJSON(AI_PEERS_FILE, d);
 
-// ═══ MAIL — multi-account Gmail over IMAP (read-only, pull) ═════════════════════
-// Zero-dependency IMAP client on Node's built-in tls. Open HL only ever FETCHes;
-// it never deletes or modifies mail on the server. "Delete" = drop Open HL's cached
-// copy. New-only incremental sync via UIDs; unopened cached mail purged at 21 days.
-
-module.exports = { readAiPeers, readFileGroups, readFolders, readJSON, readLinks, readNotes, readWebforms, writeAiPeers, writeFileGroups, writeFolders, writeJSON, writeJSONFile, writeLinks, writeNotes, writeWebforms };
+module.exports = { readJSON, writeJSON, writeJSONFile };

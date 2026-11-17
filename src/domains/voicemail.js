@@ -34,7 +34,6 @@ function writeVoicemail(d) {
   d.gone = d.gone.slice(-GONE_MAX);
   writeJSONFile(VM_FILE, d);
 }
-const unheardCount = () => readVoicemail().items.filter(v => !v.heardAt).length;
 
 async function doPoll() {
   const d = readVoicemail();
@@ -86,4 +85,4 @@ function pollVoicemail() {
 
 if (configured()) { setTimeout(pollVoicemail, 5000); setInterval(pollVoicemail, POLL_MS); }
 
-module.exports = { AUDIO_DIR, STATUS, configured, pollVoicemail, readVoicemail, unheardCount, writeVoicemail };
+module.exports = { AUDIO_DIR, STATUS, configured, pollVoicemail, readVoicemail, writeVoicemail };

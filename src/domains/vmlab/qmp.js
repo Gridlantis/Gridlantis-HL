@@ -78,27 +78,4 @@ function qga(sockPath, execute, args, timeoutMs = 4000) {
   });
 }
 
-// Run a program in the guest and wait for it. Output is base64 in QGA.
-async function guestExec(sockPath, file, argv, { timeoutSec = 60, input } = {}) {
-  const args = { path: file, arg: argv, "capture-output": true };
-  if (input != null) args["input-data"] = Buffer.from(String(input)).toString("base64");
-  const { pid } = await qga(sockPath, "guest-exec", args, 8000);
-  const deadline = Date.now() + timeoutSec * 1000;
-  for (;;) {
-    const st = await qga(sockPath, "guest-exec-status", { pid }, 8000);
-    if (st.exited) {
-      return {
-        exitCode: st.exitcode != null ? st.exitcode : (st.signal != null ? 128 + st.signal : null),
-        stdout: st["out-data"] ? Buffer.from(st["out-data"], "base64").toString("utf8") : "",
-        stderr: st["err-data"] ? Buffer.from(st["err-data"], "base64").toString("utf8") : "",
-        truncated: !!(st["out-truncated"] || st["err-truncated"]),
-      };
-    }
-    if (Date.now() > deadline) {
-      const e = new Error("timed out after " + timeoutSec + "s"); e.timeout = true; throw e;
-    }
-    await new Promise(r => setTimeout(r, 400));
-  }
-}
-
-module.exports = { guestExec, hmp, qga, qmp };
+module.exports = { hmp, qga, qmp };
