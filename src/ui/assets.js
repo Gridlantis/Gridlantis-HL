@@ -303,7 +303,6 @@ html.nav-hidden .m-cell.menu{display:flex;}
 .m-foot-btn:hover{background:var(--raised);color:var(--text);}
 .m-foot-btn.active{color:var(--text);font-weight:700;}
 .m-foot-btn i{width:18px;text-align:center;color:var(--muted);font-size:14px;flex-shrink:0;}
-.m-swatch{width:18px;height:18px;border-radius:5px;border:1px solid var(--line-strong);background:var(--accent);flex-shrink:0;}
 html.nav-rail .m-brand{padding:0;justify-content:center;}
 html.nav-rail .m-brand-name,html.nav-rail .m-link-l,html.nav-rail .m-foot-l,html.nav-rail .m-count{display:none!important;}
 html.nav-rail .m-group-h{font-size:0;padding:8px 0;margin:6px 10px;border-top:1px solid var(--line);}
@@ -640,7 +639,7 @@ function navBar(active) {
 <a href="/" class="m-brand" title="Open HL home">${LOGO_SVG}<span class="m-brand-name">Open HL</span></a>
 <nav class="m-nav-scroll" aria-label="Pages">${links}</nav>
 <div class="m-nav-foot">
-  <a class="m-foot-btn${cur === '/personalize' ? ' active' : ''}" href="/personalize" title="Personalize: your name and themes"${cur === '/personalize' ? ' aria-current="page"' : ''}><span class="m-swatch"></span><span class="m-foot-l">Personalize</span></a>
+  <a class="m-foot-btn${cur === '/personalize' ? ' active' : ''}" href="/personalize" title="Personalize: your name and themes"${cur === '/personalize' ? ' aria-current="page"' : ''}><i class="fa-solid fa-user"></i><span class="m-foot-l">Personalize</span></a>
   <div class="openhl-get-app">
     <button class="m-foot-btn" id="m-apps-btn" type="button" title="Get the app" aria-haspopup="menu" aria-expanded="false" aria-controls="m-apps-menu"><i class="fa-solid fa-download"></i><span class="m-foot-l">Get the app</span><i class="fa-solid fa-chevron-up m-apps-chev"></i></button>
     <div class="m-apps-menu" id="m-apps-menu" role="menu" aria-label="Get the app">
