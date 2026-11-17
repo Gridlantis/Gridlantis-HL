@@ -6,7 +6,8 @@
 # build-tools;35.0.0. Defaults to ~/Android/jdk and ~/Android/Sdk.
 #
 # The signing key lives OUTSIDE the repo (~/Android/openhl-release.jks by
-# default) and is made on first build. Keep it: Android only installs an
+# default) and is made on first build. Its password comes from OPENHL_KEYPASS
+# or is asked for; none is kept in the repo. Keep it: Android only installs an
 # update over the old app when both are signed with the same key.
 set -euo pipefail
 
@@ -21,7 +22,7 @@ SDK="${ANDROID_HOME:-$HOME/Android/Sdk}"
 BT="$SDK/build-tools/35.0.0"
 JAR="$SDK/platforms/android-35/android.jar"
 KEYSTORE="${OPENHL_KEYSTORE:-$HOME/Android/openhl-release.jks}"
-KEYPASS="${OPENHL_KEYPASS:-openhl-android}"
+KEYPASS="${OPENHL_KEYPASS:-}"
 PATH="$JAVA_HOME/bin:$PATH"
 
 for f in "$BT/aapt2" "$BT/d8" "$BT/apksigner" "$BT/zipalign" "$JAR" "$JAVA_HOME/bin/javac"; do
@@ -50,6 +51,12 @@ javac -nowarn -source 11 -target 11 -encoding UTF-8 -Xlint:-options -classpath "
 (cd "$B/dex" && zip -q -u "$B/unsigned.apk" classes.dex)
 
 echo "→ sign"
+if [ -z "$KEYPASS" ]; then
+  [ -t 0 ] || { echo "Set OPENHL_KEYPASS to the signing key's password." >&2; exit 1; }
+  read -rsp "  signing key password: " KEYPASS; echo
+  if [ ! -f "$KEYSTORE" ]; then read -rsp "  again: " again; echo; [ "$KEYPASS" = "$again" ] || { echo "Passwords differ." >&2; exit 1; }; fi
+  [ ${#KEYPASS} -ge 6 ] || { echo "Use at least 6 characters (keytool's minimum)." >&2; exit 1; }
+fi
 if [ ! -f "$KEYSTORE" ]; then
   echo "  making signing key $KEYSTORE"
   keytool -genkeypair -keystore "$KEYSTORE" -alias openhl -keyalg RSA -keysize 3072 -validity 10000 \

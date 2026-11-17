@@ -29,6 +29,10 @@ JAVA_HOME=~/Android/jdk ~/Android/Sdk/cmdline-tools/latest/bin/sdkmanager --sdk_
 ## Signing
 
 The first build makes a signing key at `~/Android/openhl-release.jks` (outside
-the repo; `OPENHL_KEYSTORE` / `OPENHL_KEYPASS` override it). Back it up: phones
+the repo; `OPENHL_KEYSTORE` overrides the path). Its password is read from
+`OPENHL_KEYPASS`, or the build asks for it; the first build asks twice and that
+password protects the new key. A key made before this change used the old
+built-in password `openhl-android`: enter that, or change it with
+`keytool -storepasswd` and `keytool -keypasswd -alias openhl`. Back the key up: phones
 only accept an update signed with the same key, otherwise the old app has to be
 uninstalled first. Bump `VERSION` and `VERSION_CODE` in `build.sh` for updates.
