@@ -8,7 +8,7 @@ function notesHtml() {
 ${BASE_CSS}${NAV_CSS}${TOAST_CSS}${GAMEPAD_CSS}
 /* Notes keeps its own HUD typography inside the shared shell. */
 body{font-family:'Syne',sans-serif;font-size:16px;line-height:normal;font-variant-numeric:normal;}
-.m-nav,.m-pulse,.theme-popover,.toast{font-family:var(--font-ui);font-size:14px;line-height:1.5;}
+.m-nav,.m-pulse,.toast{font-family:var(--font-ui);font-size:14px;line-height:1.5;}
 /* ── HUD tokens ──────────────────────────────────────────────────────────────
    Defined on BODY, not on .notes-layout. The editor modal, preview panel and
    selection toolbar are all rendered as siblings of .notes-layout, so tokens

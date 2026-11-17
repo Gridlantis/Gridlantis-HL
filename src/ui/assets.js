@@ -301,6 +301,7 @@ html.nav-hidden .m-cell.menu{display:flex;}
 .m-foot-btn{display:flex;align-items:center;gap:12px;height:34px;padding:0 10px;border-radius:var(--r-ctl);color:var(--text-2);
   background:none;border:0;text-decoration:none;font-size:13.5px;width:100%;text-align:left;white-space:nowrap;}
 .m-foot-btn:hover{background:var(--raised);color:var(--text);}
+.m-foot-btn.active{color:var(--text);font-weight:700;}
 .m-foot-btn i{width:18px;text-align:center;color:var(--muted);font-size:14px;flex-shrink:0;}
 .m-swatch{width:18px;height:18px;border-radius:5px;border:1px solid var(--line-strong);background:var(--accent);flex-shrink:0;}
 html.nav-rail .m-brand{padding:0;justify-content:center;}
@@ -308,24 +309,6 @@ html.nav-rail .m-brand-name,html.nav-rail .m-link-l,html.nav-rail .m-foot-l,html
 html.nav-rail .m-group-h{font-size:0;padding:8px 0;margin:6px 10px;border-top:1px solid var(--line);}
 html.nav-rail .m-link,html.nav-rail .m-foot-btn{justify-content:center;padding:0;}
 html.nav-rail .m-nav-scroll,html.nav-rail .m-nav-foot{padding-left:8px;padding-right:8px;}
-.theme-popover{position:fixed;left:calc(var(--nav-w) + 8px);bottom:12px;z-index:9999;display:none;width:320px;
-  background:var(--surface);border:1px solid var(--line);border-radius:var(--r-panel);padding:12px;
-  box-shadow:0 18px 48px rgba(0,0,0,.4);flex-direction:column;gap:10px;}
-.theme-popover.open{display:flex;}
-.theme-popover-title{font:600 15px var(--font-display);}
-.theme-section-label{font-size:12.5px;color:var(--muted);margin-bottom:6px;}
-.theme-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;}
-.theme-chip{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:var(--r-ctl);background:var(--raised);
-  border:1px solid var(--line);color:var(--text);font-size:13px;text-align:left;}
-.theme-chip:hover{border-color:var(--line-strong);}
-.theme-chip.active{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);}
-.theme-dot{width:12px;height:12px;border-radius:4px;flex-shrink:0;}
-.theme-more{display:grid;grid-template-columns:auto 1fr auto;grid-template-rows:auto auto;column-gap:10px;align-items:center;
-  padding:9px 10px;margin-top:2px;border-top:1px solid var(--line);color:var(--text);text-decoration:none;border-radius:var(--r-ctl);}
-.theme-more:hover{background:var(--raised);}
-.theme-more>i:first-child{grid-row:1/3;color:var(--accent);width:18px;text-align:center;}
-.theme-more span{font-weight:600;font-size:13.5px;} .theme-more small{grid-column:2;color:var(--muted);font-size:12px;}
-.theme-more>i:last-child{grid-row:1/3;grid-column:3;color:var(--muted);font-size:11px;}
 .m-apps-chev{margin-left:auto;font-size:10px!important;width:auto!important;transition:transform .15s;}
 .openhl-get-app.open .m-apps-chev{transform:rotate(180deg);}
 .m-apps-menu{position:fixed;left:calc(var(--nav-w) + 8px);bottom:12px;z-index:9999;display:none;width:240px;
@@ -367,7 +350,6 @@ a.m-cell:hover{background:var(--raised);}
   .m-pulse{left:0;}
   .m-cell.menu{display:flex;}
   .m-cell.hide-sm{display:none;}
-  .theme-popover{left:12px;right:12px;width:auto;}
   .m-apps-menu{left:12px;right:12px;width:auto;}
   .m-collapse,.m-hide{display:none!important;}
 }
@@ -391,39 +373,9 @@ const THEME_JS = `(function(){
     if(!THEMES[name])return;
     apply(name);
     try{localStorage.setItem('openhl-theme',name);}catch(e){}
-    document.querySelectorAll('.theme-chip').forEach(function(c){c.classList.toggle('active',c.dataset.theme===name);});
     try{window.dispatchEvent(new Event('openhl:theme'));}catch(e){}
   };
 
-  window._buildThemePicker=function(){
-    var pop=document.getElementById('theme-popover');if(!pop||pop.dataset.built)return;
-    pop.dataset.built='1';
-    var cur=saved;
-    try{cur=pick(localStorage.getItem('openhl-theme'));}catch(e){}
-    var darkDiv=document.getElementById('theme-dark-grid');
-    var lightDiv=document.getElementById('theme-light-grid');
-    Object.entries(THEMES).forEach(function(entry){
-      var name=entry[0],th=entry[1];
-      var chip=document.createElement('button');
-      chip.type='button';
-      chip.className='theme-chip'+(name===cur?' active':'');
-      chip.dataset.theme=name;
-      var dot=document.createElement('span');dot.className='theme-dot';dot.style.background=th.dot;
-      var lbl=document.createElement('span');lbl.textContent=th.label;
-      chip.appendChild(dot);chip.appendChild(lbl);
-      chip.addEventListener('click',function(){_applyTheme(name);});
-      (th.dark?darkDiv:lightDiv).appendChild(chip);
-    });
-    var btn=document.getElementById('theme-picker-btn');
-    if(btn){
-      btn.addEventListener('click',function(e){e.stopPropagation();pop.classList.toggle('open');});
-      document.addEventListener('click',function(){pop.classList.remove('open');});
-      document.addEventListener('keydown',function(e){if(e.key==='Escape')pop.classList.remove('open');});
-      pop.addEventListener('click',function(e){e.stopPropagation();});
-    }
-  };
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',window._buildThemePicker);
-  else window._buildThemePicker();
 })();`;
 
 const NAV_PAGES = [
@@ -688,13 +640,7 @@ function navBar(active) {
 <a href="/" class="m-brand" title="Open HL home">${LOGO_SVG}<span class="m-brand-name">Open HL</span></a>
 <nav class="m-nav-scroll" aria-label="Pages">${links}</nav>
 <div class="m-nav-foot">
-  <button class="m-foot-btn" id="theme-picker-btn" type="button" title="Theme"><span class="m-swatch"></span><span class="m-foot-l">Theme</span></button>
-  <div class="theme-popover" id="theme-popover" role="dialog" aria-label="Theme">
-    <div class="theme-popover-title">Theme</div>
-    <div><div class="theme-section-label">Dark</div><div class="theme-grid" id="theme-dark-grid"></div></div>
-    <div><div class="theme-section-label">Light</div><div class="theme-grid" id="theme-light-grid"></div></div>
-    <a class="theme-more" href="/personalize"><i class="fa-solid fa-sliders"></i><span>Personalize</span><small>Your name and themes</small><i class="fa-solid fa-chevron-right"></i></a>
-  </div>
+  <a class="m-foot-btn${cur === '/personalize' ? ' active' : ''}" href="/personalize" title="Personalize: your name and themes"${cur === '/personalize' ? ' aria-current="page"' : ''}><span class="m-swatch"></span><span class="m-foot-l">Personalize</span></a>
   <div class="openhl-get-app">
     <button class="m-foot-btn" id="m-apps-btn" type="button" title="Get the app" aria-haspopup="menu" aria-expanded="false" aria-controls="m-apps-menu"><i class="fa-solid fa-download"></i><span class="m-foot-l">Get the app</span><i class="fa-solid fa-chevron-up m-apps-chev"></i></button>
     <div class="m-apps-menu" id="m-apps-menu" role="menu" aria-label="Get the app">

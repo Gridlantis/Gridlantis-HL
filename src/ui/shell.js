@@ -55,7 +55,6 @@
     var setApps = function (on) { apps.classList.toggle("open", on); appsBtn.setAttribute("aria-expanded", on ? "true" : "false"); };
     appsBtn.addEventListener("click", function (e) {
       e.stopPropagation();
-      var tp = $("theme-popover"); if (tp) tp.classList.remove("open");
       setApps(!apps.classList.contains("open"));
       if (apps.classList.contains("open")) { var f = apps.querySelector(".m-apps-item"); if (f) f.focus(); }
     });
