@@ -29,6 +29,7 @@ module.exports = async function fileRoutes(ctx) {
   // ── Files API ────────────────────────────────────────────────────────────────
   if (pathname === '/api/files' && req.method === 'GET') {
     const dir = inUploads(parsed.searchParams.get('dir'));
+    const sub = (parsed.searchParams.get('dir') || '').replace(/^\/+|\/+$/g, '');
     if (!dir) return json({ error: 'Invalid path' }, 400);
     let entries;
     try { entries = fs.readdirSync(dir, { withFileTypes: true }); }
