@@ -32,6 +32,27 @@ A few rules for `.env`: one `KEY=value` per line, comments on their own line
 (a `#` after a value becomes part of the value), and a variable already set in
 your shell overrides the file.
 
+## Use it from other devices
+
+Open HL listens on every network interface, so nothing in Open HL needs
+changing to reach it from another device.
+
+**Use [Tailscale](https://tailscale.com).** Install it on the machine running
+Open HL and on your phone or laptop, sign both into the same tailnet, then open
+`http://<tailscale-ip>:3000`. This works at home and away, and the traffic is
+encrypted. Don't forward port 3000 on your router: Open HL is plain HTTP behind
+one password.
+
+**Home network without Tailscale.** Open `http://<machine-ip>:3000` or
+`http://openhl.local:3000`. If the page doesn't load, the machine's firewall is
+blocking it. Allow TCP port 3000 (and UDP 5353 for the `openhl.local` name)
+from your local network only. With ufw on a `192.168.1.x` network:
+
+    sudo ufw allow from 192.168.1.0/24 to any port 3000 proto tcp
+    sudo ufw allow from 192.168.1.0/24 to any port 5353 proto udp
+
+Use your own network's range in place of `192.168.1.0/24`.
+
 ## API keys
 
 Every key below is optional. A feature whose keys are missing simply stays
