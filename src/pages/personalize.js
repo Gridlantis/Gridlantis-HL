@@ -1,5 +1,5 @@
 const { esc } = require("../helpers");
-const { NAME_MAX, userName } = require("../profile");
+const { NAME_MAX, haloOn, userName } = require("../profile");
 const { BASE_CSS, FAVICON, FONT, NAV_CSS, THEMES, TOAST_CSS, TOAST_JS, navBar } = require("../ui/assets");
 
 // ─── PERSONALIZE ─────────────────────────────────────────────────────────────
@@ -33,6 +33,7 @@ function themeCard(id, th) {
 
 function personalizeHtml() {
   const name = userName();
+  const halo = haloOn();
   const cards = Object.entries(THEMES).map(([id, th]) => themeCard(id, th)).join("");
   return `<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -70,6 +71,17 @@ ${BASE_CSS}${NAV_CSS}${TOAST_CSS}
 .pz-theme-l small{color:var(--muted);font-size:12px;}
 .pz-theme-l i{margin-left:auto;color:var(--accent);visibility:hidden;align-self:center;}
 .pz-theme.on .pz-theme-l i{visibility:visible;}
+.pz-toggle{display:flex;align-items:center;gap:14px;max-width:560px;cursor:pointer;}
+.pz-toggle-t{flex:1;min-width:0;}
+.pz-toggle-t b{display:block;font-weight:600;color:var(--text);}
+.pz-toggle-t span{display:block;color:var(--muted);font-size:13px;margin-top:2px;}
+.pz-switch{position:relative;flex:0 0 auto;width:44px;height:26px;border-radius:13px;border:1px solid var(--line-strong);
+  background:var(--raised);transition:background .15s,border-color .15s;}
+.pz-switch::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:var(--muted);transition:transform .15s,background .15s;}
+.pz-switch[aria-checked="true"]{background:color-mix(in srgb,var(--accent) 30%,var(--raised));border-color:var(--accent);}
+.pz-switch[aria-checked="true"]::after{transform:translateX(18px);background:var(--accent);}
+.pz-switch:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+.pz-switch:disabled{opacity:.6;}
 @media(max-width:560px){.pz-name{flex-direction:column;}.pz-themes{grid-template-columns:1fr 1fr;}}
 </style></head><body>
 ${navBar("/personalize")}
@@ -86,6 +98,16 @@ ${navBar("/personalize")}
       <div class="pz-hello" id="pz-hello"></div>
       <p class="pz-hint">Leave it empty and the greetings go back to plain "Good morning".</p>
     </form>
+  </section>
+
+  <section class="m-panel pz-sec" aria-labelledby="pz-halo-t">
+    <div class="m-panel-h"><h2 class="m-panel-t" id="pz-halo-t">Halo</h2><span class="m-panel-meta">Saved on this server, so every device uses it</span></div>
+    <div class="pz-body">
+      <div class="pz-toggle" id="pz-halo-row">
+        <span class="pz-toggle-t" id="pz-halo-l"><b>Show Halo on Home</b><span>The 3D helper that explains which API keys each feature needs.</span></span>
+        <button class="pz-switch" type="button" role="switch" id="pz-halo" aria-checked="${halo ? "true" : "false"}" aria-labelledby="pz-halo-l"></button>
+      </div>
+    </div>
   </section>
 
   <section class="m-panel pz-sec" aria-labelledby="pz-theme-t">
@@ -116,6 +138,20 @@ ${TOAST_JS}
       .catch(function(err){ showToast(err.message, 'bad'); })
       .then(function(){ btn.disabled = false; });
   });
+
+  // Halo on or off.
+  var sw = document.getElementById('pz-halo');
+  function toggleHalo(){
+    var want = sw.getAttribute('aria-checked') !== 'true';
+    sw.disabled = true;
+    fetch('/api/profile', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ halo: want }) })
+      .then(function(r){ return r.json().then(function(d){ if (!r.ok || d.error) throw new Error(d.error || 'Could not save'); return d; }); })
+      .then(function(d){ sw.setAttribute('aria-checked', d.halo ? 'true' : 'false'); showToast(d.halo ? 'Halo is back on Home' : 'Halo is off', 'ok'); })
+      .catch(function(err){ showToast(err.message, 'bad'); })
+      .then(function(){ sw.disabled = false; });
+  }
+  sw.addEventListener('click', toggleHalo);
+  document.getElementById('pz-halo-row').addEventListener('click', function(e){ if (e.target !== sw && !sw.disabled) toggleHalo(); });
 
   // Themes: the same store the sidebar picker uses, so both stay in step.
   var cards = document.querySelectorAll('.pz-theme');

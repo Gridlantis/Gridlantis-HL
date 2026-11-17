@@ -16,9 +16,18 @@ function setUserName(raw) {
   return name;
 }
 
+// Halo, the home page helper. On unless turned off on /personalize; kept on
+// the server like the name, so turning it off holds on every device.
+function haloOn() { return SETTINGS.haloOff !== true; }
+function setHaloOn(on) {
+  if (on) delete SETTINGS.haloOff; else SETTINGS.haloOff = true;
+  saveSettings();
+  return haloOn();
+}
+
 // A string as a JS literal that is safe inside an inline <script>.
 function scriptString(s) {
   return JSON.stringify(String(s)).replace(/</g, "\\u003c");
 }
 
-module.exports = { NAME_MAX, scriptString, setUserName, userName };
+module.exports = { NAME_MAX, haloOn, scriptString, setHaloOn, setUserName, userName };

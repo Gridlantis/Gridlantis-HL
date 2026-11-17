@@ -1,4 +1,4 @@
-const { scriptString, userName } = require("../profile");
+const { haloOn, scriptString, userName } = require("../profile");
 const { BASE_CSS, FAVICON, FONT, NAV_CSS, TOAST_CSS, TOAST_JS, navBar } = require("../ui/assets");
 
 // ─── HOME ────────────────────────────────────────────────────────────────────
@@ -9,6 +9,7 @@ const { BASE_CSS, FAVICON, FONT, NAV_CSS, TOAST_CSS, TOAST_JS, navBar } = requir
 // Client JS below sits inside a template literal: no backticks, no dollar-brace,
 // no backslashes.
 function homeHtml() {
+  const halo = haloOn();
   return `<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Open HL · Home</title>${FONT}${FAVICON}
@@ -16,9 +17,6 @@ function homeHtml() {
 ${BASE_CSS}${NAV_CSS}${TOAST_CSS}
 /* ── Home · glass dashboard ─────────────────────────────────────────────── */
 .home{--card-r:22px;--glow:color-mix(in srgb,var(--accent) 22%,transparent);position:relative;}
-.home::before{content:'';position:absolute;top:-28px;left:0;right:0;height:420px;pointer-events:none;z-index:0;
-  background:radial-gradient(60% 70% at 18% 0%,color-mix(in srgb,var(--accent) 14%,transparent),transparent 70%),
-             radial-gradient(40% 60% at 92% 10%,color-mix(in srgb,var(--chart2) 10%,transparent),transparent 70%);}
 .home>*{position:relative;z-index:1;}
 .hero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px 28px;align-items:end;margin:4px 0 26px;}
 .hero-top{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
@@ -217,13 +215,13 @@ ${navBar("/")}
         <a class="pill cta" id="pill-new" href="/reminders"><i class="fa-solid fa-plus"></i>New reminder</a>
       </div>
     </div>
-    <div class="halo" id="halo">
+${halo ? `    <div class="halo" id="halo">
       <button class="halo-btn" type="button" id="halo-btn" aria-haspopup="dialog" aria-expanded="false" aria-controls="halo-panel" aria-label="Halo, your helper" title="Halo, your helper">
         <canvas id="halo-canvas" aria-hidden="true"></canvas><span class="fallback" aria-hidden="true"><i class="fa-solid fa-robot"></i></span>
         <span class="halo-name" aria-hidden="true">Halo</span></button>
       <div class="halo-panel" id="halo-panel" role="dialog" hidden></div>
     </div>
-  </header>
+` : ""}  </header>
 
   <div class="dash">
     <div class="col">
@@ -725,9 +723,9 @@ function qlSave(){
 document.addEventListener('keydown', function(e){ if (e.key === 'Escape') qlClose(); });
 
 </script>
-<script type="importmap">{"imports":{"three":"/ui/vendor/three-0.170.0/three.module.min.js","three/addons/":"/ui/vendor/three-0.170.0/addons/"}}</script>
+${halo ? `<script type="importmap">{"imports":{"three":"/ui/vendor/three-0.170.0/three.module.min.js","three/addons/":"/ui/vendor/three-0.170.0/addons/"}}</script>
 <script type="module" src="/ui/pages/halo.js"></script>
-</body></html>`;
+` : ""}</body></html>`;
 }
 
 module.exports = { homeHtml };

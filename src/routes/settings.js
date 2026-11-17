@@ -1,5 +1,5 @@
 const { OPENROUTER_API_KEY } = require("../config");
-const { NAME_MAX, setUserName, userName } = require("../profile");
+const { NAME_MAX, haloOn, setHaloOn, setUserName, userName } = require("../profile");
 const { SETTINGS, getOpenRouterKey, maskKey, saveSettings } = require("../settings");
 
 // UI-editable settings and secrets.
@@ -7,11 +7,16 @@ module.exports = async function settingsRoutes(ctx) {
   const { req, pathname, json, readBody } = ctx;
 
   // ── Profile (/personalize): the name the pages greet you by ─────────────────
-  if (pathname === '/api/profile' && req.method === 'GET') return json({ name: userName(), max: NAME_MAX });
+  if (pathname === '/api/profile' && req.method === 'GET') return json({ name: userName(), max: NAME_MAX, halo: haloOn() });
   if (pathname === '/api/profile' && req.method === 'PUT') {
     const body = JSON.parse((await readBody(4096)).toString() || '{}');
-    if (typeof body.name !== 'string') return json({ error: 'name must be text' }, 400);
-    return json({ ok: true, name: setUserName(body.name) });
+    if (body.name === undefined && body.halo === undefined) return json({ error: 'nothing to change' }, 400);
+    if (body.name !== undefined && typeof body.name !== 'string') return json({ error: 'name must be text' }, 400);
+    if (body.halo !== undefined && typeof body.halo !== 'boolean') return json({ error: 'halo must be true or false' }, 400);
+    const out = { ok: true };
+    if (body.name !== undefined) out.name = setUserName(body.name);
+    if (body.halo !== undefined) out.halo = setHaloOn(body.halo);
+    return json(out);
   }
 
   // ── Settings (UI-editable secrets: OpenRouter key) ───────────────────────────
