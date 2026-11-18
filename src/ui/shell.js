@@ -66,11 +66,11 @@
   // Turned on from /personalize (html.nav-edit). Each page in a category then
   // shows a minus to hide it, and hidden pages show, dimmed, with a plus. The
   // server only remembers the list; the sidebar updates in place.
-  function navItems() { return Array.prototype.slice.call(document.querySelectorAll(".m-item")); }
+  function navItems() { return Array.prototype.slice.call(document.querySelectorAll(".m-nav-item")); }
   function paintHeads() {
     document.querySelectorAll(".m-group-h").forEach(function (h) {
       var empty = true;
-      for (var n = h.nextElementSibling; n && n.classList.contains("m-item"); n = n.nextElementSibling)
+      for (var n = h.nextElementSibling; n && n.classList.contains("m-nav-item"); n = n.nextElementSibling)
         if (!n.classList.contains("off") || n.classList.contains("here")) empty = false;
       h.classList.toggle("empty", empty);
     });

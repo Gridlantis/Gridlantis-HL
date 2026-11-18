@@ -339,19 +339,19 @@ html.nav-hidden .m-cell.menu{display:flex;}
 /* Pages hidden from the sidebar. Turning on "Edit navigation bar" on
    /personalize (html.nav-edit) shows them again, dimmed, with a minus on each
    shown page and a plus on each hidden one. The page you are on stays listed. */
-.m-item{position:relative;}
-.m-item.off:not(.here){display:none;}
-.m-item.off .m-link{opacity:.5;}
+.m-nav-item{position:relative;}
+.m-nav-item.off:not(.here){display:none;}
+.m-nav-item.off .m-link{opacity:.5;}
 .m-group-h.empty{display:none;}
 .m-item-tog{display:none;position:absolute;right:6px;top:50%;transform:translateY(-50%);width:22px;height:22px;border-radius:50%;
   border:1.5px solid rgba(255,255,255,.5);background:var(--nav);color:var(--nav-ink);font-size:10px;cursor:pointer;
   align-items:center;justify-content:center;padding:0;z-index:1;}
 .m-item-tog:hover,.m-item-tog:focus-visible{background:var(--nav-ink);color:var(--nav);border-color:var(--nav-ink);}
-html.nav-edit .m-item.off{display:block;}
+html.nav-edit .m-nav-item.off{display:block;}
 html.nav-edit .m-group-h.empty{display:block;}
 html.nav-edit .m-item-tog{display:flex;}
-html.nav-edit .m-item .m-link{padding-right:36px;}
-html.nav-edit .m-item .m-count{display:none;}
+html.nav-edit .m-nav-item .m-link{padding-right:36px;}
+html.nav-edit .m-nav-item .m-count{display:none;}
 .m-link,.m-foot-btn,.m-apps-item{font-family:var(--font-nav);}
 .m-link{display:flex;align-items:center;gap:12px;height:36px;padding:0 10px;border-radius:var(--r-ctl);color:var(--nav-ink-2);
   text-decoration:none;font-weight:500;position:relative;white-space:nowrap;}
@@ -388,7 +388,7 @@ html.nav-rail .m-brand-name,html.nav-rail .m-link-l,html.nav-rail .m-foot-l,html
 html.nav-rail .m-group-h{font-size:0;padding:8px 0;margin:6px 10px;border-top:1px solid var(--nav-line);border-bottom:0;}
 /* In the rail the toggle sits small on the icon's top-right corner. */
 html.nav-rail .m-item-tog{right:2px;top:0;transform:none;width:18px;height:18px;font-size:8px;}
-html.nav-edit.nav-rail .m-item .m-link{padding-right:0;}
+html.nav-edit.nav-rail .m-nav-item .m-link{padding-right:0;}
 html.nav-rail .m-link,html.nav-rail .m-foot-btn{justify-content:center;padding:0;}
 html.nav-rail .m-nav-scroll,html.nav-rail .m-nav-foot{padding-left:8px;padding-right:8px;}
 .m-apps-chev{margin-left:auto;font-size:10px!important;width:auto!important;transition:transform .15s;}
@@ -434,7 +434,7 @@ a.m-cell:hover{background:var(--raised);}
   .m-cell.hide-sm{display:none;}
   .m-apps-menu{left:12px;right:12px;width:auto;}
   html.nav-rail .m-item-tog{right:6px;top:50%;transform:translateY(-50%);width:22px;height:22px;font-size:10px;}
-  html.nav-edit.nav-rail .m-item .m-link{padding-right:36px;}
+  html.nav-edit.nav-rail .m-nav-item .m-link{padding-right:36px;}
   .m-collapse,.m-hide{display:none!important;}
 }
 `;
@@ -719,7 +719,7 @@ function navBar(active) {
   const item = p => {
     const off = hidden.has(p.href);
     const verb = off ? "Show" : "Hide";
-    return `<div class="m-item${off ? " off" : ""}${cur === p.href ? " here" : ""}" data-href="${p.href}">${link(p)}` +
+    return `<div class="m-nav-item${off ? " off" : ""}${cur === p.href ? " here" : ""}" data-href="${p.href}">${link(p)}` +
       `<button type="button" class="m-item-tog" title="${verb} ${p.title}" aria-label="${verb} ${p.title} in the sidebar"><i class="fa-solid fa-${off ? "plus" : "minus"}"></i></button></div>`;
   };
   const groups = [];
