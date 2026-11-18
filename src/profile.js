@@ -25,9 +25,22 @@ function setHaloOn(on) {
   return haloOn();
 }
 
+// Pages hidden from the sidebar, set from each category's settings. Kept on
+// the server like the name, so a hidden page stays hidden on every device.
+function hiddenPages() {
+  return Array.isArray(SETTINGS.hiddenPages) ? SETTINGS.hiddenPages.filter(h => typeof h === "string") : [];
+}
+// `allowed` is the set of pages that can be hidden; anything else is dropped.
+function setHiddenPages(list, allowed) {
+  const keep = [...new Set(list.filter(h => typeof h === "string" && allowed.includes(h)))];
+  if (keep.length) SETTINGS.hiddenPages = keep; else delete SETTINGS.hiddenPages;
+  saveSettings();
+  return keep;
+}
+
 // A string as a JS literal that is safe inside an inline <script>.
 function scriptString(s) {
   return JSON.stringify(String(s)).replace(/</g, "\\u003c");
 }
 
-module.exports = { NAME_MAX, haloOn, scriptString, setHaloOn, setUserName, userName };
+module.exports = { NAME_MAX, haloOn, hiddenPages, scriptString, setHaloOn, setHiddenPages, setUserName, userName };

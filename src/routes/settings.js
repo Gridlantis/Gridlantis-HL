@@ -1,5 +1,6 @@
 const { OPENROUTER_API_KEY } = require("../config");
-const { NAME_MAX, haloOn, setHaloOn, setUserName, userName } = require("../profile");
+const { NAME_MAX, haloOn, hiddenPages, setHaloOn, setHiddenPages, setUserName, userName } = require("../profile");
+const { NAV_PAGES } = require("../ui/assets");
 const { SETTINGS, getOpenRouterKey, maskKey, saveSettings } = require("../settings");
 
 // UI-editable settings and secrets.
@@ -17,6 +18,15 @@ module.exports = async function settingsRoutes(ctx) {
     if (body.name !== undefined) out.name = setUserName(body.name);
     if (body.halo !== undefined) out.halo = setHaloOn(body.halo);
     return json(out);
+  }
+
+  // ── Sidebar: pages hidden from each category's settings ────────────────────
+  // Only pages inside a category can be hidden; Home always stays.
+  if (pathname === '/api/nav' && req.method === 'GET') return json({ hidden: hiddenPages() });
+  if (pathname === '/api/nav' && req.method === 'PUT') {
+    const body = JSON.parse((await readBody(8192)).toString() || '{}');
+    if (!Array.isArray(body.hidden)) return json({ error: 'hidden must be a list of pages' }, 400);
+    return json({ ok: true, hidden: setHiddenPages(body.hidden, NAV_PAGES.filter(p => p.group).map(p => p.href)) });
   }
 
   // ── Settings (UI-editable secrets: OpenRouter key) ───────────────────────────

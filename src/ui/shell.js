@@ -62,6 +62,46 @@
     document.addEventListener("keydown", function (e) { if (e.key === "Escape" && apps.classList.contains("open")) { setApps(false); appsBtn.focus(); } });
   }
 
+  // ── Edit navigation bar: hide and unhide pages ────────────────────────────
+  // Turned on from /personalize (html.nav-edit). Each page in a category then
+  // shows a minus to hide it, and hidden pages show, dimmed, with a plus. The
+  // server only remembers the list; the sidebar updates in place.
+  function navItems() { return Array.prototype.slice.call(document.querySelectorAll(".m-item")); }
+  function paintHeads() {
+    document.querySelectorAll(".m-group-h").forEach(function (h) {
+      var empty = true;
+      for (var n = h.nextElementSibling; n && n.classList.contains("m-item"); n = n.nextElementSibling)
+        if (!n.classList.contains("off") || n.classList.contains("here")) empty = false;
+      h.classList.toggle("empty", empty);
+    });
+  }
+  function setOff(item, off) {
+    item.classList.toggle("off", off);
+    var t = item.querySelector(".m-link").title, b = item.querySelector(".m-item-tog");
+    b.title = (off ? "Show " : "Hide ") + t;
+    b.setAttribute("aria-label", (off ? "Show " : "Hide ") + t + " in the sidebar");
+    b.querySelector("i").className = "fa-solid fa-" + (off ? "plus" : "minus");
+  }
+  navItems().forEach(function (item) {
+    item.querySelector(".m-item-tog").addEventListener("click", function (e) {
+      e.preventDefault();
+      var was = item.classList.contains("off");
+      setOff(item, !was); paintHeads();
+      var list = navItems().filter(function (i) { return i.classList.contains("off"); }).map(function (i) { return i.dataset.href; });
+      fetch("/api/nav", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ hidden: list }) })
+        .then(function (r) { if (!r.ok) throw new Error(); })
+        .catch(function () {
+          setOff(item, was); paintHeads();
+          if (typeof showToast === "function") showToast("Couldn't save the sidebar", "bad");
+        });
+    });
+  });
+  window.openhlNavEdit = function (on) {
+    root.classList.toggle("nav-edit", !!on);
+    try { localStorage.setItem("openhl-nav-edit", on ? "1" : "0"); } catch (e) {}
+    if (on && phone.matches) root.classList.add("nav-open");   // show the drawer you are editing
+  };
+
   // ── Status strip ───────────────────────────────────────────────────────────
   function set(id, text, state) {
     var el = $(id); if (!el) return;

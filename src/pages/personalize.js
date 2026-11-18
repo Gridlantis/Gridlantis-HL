@@ -110,6 +110,16 @@ ${navBar("/personalize")}
     </div>
   </section>
 
+  <section class="m-panel pz-sec" aria-labelledby="pz-nav-t">
+    <div class="m-panel-h"><h2 class="m-panel-t" id="pz-nav-t">Navigation bar</h2><span class="m-panel-meta">Edit mode is per browser; hidden pages apply on every device</span></div>
+    <div class="pz-body">
+      <div class="pz-toggle" id="pz-nav-row">
+        <span class="pz-toggle-t" id="pz-nav-l"><b>Edit navigation bar</b><span>Shows a minus next to each page in the sidebar to hide it. Hidden pages show dimmed with a plus to bring them back. Hidden pages still open from their address.</span></span>
+        <button class="pz-switch" type="button" role="switch" id="pz-nav" aria-checked="false" aria-labelledby="pz-nav-l"></button>
+      </div>
+    </div>
+  </section>
+
   <section class="m-panel pz-sec" aria-labelledby="pz-theme-t">
     <div class="m-panel-h"><h2 class="m-panel-t" id="pz-theme-t">Theme</h2><span class="m-panel-meta">Saved in this browser</span></div>
     <div class="pz-body"><div class="pz-themes" id="pz-themes">${cards}</div></div>
@@ -152,6 +162,18 @@ ${TOAST_JS}
   }
   sw.addEventListener('click', toggleHalo);
   document.getElementById('pz-halo-row').addEventListener('click', function(e){ if (e.target !== sw && !sw.disabled) toggleHalo(); });
+
+  // Edit navigation bar: a mode for this browser, read by every page's sidebar.
+  var nav = document.getElementById('pz-nav');
+  function paintNav(){ nav.setAttribute('aria-checked', document.documentElement.classList.contains('nav-edit') ? 'true' : 'false'); }
+  function toggleNav(){
+    var on = nav.getAttribute('aria-checked') !== 'true';
+    if (window.openhlNavEdit) window.openhlNavEdit(on); else document.documentElement.classList.toggle('nav-edit', on);
+    paintNav();
+  }
+  nav.addEventListener('click', toggleNav);
+  document.getElementById('pz-nav-row').addEventListener('click', function(e){ if (e.target !== nav) toggleNav(); });
+  paintNav();
 
   // Themes: the same store the sidebar picker uses, so both stay in step.
   var cards = document.querySelectorAll('.pz-theme');

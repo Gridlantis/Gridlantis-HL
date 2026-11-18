@@ -1,3 +1,5 @@
+const { hiddenPages } = require("../profile");
+
 // ─── OPENHL DESIGN SYSTEM · "control room" ────────────────────────────────────
 // Calm operations console for a home server. Rules the whole UI follows:
 //   • colour carries meaning: --ok / --warn / --fault are status, --accent is
@@ -327,13 +329,29 @@ html.nav-hidden .m-nav{transform:translateX(-100%);visibility:hidden;}
 html.nav-hidden .m-cell.menu{display:flex;}
 .m-nav{position:fixed;top:0;left:0;bottom:0;width:var(--nav-w);z-index:60;background:var(--nav);color:var(--nav-ink);
   display:flex;flex-direction:column;}
-.m-brand{height:var(--pulse-h);flex-shrink:0;display:flex;align-items:center;gap:10px;padding:0 18px;border-bottom:1px solid var(--nav-line);
+.m-brand{height:var(--pulse-h);flex-shrink:0;display:flex;align-items:center;gap:10px;padding:0 18px;
   text-decoration:none;color:var(--nav-ink);}
 .m-brand-name{font:400 21px/1 var(--font-brand);letter-spacing:.02em;}
 .m-logo{width:26px;height:26px;flex-shrink:0;color:var(--nav-ink);}
 .m-logo path{stroke:currentColor;} .m-logo path+path{stroke:var(--nav-accent);}
 .m-nav-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:8px 10px 12px;scrollbar-width:thin;}
 .m-group-h{font:500 12.5px/1 var(--font-nav);color:var(--nav-muted);padding:16px 10px 8px;margin:0 0 4px;border-bottom:1px solid var(--nav-line);}
+/* Pages hidden from the sidebar. Turning on "Edit navigation bar" on
+   /personalize (html.nav-edit) shows them again, dimmed, with a minus on each
+   shown page and a plus on each hidden one. The page you are on stays listed. */
+.m-item{position:relative;}
+.m-item.off:not(.here){display:none;}
+.m-item.off .m-link{opacity:.5;}
+.m-group-h.empty{display:none;}
+.m-item-tog{display:none;position:absolute;right:6px;top:50%;transform:translateY(-50%);width:22px;height:22px;border-radius:50%;
+  border:1.5px solid rgba(255,255,255,.5);background:var(--nav);color:var(--nav-ink);font-size:10px;cursor:pointer;
+  align-items:center;justify-content:center;padding:0;z-index:1;}
+.m-item-tog:hover,.m-item-tog:focus-visible{background:var(--nav-ink);color:var(--nav);border-color:var(--nav-ink);}
+html.nav-edit .m-item.off{display:block;}
+html.nav-edit .m-group-h.empty{display:block;}
+html.nav-edit .m-item-tog{display:flex;}
+html.nav-edit .m-item .m-link{padding-right:36px;}
+html.nav-edit .m-item .m-count{display:none;}
 .m-link,.m-foot-btn,.m-apps-item{font-family:var(--font-nav);}
 .m-link{display:flex;align-items:center;gap:12px;height:36px;padding:0 10px;border-radius:var(--r-ctl);color:var(--nav-ink-2);
   text-decoration:none;font-weight:500;position:relative;white-space:nowrap;}
@@ -359,7 +377,7 @@ html.nav-rail .m-link.active::after{right:-8px;width:10px;background:var(--nav-a
 .m-count{min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--nav-hover);color:var(--nav-ink);
   font-size:12px;font-weight:600;display:none;align-items:center;justify-content:center;}
 .m-count.on{display:inline-flex;}
-.m-nav-foot{flex-shrink:0;border-top:1px solid var(--nav-line);padding:8px 10px;display:flex;flex-direction:column;gap:2px;}
+.m-nav-foot{flex-shrink:0;padding:8px 10px;display:flex;flex-direction:column;gap:2px;}
 .m-foot-btn{display:flex;align-items:center;gap:12px;height:34px;padding:0 10px;border-radius:var(--r-ctl);color:var(--nav-ink-2);
   background:none;border:0;text-decoration:none;font-size:13.5px;width:100%;text-align:left;white-space:nowrap;}
 .m-foot-btn:hover{background:var(--nav-hover);color:var(--nav-ink);}
@@ -368,6 +386,9 @@ html.nav-rail .m-link.active::after{right:-8px;width:10px;background:var(--nav-a
 html.nav-rail .m-brand{padding:0;justify-content:center;}
 html.nav-rail .m-brand-name,html.nav-rail .m-link-l,html.nav-rail .m-foot-l,html.nav-rail .m-count{display:none!important;}
 html.nav-rail .m-group-h{font-size:0;padding:8px 0;margin:6px 10px;border-top:1px solid var(--nav-line);border-bottom:0;}
+/* In the rail the toggle sits small on the icon's top-right corner. */
+html.nav-rail .m-item-tog{right:2px;top:0;transform:none;width:18px;height:18px;font-size:8px;}
+html.nav-edit.nav-rail .m-item .m-link{padding-right:0;}
 html.nav-rail .m-link,html.nav-rail .m-foot-btn{justify-content:center;padding:0;}
 html.nav-rail .m-nav-scroll,html.nav-rail .m-nav-foot{padding-left:8px;padding-right:8px;}
 .m-apps-chev{margin-left:auto;font-size:10px!important;width:auto!important;transition:transform .15s;}
@@ -412,6 +433,8 @@ a.m-cell:hover{background:var(--raised);}
   .m-cell.menu{display:flex;}
   .m-cell.hide-sm{display:none;}
   .m-apps-menu{left:12px;right:12px;width:auto;}
+  html.nav-rail .m-item-tog{right:6px;top:50%;transform:translateY(-50%);width:22px;height:22px;font-size:10px;}
+  html.nav-edit.nav-rail .m-item .m-link{padding-right:36px;}
   .m-collapse,.m-hide{display:none!important;}
 }
 `;
@@ -428,7 +451,7 @@ const THEME_JS = `(function(){
     try{ if(window.openhlAndroid&&window.openhlAndroid.setTheme) window.openhlAndroid.setTheme(th.vars['bg-nav'],th.vars.bg,th.dark); }catch(e){}
   }
   var saved='slate';
-  try{ saved=pick(localStorage.getItem('openhl-theme')); if(localStorage.getItem('openhl-nav')==='rail') root.classList.add('nav-rail'); if(localStorage.getItem('openhl-nav-hidden')==='1') root.classList.add('nav-hidden'); }catch(e){}
+  try{ saved=pick(localStorage.getItem('openhl-theme')); if(localStorage.getItem('openhl-nav')==='rail') root.classList.add('nav-rail'); if(localStorage.getItem('openhl-nav-hidden')==='1') root.classList.add('nav-hidden'); if(localStorage.getItem('openhl-nav-edit')==='1') root.classList.add('nav-edit'); }catch(e){}
   apply(saved);
 
   window._applyTheme=function(name){
@@ -686,15 +709,30 @@ function navBar(active) {
   const cur = active ? (active.charAt(0) === '/' ? active : '/' + active) : '';
   const pages = NAV_ORDER.map(h => NAV_PAGES.find(p => p.href === h)).filter(Boolean)
     .concat(NAV_PAGES.filter(p => !NAV_ORDER.includes(p.href)));
-  let lastGroup = null;
-  const links = pages.map(p => {
-    let head = '';
-    if (p.group && p.group !== lastGroup) head = `<div class="m-group-h">${p.group}</div>`;
-    lastGroup = p.group;
-    const count = p.href === '/mail' ? '<span class="m-count" id="nav-count-mail"></span>'
-                : p.href === '/voicemail' ? '<span class="m-count" id="nav-count-voicemail"></span>'
-                : p.href === '/texts' ? '<span class="m-count" id="nav-count-texts"></span>' : '';
-    return head + `<a href="${p.href}" class="m-link${cur === p.href ? " active" : ""}" title="${p.title}"${cur === p.href ? ' aria-current="page"' : ''}>${p.icon}<span class="m-link-l">${p.title}</span>${count}</a>`;
+  const hidden = new Set(hiddenPages());
+  const count = href => href === '/mail' ? '<span class="m-count" id="nav-count-mail"></span>'
+              : href === '/voicemail' ? '<span class="m-count" id="nav-count-voicemail"></span>'
+              : href === '/texts' ? '<span class="m-count" id="nav-count-texts"></span>' : '';
+  const link = p => `<a href="${p.href}" class="m-link${cur === p.href ? " active" : ""}" title="${p.title}"${cur === p.href ? ' aria-current="page"' : ''}>${p.icon}<span class="m-link-l">${p.title}</span>${count(p.href)}</a>`;
+  // Pages in a category can be hidden. Hidden ones stay in the markup so edit
+  // mode (/personalize) can show them with a plus and bring them back in place.
+  const item = p => {
+    const off = hidden.has(p.href);
+    const verb = off ? "Show" : "Hide";
+    return `<div class="m-item${off ? " off" : ""}${cur === p.href ? " here" : ""}" data-href="${p.href}">${link(p)}` +
+      `<button type="button" class="m-item-tog" title="${verb} ${p.title}" aria-label="${verb} ${p.title} in the sidebar"><i class="fa-solid fa-${off ? "plus" : "minus"}"></i></button></div>`;
+  };
+  const groups = [];
+  for (const p of pages) {
+    if (!p.group) { groups.push({ pages: [p] }); continue; }
+    const last = groups[groups.length - 1];
+    if (last && last.name === p.group) last.pages.push(p); else groups.push({ name: p.group, pages: [p] });
+  }
+  const links = groups.map(g => {
+    if (!g.name) return g.pages.map(link).join("");
+    // A heading whose pages are all hidden goes too, outside edit mode.
+    const empty = g.pages.every(p => hidden.has(p.href) && p.href !== cur);
+    return `<div class="m-group-h${empty ? " empty" : ""}">${g.name}</div>` + g.pages.map(item).join("");
   }).join("");
   return `<header class="m-nav" id="m-nav">
 <a href="/" class="m-brand" title="Open HL home">${LOGO_SVG}<span class="m-brand-name">Open HL</span></a>
