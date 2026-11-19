@@ -1,5 +1,6 @@
 const { esc } = require("../helpers");
 const { NAME_MAX, haloOn, userName } = require("../profile");
+const { COMMIT, VERSION } = require("../version");
 const { BASE_CSS, FAVICON, FONT, NAV_CSS, THEMES, TOAST_CSS, TOAST_JS, navBar } = require("../ui/assets");
 
 // ─── PERSONALIZE ─────────────────────────────────────────────────────────────
@@ -42,6 +43,7 @@ function personalizeHtml() {
 ${BASE_CSS}${NAV_CSS}${TOAST_CSS}
 .pz{max-width:980px;}
 .pz-sec{margin-bottom:18px;}
+.pz-version{margin:28px 0 0;text-align:center;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;}
 .pz-sec .m-panel-h{padding:18px 20px 6px;}
 .pz-sec .m-panel-meta{color:var(--muted);font-size:13px;}
 .pz-body{padding:8px 20px 20px;}
@@ -124,6 +126,8 @@ ${navBar("/personalize")}
     <div class="m-panel-h"><h2 class="m-panel-t" id="pz-theme-t">Theme</h2><span class="m-panel-meta">Saved in this browser</span></div>
     <div class="pz-body"><div class="pz-themes" id="pz-themes">${cards}</div></div>
   </section>
+
+  <p class="pz-version">Open HL ${VERSION ? "version " + esc(VERSION) : "(version unknown)"}${COMMIT ? ` <span title="Git commit this server is running">· ${esc(COMMIT)}</span>` : ""}</p>
 </main>
 <div class="toast" id="toast"></div>
 <script>
