@@ -1,5 +1,5 @@
 const { OPENROUTER_API_KEY } = require("../config");
-const { NAME_MAX, haloOn, hiddenPages, setHaloOn, setHiddenPages, setUserName, userName } = require("../profile");
+const { NAME_MAX, haloOn, hiddenPages, navGroupNames, navGroups, setHaloOn, setHiddenPages, setNavGroups, setUserName, userName } = require("../profile");
 const { NAV_PAGES } = require("../ui/assets");
 const { SETTINGS, getOpenRouterKey, maskKey, saveSettings } = require("../settings");
 
@@ -20,13 +20,24 @@ module.exports = async function settingsRoutes(ctx) {
     return json(out);
   }
 
-  // ── Sidebar: pages hidden from each category's settings ────────────────────
-  // Only pages inside a category can be hidden; Home always stays.
-  if (pathname === '/api/nav' && req.method === 'GET') return json({ hidden: hiddenPages() });
+  // ── Sidebar: hidden pages, category names, which category a page sits in ──
+  // Only pages inside a category can be hidden or moved; Home always stays.
+  if (pathname === '/api/nav' && req.method === 'GET') return json({ hidden: hiddenPages(), names: navGroupNames(), groups: navGroups() });
   if (pathname === '/api/nav' && req.method === 'PUT') {
     const body = JSON.parse((await readBody(8192)).toString() || '{}');
-    if (!Array.isArray(body.hidden)) return json({ error: 'hidden must be a list of pages' }, 400);
-    return json({ ok: true, hidden: setHiddenPages(body.hidden, NAV_PAGES.filter(p => p.group).map(p => p.href)) });
+    const isMap = v => v && typeof v === 'object' && !Array.isArray(v);
+    if (body.hidden === undefined && body.names === undefined && body.groups === undefined) return json({ error: 'nothing to change' }, 400);
+    if (body.hidden !== undefined && !Array.isArray(body.hidden)) return json({ error: 'hidden must be a list of pages' }, 400);
+    if (body.names !== undefined && !isMap(body.names)) return json({ error: 'names must map categories to names' }, 400);
+    if (body.groups !== undefined && !isMap(body.groups)) return json({ error: 'groups must map pages to categories' }, 400);
+    const inGroup = NAV_PAGES.filter(p => p.group);
+    const out = { ok: true };
+    if (body.hidden !== undefined) out.hidden = setHiddenPages(body.hidden, inGroup.map(p => p.href));
+    if (body.names !== undefined || body.groups !== undefined) {
+      const keys = [...new Set(inGroup.map(p => p.group))];
+      Object.assign(out, setNavGroups(body.names, body.groups, keys, Object.fromEntries(inGroup.map(p => [p.href, p.group]))));
+    }
+    return json(out);
   }
 
   // ── Settings (UI-editable secrets: OpenRouter key) ───────────────────────────

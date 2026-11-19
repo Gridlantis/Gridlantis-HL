@@ -1,4 +1,5 @@
-const { hiddenPages } = require("../profile");
+const { esc } = require("../helpers");
+const { GROUP_NAME_MAX, hiddenPages, navGroupNames, navGroups } = require("../profile");
 
 // ─── OPENHL DESIGN SYSTEM · "control room" ────────────────────────────────────
 // Calm operations console for a home server. Rules the whole UI follows:
@@ -352,6 +353,29 @@ html.nav-edit .m-group-h.empty{display:block;}
 html.nav-edit .m-item-tog{display:flex;}
 html.nav-edit .m-nav-item .m-link{padding-right:36px;}
 html.nav-edit .m-nav-item .m-count{display:none;}
+/* Each heading's pen (edit mode only) opens a small form under it: rename the
+   category and move its pages to another one. */
+.m-group-h{display:flex;align-items:center;gap:8px;}
+.m-group-l{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.m-group-ed{display:none;width:22px;height:22px;margin:-6px 6px -6px 0;border-radius:50%;border:1.5px solid rgba(255,255,255,.5);background:var(--nav);
+  color:var(--nav-ink);font-size:9px;cursor:pointer;align-items:center;justify-content:center;padding:0;flex-shrink:0;}
+.m-group-ed:hover,.m-group-ed:focus-visible,.m-group-ed[aria-expanded="true"]{background:var(--nav-ink);color:var(--nav);border-color:var(--nav-ink);}
+html.nav-edit .m-group-ed{display:flex;}
+.m-group-form{margin:4px 0 10px;padding:10px;border-radius:var(--r-ctl);background:var(--nav-hover);display:flex;flex-direction:column;gap:8px;
+  font:400 12.5px/1.3 var(--font-nav);color:var(--nav-ink-2);}
+.m-group-form label{display:flex;flex-direction:column;gap:4px;color:var(--nav-muted);text-align:left;}
+.m-group-form input,.m-group-form select{font:inherit;color:var(--nav-ink);background:var(--nav);border:1px solid rgba(255,255,255,.28);
+  border-radius:var(--r-ctl);height:28px;padding:0 8px;min-width:0;}
+.m-group-form input:focus,.m-group-form select:focus{outline:2px solid var(--nav-accent);outline-offset:-1px;}
+.m-group-moves{display:flex;flex-direction:column;gap:6px;}
+.m-group-form .m-group-move{display:grid;flex-direction:row;text-align:left;grid-template-columns:1fr minmax(0,1.1fr);align-items:center;gap:8px;color:var(--nav-ink-2);}
+.m-group-move span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.m-group-none{color:var(--nav-muted);font-style:italic;}
+.m-group-acts{display:flex;justify-content:flex-end;gap:6px;}
+.m-group-acts button{font:500 12.5px/1 var(--font-nav);height:28px;padding:0 12px;border-radius:var(--r-ctl);cursor:pointer;
+  border:1px solid rgba(255,255,255,.28);background:none;color:var(--nav-ink);}
+.m-group-acts .m-group-save{background:var(--nav-ink);color:var(--nav);border-color:var(--nav-ink);}
+.m-group-acts button:disabled{opacity:.5;cursor:default;}
 .m-link,.m-foot-btn,.m-apps-item{font-family:var(--font-nav);}
 .m-link{display:flex;align-items:center;gap:12px;height:36px;padding:0 10px;border-radius:var(--r-ctl);color:var(--nav-ink-2);
   text-decoration:none;font-weight:500;position:relative;white-space:nowrap;}
@@ -386,6 +410,8 @@ html.nav-rail .m-link.active::after{right:-8px;width:10px;background:var(--nav-a
 html.nav-rail .m-brand{padding:0;justify-content:center;}
 html.nav-rail .m-brand-name,html.nav-rail .m-link-l,html.nav-rail .m-foot-l,html.nav-rail .m-count{display:none!important;}
 html.nav-rail .m-group-h{font-size:0;padding:8px 0;margin:6px 10px;border-top:1px solid var(--nav-line);border-bottom:0;}
+/* The rail has no room for names; expand the sidebar to edit a category. */
+html.nav-rail .m-group-l,html.nav-rail .m-group-ed,html.nav-rail .m-group-form{display:none!important;}
 /* In the rail the toggle sits small on the icon's top-right corner. */
 html.nav-rail .m-item-tog{right:2px;top:0;transform:none;width:18px;height:18px;font-size:8px;}
 html.nav-edit.nav-rail .m-nav-item .m-link{padding-right:0;}
@@ -435,6 +461,10 @@ a.m-cell:hover{background:var(--raised);}
   .m-apps-menu{left:12px;right:12px;width:auto;}
   html.nav-rail .m-item-tog{right:6px;top:50%;transform:translateY(-50%);width:22px;height:22px;font-size:10px;}
   html.nav-edit.nav-rail .m-nav-item .m-link{padding-right:36px;}
+  html.nav-rail .m-group-h{font-size:12.5px;padding:16px 10px 8px;margin:0 0 4px;border-top:0;border-bottom:1px solid var(--nav-line);}
+  html.nav-rail .m-group-l{display:block!important;}
+  html.nav-edit.nav-rail .m-group-ed{display:flex!important;}
+  html.nav-rail .m-group-form{display:flex!important;}
   .m-collapse,.m-hide{display:none!important;}
 }
 `;
@@ -719,24 +749,27 @@ function navBar(active) {
   const item = p => {
     const off = hidden.has(p.href);
     const verb = off ? "Show" : "Hide";
-    return `<div class="m-nav-item${off ? " off" : ""}${cur === p.href ? " here" : ""}" data-href="${p.href}">${link(p)}` +
+    return `<div class="m-nav-item${off ? " off" : ""}${cur === p.href ? " here" : ""}" data-href="${p.href}" data-i="${pages.indexOf(p)}">${link(p)}` +
       `<button type="button" class="m-item-tog" title="${verb} ${p.title}" aria-label="${verb} ${p.title} in the sidebar"><i class="fa-solid fa-${off ? "plus" : "minus"}"></i></button></div>`;
   };
-  const groups = [];
-  for (const p of pages) {
-    if (!p.group) { groups.push({ pages: [p] }); continue; }
-    const last = groups[groups.length - 1];
-    if (last && last.name === p.group) last.pages.push(p); else groups.push({ name: p.group, pages: [p] });
-  }
+  // Categories keep the order they ship in; a page moved from the pen on a
+  // heading joins its new category in its usual place in NAV_ORDER.
+  const moved = navGroups(), names = navGroupNames();
+  const keys = [...new Set(pages.filter(p => p.group).map(p => p.group))];
+  const groupOf = p => p.group && keys.includes(moved[p.href]) ? moved[p.href] : p.group;
+  const groups = pages.filter(p => !p.group).map(p => ({ pages: [p] }))
+    .concat(keys.map(k => ({ key: k, name: names[k] || k, pages: pages.filter(p => groupOf(p) === k) })));
   const links = groups.map(g => {
-    if (!g.name) return g.pages.map(link).join("");
+    if (!g.key) return g.pages.map(link).join("");
     // A heading whose pages are all hidden goes too, outside edit mode.
     const empty = g.pages.every(p => hidden.has(p.href) && p.href !== cur);
-    return `<div class="m-group-h${empty ? " empty" : ""}">${g.name}</div>` + g.pages.map(item).join("");
+    return `<div class="m-group-h${empty ? " empty" : ""}" data-group="${esc(g.key)}"><span class="m-group-l">${esc(g.name)}</span>` +
+      `<button type="button" class="m-group-ed" title="Edit ${esc(g.name)}" aria-label="Rename ${esc(g.name)} or move its pages" aria-expanded="false"><i class="fa-solid fa-pen"></i></button></div>` +
+      g.pages.map(p => item(p)).join("");
   }).join("");
   return `<header class="m-nav" id="m-nav">
 <a href="/" class="m-brand" title="Open HL home">${LOGO_SVG}<span class="m-brand-name">Open HL</span></a>
-<nav class="m-nav-scroll" aria-label="Pages">${links}</nav>
+<nav class="m-nav-scroll" aria-label="Pages" data-name-max="${GROUP_NAME_MAX}">${links}</nav>
 <div class="m-nav-foot">
   <a class="m-foot-btn${cur === '/personalize' ? ' active' : ''}" href="/personalize" title="Personalize: your name and themes"${cur === '/personalize' ? ' aria-current="page"' : ''}><i class="fa-solid fa-user"></i><span class="m-foot-l">Personalize</span></a>
   <div class="openhl-get-app">

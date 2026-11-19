@@ -111,10 +111,10 @@ ${navBar("/personalize")}
   </section>
 
   <section class="m-panel pz-sec" aria-labelledby="pz-nav-t">
-    <div class="m-panel-h"><h2 class="m-panel-t" id="pz-nav-t">Navigation bar</h2><span class="m-panel-meta">Edit mode is per browser; hidden pages apply on every device</span></div>
+    <div class="m-panel-h"><h2 class="m-panel-t" id="pz-nav-t">Navigation bar</h2><span class="m-panel-meta">Edit mode is per browser; changes apply on every device</span></div>
     <div class="pz-body">
       <div class="pz-toggle" id="pz-nav-row">
-        <span class="pz-toggle-t" id="pz-nav-l"><b>Edit navigation bar</b><span>Shows a minus next to each page in the sidebar to hide it. Hidden pages show dimmed with a plus to bring them back. Hidden pages still open from their address.</span></span>
+        <span class="pz-toggle-t" id="pz-nav-l"><b>Edit navigation bar</b><span>Shows a minus next to each page in the sidebar to hide it. Hidden pages show dimmed with a plus to bring them back, and still open from their address. The pen on each category heading renames it and moves its pages to another category.</span></span>
         <button class="pz-switch" type="button" role="switch" id="pz-nav" aria-checked="false" aria-labelledby="pz-nav-l"></button>
       </div>
     </div>
