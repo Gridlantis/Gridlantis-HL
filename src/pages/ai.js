@@ -35,6 +35,9 @@ ${BASE_CSS}${NAV_CSS}${TOAST_CSS}${GAMEPAD_CSS}
 .or-model-sel{width:100%;height:36px;background:var(--field);border:1px solid var(--line);border-radius:var(--r-ctl);padding:0 8px;color:var(--text);}
 .or-custom-row{display:flex;gap:6px;}
 .or-status{font-weight:400;font-size:13px;color:var(--muted);}
+.or-env{font-size:12.5px;color:var(--muted);margin-top:-4px;}
+.or-env:empty{display:none;}
+.or-card.off{cursor:default;opacity:.6;}
 .chat-box{display:flex;flex-direction:column;height:calc(var(--app-h) - 140px);min-height:480px;}
 .chat-header{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;}
 .chat-header-title{font:600 17px var(--font-display);}
@@ -55,7 +58,7 @@ ${BASE_CSS}${NAV_CSS}${TOAST_CSS}${GAMEPAD_CSS}
 </style></head><body>
 ${navBar('ai')}
 <main class="m-page">
-  <div class="m-head"><div><h1 class="m-title">AI</h1><p class="m-sub">Chat with models on your own machines or through OpenRouter.</p></div></div>
+  <div class="m-head"><div><h1 class="m-title">AI</h1><p class="m-sub">Chat with models on your own machines or through a cloud AI provider.</p></div></div>
   <div class="ai-layout">
     <div class="ai-sidebar">
       <section class="m-panel" aria-labelledby="peers-t">
@@ -69,18 +72,23 @@ ${navBar('ai')}
         </div>
       </section>
       <section class="m-panel" id="or-section" aria-labelledby="or-t">
-        <div class="m-panel-h"><h2 class="m-panel-t" id="or-t">OpenRouter</h2><span id="or-key-status" class="or-status">not set</span></div>
+        <div class="m-panel-h"><h2 class="m-panel-t" id="or-t">Cloud AI</h2><span id="or-key-status" class="or-status">not set</span></div>
         <div class="m-panel-b ai-form">
+          <label class="m-label" for="or-provider" style="margin:0">Provider</label>
+          <select class="or-model-sel" id="or-provider" onchange="onProviderChange()" aria-describedby="or-key-status">
+            <option value="openrouter">OpenRouter</option>
+          </select>
           <div class="or-custom-row">
-            <input class="peer-input" id="or-key" type="password" placeholder="API key, sk-or-…" aria-label="OpenRouter API key" onkeydown="if(event.key==='Enter')saveOrKey()">
+            <input class="peer-input" id="or-key" type="password" placeholder="API key" aria-label="API key" autocomplete="off" onkeydown="if(event.key==='Enter')saveOrKey()">
             <button class="add-peer-btn" onclick="saveOrKey()">Save</button>
           </div>
-          <div class="or-card" id="or-card" role="button" tabindex="0" onclick="selectOpenRouter()">
+          <div class="or-env" id="or-env"></div>
+          <div class="or-card" id="or-card" role="button" tabindex="0" onclick="selectOpenRouter()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectOpenRouter();}">
             <div class="or-dot off" id="or-dot"></div>
-            <div class="or-label">Chat with OpenRouter</div>
+            <div class="or-label" id="or-label">Chat with OpenRouter</div>
             <span id="or-model-count" style="font-size:13px;color:var(--muted)"></span>
           </div>
-          <select class="or-model-sel" id="or-model-sel" onchange="onOrModelChange()" style="display:none" aria-label="OpenRouter model">
+          <select class="or-model-sel" id="or-model-sel" onchange="onOrModelChange()" style="display:none" aria-label="Model">
             <option value="">Loading models…</option>
           </select>
           <div class="or-custom-row" style="display:none" id="or-custom-row">
@@ -92,11 +100,11 @@ ${navBar('ai')}
     </div>
     <section class="m-panel chat-box" aria-label="Chat">
       <div class="chat-header">
-        <span id="chatTitle" class="chat-header-title" style="color:var(--muted)">Choose a machine or OpenRouter to start</span>
+        <span id="chatTitle" class="chat-header-title" style="color:var(--muted)">Choose a machine or a cloud provider to start</span>
         <select class="chat-model-select" id="modelSelect" style="display:none" onchange="onModelChange()" aria-label="Model"></select>
       </div>
       <div class="chat-messages" id="chatMessages" aria-live="polite">
-        <div class="empty-state">Choose one of your machines or OpenRouter<br>to start a conversation.</div>
+        <div class="empty-state">Choose one of your machines or a cloud provider<br>to start a conversation.</div>
       </div>
       <div class="chat-input-row">
         <textarea class="chat-input" id="chatInput" placeholder="Message" rows="1" aria-label="Message"
@@ -117,45 +125,100 @@ let chatHistory = [];
 let orActive = false;
 let orModels = [];
 
+// Cloud AI: one provider at a time, picked in the Provider list. Each keeps
+// its own key on the server; the chat card uses the picked one.
+let PROVIDERS = [{ id: 'openrouter', name: 'OpenRouter', hint: 'sk-or-…' }];
+let AI_KEYS = {};
+let cloudProvider = 'openrouter';
+try { cloudProvider = localStorage.getItem('openhl-ai-provider') || 'openrouter'; } catch(e) {}
+const OR_FAVS = [
+  {id:'openrouter/auto', name:'⚡ Auto (best for task)'},
+  {id:'anthropic/claude-sonnet-4-5', name:'Claude Sonnet 4.5'},
+  {id:'anthropic/claude-3-5-haiku', name:'Claude 3.5 Haiku'},
+  {id:'openai/gpt-4o', name:'GPT-4o'},
+  {id:'openai/gpt-4o-mini', name:'GPT-4o Mini'},
+  {id:'openai/o3-mini', name:'o3-mini'},
+  {id:'google/gemini-2.0-flash-001', name:'Gemini 2.0 Flash'},
+  {id:'google/gemini-pro-1.5', name:'Gemini Pro 1.5'},
+  {id:'meta-llama/llama-3.3-70b-instruct', name:'Llama 3.3 70B'},
+  {id:'mistralai/mistral-large', name:'Mistral Large'},
+  {id:'deepseek/deepseek-chat', name:'DeepSeek V3'},
+  {id:'x-ai/grok-3-mini', name:'Grok 3 Mini'},
+  {id:'openrouter/fusion', name:'Fusion'},
+];
+function providerName(id) { const p = PROVIDERS.find(x => x.id === id); return p ? p.name : id; }
+function opt(v, t) { const o = document.createElement('option'); o.value = v; o.textContent = t; return o; }
+
+function paintProviders() {
+  const sel = document.getElementById('or-provider');
+  sel.innerHTML = '';
+  PROVIDERS.forEach(p => sel.appendChild(opt(p.id, p.name + (AI_KEYS[p.id] && AI_KEYS[p.id].set ? '  ·  key saved' : ''))));
+  if (!PROVIDERS.some(p => p.id === cloudProvider)) cloudProvider = 'openrouter';
+  sel.value = cloudProvider;
+  const p = PROVIDERS.find(x => x.id === cloudProvider) || PROVIDERS[0];
+  const k = AI_KEYS[cloudProvider] || {};
+  const input = document.getElementById('or-key');
+  input.placeholder = (k.set ? 'Replace the key, ' : 'API key, ') + (p.hint || '');
+  input.setAttribute('aria-label', p.name + ' API key');
+  document.getElementById('or-key-status').textContent = k.set ? 'key saved' : 'not set';
+  document.getElementById('or-env').textContent = !k.set ? '' : k.fromEnv
+    ? 'Using ' + k.masked + ' from ' + p.env + ' in .env. Save a key here to replace it.'
+    : 'Key ' + k.masked + '. Save an empty key to remove it.';
+  document.getElementById('or-label').textContent = 'Chat with ' + p.name;
+  document.getElementById('or-card').classList.toggle('off', !k.set);
+}
+
+async function onProviderChange() {
+  const was = cloudProvider;
+  cloudProvider = document.getElementById('or-provider').value;
+  try { localStorage.setItem('openhl-ai-provider', cloudProvider); } catch(e) {}
+  document.getElementById('or-key').value = '';
+  paintProviders();
+  if (orActive && was !== cloudProvider) leaveCloud();
+  await initOpenRouter();
+}
+
+// Loads the picked provider's models into the model list.
 async function initOpenRouter() {
-  const res = await fetch('/api/openrouter/models').catch(()=>null);
-  if (!res || !res.ok) return;
-  const data = await res.json();
-  if (data.error) return; // no key set
-  orModels = data.models || [];
-  const sec = document.getElementById('or-section');
-  sec.style.display = '';
-  const cnt = document.getElementById('or-model-count');
-  cnt.textContent = orModels.length + ' models';
-  document.getElementById('or-dot').classList.remove('off');
-  // Populate model select
+  const id = cloudProvider;
   const sel = document.getElementById('or-model-sel');
-  // Curated favourites first
-  const favs = [
-    {id:'openrouter/auto', name:'⚡ Auto (best for task)'},
-    {id:'anthropic/claude-sonnet-4-5', name:'Claude Sonnet 4.5'},
-    {id:'anthropic/claude-3-5-haiku', name:'Claude 3.5 Haiku'},
-    {id:'openai/gpt-4o', name:'GPT-4o'},
-    {id:'openai/gpt-4o-mini', name:'GPT-4o Mini'},
-    {id:'openai/o3-mini', name:'o3-mini'},
-    {id:'google/gemini-2.0-flash-001', name:'Gemini 2.0 Flash'},
-    {id:'google/gemini-pro-1.5', name:'Gemini Pro 1.5'},
-    {id:'meta-llama/llama-3.3-70b-instruct', name:'Llama 3.3 70B'},
-    {id:'mistralai/mistral-large', name:'Mistral Large'},
-    {id:'deepseek/deepseek-chat', name:'DeepSeek V3'},
-    {id:'x-ai/grok-3-mini', name:'Grok 3 Mini'},
-    {id:'openrouter/fusion', name:'Fusion'},
-  ];
-  const favIds = new Set(favs.map(f=>f.id));
-  const rest = orModels.filter(m=>!favIds.has(m.id));
-  sel.innerHTML = '<optgroup label="Popular">' +
-    favs.map(f=>\`<option value="\${f.id}">\${f.name}</option>\`).join('') +
-    '</optgroup><optgroup label="All Models">' +
-    rest.map(m=>\`<option value="\${m.id}">\${m.name||m.id}</option>\`).join('') +
-    '</optgroup>';
+  const cnt = document.getElementById('or-model-count');
+  const dot = document.getElementById('or-dot');
+  orModels = [];
+  dot.classList.add('off'); cnt.textContent = '';
+  if (!(AI_KEYS[id] && AI_KEYS[id].set)) { sel.innerHTML = ''; sel.appendChild(opt('', 'Save a key first')); return; }
+  sel.innerHTML = ''; sel.appendChild(opt('', 'Loading models…'));
+  const res = await fetch('/api/ai/models?provider=' + encodeURIComponent(id)).catch(()=>null);
+  if (id !== cloudProvider) return;   // switched again while this loaded
+  const data = res ? await res.json().catch(()=>({})) : {};
+  if (!res || !res.ok || data.error) {
+    sel.innerHTML = ''; sel.appendChild(opt('', 'Could not load models'));
+    cnt.textContent = 'models unavailable';
+    if (data.error) showToast(providerName(id) + ': ' + data.error, 'error');
+    return;
+  }
+  orModels = data.models || [];
+  cnt.textContent = orModels.length + ' models';
+  dot.classList.remove('off');
+  sel.innerHTML = '';
+  if (id === 'openrouter') {
+    const favIds = new Set(OR_FAVS.map(f=>f.id));
+    const g1 = document.createElement('optgroup'); g1.label = 'Popular';
+    OR_FAVS.forEach(f => g1.appendChild(opt(f.id, f.name)));
+    const g2 = document.createElement('optgroup'); g2.label = 'All Models';
+    orModels.filter(m=>!favIds.has(m.id)).forEach(m => g2.appendChild(opt(m.id, m.name || m.id)));
+    sel.appendChild(g1); sel.appendChild(g2);
+  } else {
+    orModels.forEach(m => sel.appendChild(opt(m.id, m.name || m.id)));
+    if (!orModels.length) sel.appendChild(opt('', 'No models listed'));
+  }
+  let last = null; try { last = localStorage.getItem('openhl-ai-model-' + id); } catch(e) {}
+  if (last && [...sel.options].some(o => o.value === last)) sel.value = last;
+  if (orActive) activeModel = sel.value || null;
 }
 
 function selectOpenRouter() {
+  if (!(AI_KEYS[cloudProvider] && AI_KEYS[cloudProvider].set)) { document.getElementById('or-key').focus(); showToast('Save your ' + providerName(cloudProvider) + ' key first', 'warning'); return; }
   orActive = true;
   activePeer = null;
   chatHistory = [];
@@ -163,16 +226,29 @@ function selectOpenRouter() {
   document.getElementById('or-card').classList.add('active');
   document.getElementById('or-model-sel').style.display = '';
   document.getElementById('or-custom-row').style.display = '';
-  document.getElementById('chatTitle').textContent = 'OpenRouter';
+  document.getElementById('chatTitle').textContent = providerName(cloudProvider);
   document.getElementById('chatTitle').style.color = '';
   document.getElementById('modelSelect').style.display = 'none';
   document.getElementById('sendBtn').disabled = false;
   document.getElementById('chatMessages').innerHTML = '';
-  activeModel = document.getElementById('or-model-sel').value || 'openrouter/auto';
+  activeModel = document.getElementById('or-model-sel').value || (cloudProvider === 'openrouter' ? 'openrouter/auto' : null);
+}
+
+// Back to "nothing picked" when the provider being chatted with changes.
+function leaveCloud() {
+  orActive = false; activeModel = null; chatHistory = [];
+  document.getElementById('or-card').classList.remove('active');
+  document.getElementById('or-model-sel').style.display = 'none';
+  document.getElementById('or-custom-row').style.display = 'none';
+  document.getElementById('chatMessages').innerHTML = '<div class="empty-state">Choose one of your machines or a cloud provider<br>to start a conversation.</div>';
+  document.getElementById('chatTitle').textContent = 'Choose a machine or a cloud provider to start';
+  document.getElementById('chatTitle').style.color = 'var(--muted)';
+  document.getElementById('sendBtn').disabled = true;
 }
 
 function onOrModelChange() {
   activeModel = document.getElementById('or-model-sel').value;
+  try { localStorage.setItem('openhl-ai-model-' + cloudProvider, activeModel); } catch(e) {}
   chatHistory = [];
   document.getElementById('chatMessages').innerHTML = '';
 }
@@ -259,7 +335,7 @@ async function sendMsg() {
   const thinkingEl = appendMsg('assistant', '…');
   try {
     const payload = orActive
-      ? { provider: 'openrouter', model: activeModel, messages: chatHistory }
+      ? { provider: cloudProvider, model: activeModel, messages: chatHistory }
       : { peerId: activePeer.id, model: activeModel, messages: chatHistory };
     const res = await fetch('/api/ai/chat', {
       method: 'POST',
@@ -313,8 +389,8 @@ async function deletePeer(id) {
     activePeer = null;
     activeModel = null;
     chatHistory = [];
-    document.getElementById('chatMessages').innerHTML = '<div class="empty-state">Choose one of your machines or OpenRouter<br>to start a conversation.</div>';
-    document.getElementById('chatTitle').textContent = 'Choose a machine or OpenRouter to start';
+    document.getElementById('chatMessages').innerHTML = '<div class="empty-state">Choose one of your machines or a cloud provider<br>to start a conversation.</div>';
+    document.getElementById('chatTitle').textContent = 'Choose a machine or a cloud provider to start';
     document.getElementById('chatTitle').style.color = 'var(--muted)';
     document.getElementById('modelSelect').style.display = 'none';
     document.getElementById('sendBtn').disabled = true;
@@ -332,29 +408,26 @@ document.getElementById('chatInput').addEventListener('input', function() {
 async function loadOrKeyStatus() {
   try {
     const s = await fetch('/api/settings').then(r=>r.json());
-    const el = document.getElementById('or-key-status');
-    if (s.openRouter && s.openRouter.set) {
-      if (el) el.textContent = 'key saved, ' + s.openRouter.masked;
-      await initOpenRouter();
-    } else {
-      if (el) el.textContent = 'not set';
-    }
+    if (Array.isArray(s.providers) && s.providers.length) PROVIDERS = s.providers;
+    AI_KEYS = s.aiKeys || { openrouter: s.openRouter || {} };
+    paintProviders();
+    await initOpenRouter();
   } catch(e) {}
 }
 async function saveOrKey() {
+  const id = cloudProvider, name = providerName(id);
   const v = document.getElementById('or-key').value.trim();
   try {
-    const r = await fetch('/api/settings', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ openRouterKey: v }) }).then(x=>x.json());
+    const r = await fetch('/api/settings', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ provider: id, key: v }) })
+      .then(x => x.json().then(d => { if (!x.ok || d.error) throw new Error(d.error || 'HTTP ' + x.status); return d; }));
     document.getElementById('or-key').value = '';
-    const el = document.getElementById('or-key-status');
-    if (r.openRouter && r.openRouter.set) {
-      el.textContent = 'key saved, ' + r.openRouter.masked;
-      showToast('OpenRouter key saved', 'success');
-      await initOpenRouter();
-    } else {
-      el.textContent = 'not set';
-      showToast('OpenRouter key cleared', 'success');
-    }
+    if (r.aiKeys) AI_KEYS = r.aiKeys;
+    paintProviders();
+    const k = AI_KEYS[id] || {};
+    if (v) showToast(name + ' key saved', 'success');
+    else showToast(k.set ? name + ' key removed, using the one in .env' : name + ' key removed', 'success');
+    if (!k.set && orActive && cloudProvider === id) leaveCloud();
+    await initOpenRouter();
   } catch(e) { showToast('Save failed: ' + e.message, 'error'); }
 }
 

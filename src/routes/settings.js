@@ -1,7 +1,7 @@
 const { OPENROUTER_API_KEY } = require("../config");
 const { NAME_MAX, haloOn, hiddenPages, navGroupNames, navGroups, setHaloOn, setHiddenPages, setNavGroups, setUserName, userName } = require("../profile");
 const { NAV_PAGES } = require("../ui/assets");
-const { SETTINGS, getOpenRouterKey, maskKey, saveSettings } = require("../settings");
+const { AI_PROVIDERS, SETTINGS, aiProvider, getAiKey, getOpenRouterKey, maskKey, savedAiKey, saveSettings, setAiKey } = require("../settings");
 
 // UI-editable settings and secrets.
 module.exports = async function settingsRoutes(ctx) {
@@ -40,22 +40,32 @@ module.exports = async function settingsRoutes(ctx) {
     return json(out);
   }
 
-  // ── Settings (UI-editable secrets: OpenRouter key) ───────────────────────────
+  // ── Settings (UI-editable secrets: cloud AI keys) ───────────────────────────
+  // Keys never come back whole, only masked.
+  const aiKeys = () => Object.fromEntries(AI_PROVIDERS.map(p => {
+    const k = getAiKey(p.id);
+    return [p.id, { set: !!k, masked: maskKey(k), fromEnv: !!k && !savedAiKey(p.id) }];
+  }));
+  const providers = () => AI_PROVIDERS.map(p => ({ id: p.id, name: p.name, hint: p.hint, env: p.env }));
   if (pathname === '/api/settings' && req.method === 'GET') {
     return json({
-      openRouter: { set: !!getOpenRouterKey(), masked: maskKey(getOpenRouterKey()), fromEnv: !!OPENROUTER_API_KEY && !SETTINGS.openRouterKey }
+      openRouter: { set: !!getOpenRouterKey(), masked: maskKey(getOpenRouterKey()), fromEnv: !!OPENROUTER_API_KEY && !SETTINGS.openRouterKey },
+      providers: providers(), aiKeys: aiKeys()
     });
   }
   if (pathname === '/api/settings' && req.method === 'POST') {
     const body = JSON.parse((await readBody()).toString());
-    if (typeof body.openRouterKey === 'string') {
-      if (body.openRouterKey.trim()) SETTINGS.openRouterKey = body.openRouterKey.trim();
-      else delete SETTINGS.openRouterKey; // empty clears -> falls back to .env
+    if (typeof body.openRouterKey === 'string') setAiKey('openrouter', body.openRouterKey);
+    if (body.provider !== undefined) {
+      if (!aiProvider(body.provider)) return json({ error: 'Unknown provider' }, 400);
+      if (typeof body.key !== 'string') return json({ error: 'key must be text' }, 400);
+      setAiKey(body.provider, body.key);
     }
     saveSettings();
     return json({
       ok: true,
-      openRouter: { set: !!getOpenRouterKey(), masked: maskKey(getOpenRouterKey()) }
+      openRouter: { set: !!getOpenRouterKey(), masked: maskKey(getOpenRouterKey()) },
+      aiKeys: aiKeys()
     });
   }
 };

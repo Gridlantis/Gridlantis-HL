@@ -1,7 +1,7 @@
 const { AI_PEERS_FILE } = require("../config");
-const { callOllama, callOpenRouter } = require("../domains/ai");
+const { callCloud, callOllama, cloudModels } = require("../domains/ai");
 const { httpGet } = require("../net");
-const { getOpenRouterKey } = require("../settings");
+const { aiProvider, getAiKey, getOpenRouterKey } = require("../settings");
 const { readJSON, writeJSON } = require("../store");
 
 // AI peers, chat, and the OpenRouter proxy.
@@ -42,11 +42,13 @@ module.exports = async function aiRoutes(ctx) {
 
   if (pathname === '/api/ai/chat' && req.method === 'POST') {
     const body = JSON.parse((await readBody()).toString());
-    // ── OpenRouter ──
-    if (body.provider === 'openrouter') {
-      if (!getOpenRouterKey()) return json({ error: 'No OpenRouter API key set' }, 400);
+    // ── Cloud provider (OpenRouter, OpenAI, Anthropic, …) ──
+    if (body.provider && body.provider !== 'local') {
+      const p = aiProvider(body.provider);
+      if (!p) return json({ error: 'Unknown provider' }, 400);
+      if (!getAiKey(p.id)) return json({ error: `No ${p.name} API key set` }, 400);
       try {
-        const text = await callOpenRouter(body.messages, body.model, null, 60000);
+        const text = await callCloud(p.id, body.messages, body.model, null, 60000);
         return json({ message: text });
       } catch(e) { return json({ error: e.message }, 502); }
     }
@@ -79,19 +81,12 @@ module.exports = async function aiRoutes(ctx) {
     }
   }
 
-  if (pathname === '/api/openrouter/models' && req.method === 'GET') {
-    const ORK = getOpenRouterKey();
-    if (!ORK) return json({ error: 'No OpenRouter API key set' }, 400);
-    try {
-      const res = await fetch('https://openrouter.ai/api/v1/models', {
-        headers: { 'Authorization': `Bearer ${ORK}`, 'User-Agent': 'OpenHL/1.0' }
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error?.message || `HTTP ${res.status}`);
-      const models = (data.data || [])
-        .map(m => ({ id: m.id, name: m.name || m.id, ctx: m.context_length }))
-        .sort((a, b) => a.name.localeCompare(b.name));
-      return json({ models });
-    } catch(e) { return json({ error: e.message }, 500); }
+  // Models for any cloud provider; /api/openrouter/models is the old name.
+  if ((pathname === '/api/ai/models' || pathname === '/api/openrouter/models') && req.method === 'GET') {
+    const id = pathname === '/api/openrouter/models' ? 'openrouter' : ctx.parsed.searchParams.get('provider');
+    if (!aiProvider(id)) return json({ error: 'Unknown provider' }, 400);
+    if (!getAiKey(id)) return json({ error: `No ${aiProvider(id).name} API key set` }, 400);
+    try { return json({ models: await cloudModels(id) }); }
+    catch(e) { return json({ error: e.message }, 502); }
   }
 };

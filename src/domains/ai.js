@@ -1,7 +1,7 @@
 const https = require("https");
 
 const { httpGet } = require("../net");
-const { getOpenRouterKey } = require("../settings");
+const { aiProvider, getAiKey } = require("../settings");
 
 // ── Ollama, streamed ──────────────────────────────────────────────────────────
 // The old version sent stream:false and leaned on httpPost's req.setTimeout().
@@ -98,42 +98,82 @@ function callOllamaRaw(host, model, messages, system, ms = 0) {
   });
 }
 
-// Unified AI caller — Local network (Ollama) or OpenRouter
+// Unified AI caller — Local network (Ollama) or a cloud provider
 async function callAI(provider, model, messages, system, ms = 0, opts = {}) {
-  if (provider === 'openrouter') return callOpenRouter(messages, model, system, ms || 120000);
-  if (provider === 'local')      return callOllama(opts.host, model, messages, system, ms);
+  if (provider === 'local') return callOllama(opts.host, model, messages, system, ms);
+  if (aiProvider(provider))  return callCloud(provider, messages, model, system, ms || 120000);
   throw new Error('Unknown AI provider: ' + provider);
 }
 
 function callOpenRouter(messages, model, system, ms = 120000) {
-  return callOpenRouterRaw(messages, model, system, ms);
+  return callCloud('openrouter', messages, model, system, ms);
 }
-async function callOpenRouterRaw(messages, model, system, ms = 120000) {
-  const KEY = getOpenRouterKey();
-  if (!KEY) throw new Error('No OpenRouter API key (set it on the AI page or in .env)');
-  const msgs = system ? [{ role: 'system', content: system }, ...messages] : messages;
+
+// Headers for a provider's API. OpenRouter likes to know who is calling.
+function cloudHeaders(p, key) {
+  if (p.kind === 'anthropic') return { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'Content-Type': 'application/json' };
+  const h = { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json', 'User-Agent': 'OpenHL/1.0' };
+  if (p.id === 'openrouter') { h['HTTP-Referer'] = 'http://openhl.local'; h['X-Title'] = 'Open HL'; }
+  return h;
+}
+function cloudError(data, status) {
+  const e = data && data.error;
+  return new Error((e && (e.message || (typeof e === 'string' ? e : ''))) || (data && data.message) || `HTTP ${status}`);
+}
+
+async function callCloud(id, messages, model, system, ms = 120000) {
+  const p = aiProvider(id);
+  if (!p) throw new Error('Unknown AI provider: ' + id);
+  const KEY = getAiKey(id);
+  if (!KEY) throw new Error(`No ${p.name} API key (set it on the AI page or ${p.env} in .env)`);
+  if (!model && id !== 'openrouter') throw new Error('Pick a model first');
+  const usedModel = model || 'openrouter/auto';
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), ms);
-  const usedModel = model || 'openrouter/auto';
-  console.log(`[OpenRouter] model=${usedModel} key=${KEY.slice(0,12)}... msgs=${msgs.length}`);
+  console.log(`[${p.name}] model=${usedModel} msgs=${messages.length}`);
   try {
-    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      signal: ctrl.signal,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${KEY}`,
-        'HTTP-Referer': 'http://openhl.local',
-        'X-Title': 'Open HL'
-      },
-      body: JSON.stringify({ model: usedModel, messages: msgs, stream: false })
-    });
+    let url, body;
+    if (p.kind === 'anthropic') {
+      // Anthropic takes the system prompt on its own and only user/assistant turns.
+      const sys = [system, ...messages.filter(m => m.role === 'system').map(m => m.content)].filter(Boolean).join('\n\n');
+      url = p.base + '/messages';
+      body = { model: usedModel, max_tokens: 4096, messages: messages.filter(m => m.role !== 'system') };
+      if (sys) body.system = sys;
+    } else {
+      url = p.base + '/chat/completions';
+      body = { model: usedModel, messages: system ? [{ role: 'system', content: system }, ...messages] : messages, stream: false };
+    }
+    const res = await fetch(url, { method: 'POST', signal: ctrl.signal, headers: cloudHeaders(p, KEY), body: JSON.stringify(body) });
     const raw = await res.text();
-    console.log(`[OpenRouter] status=${res.status} body=${raw.slice(0, 200)}`);
-    const data = JSON.parse(raw);
-    if (!res.ok) throw new Error(data.error?.message || `HTTP ${res.status}`);
+    console.log(`[${p.name}] status=${res.status}`);
+    let data = null; try { data = JSON.parse(raw); } catch {}
+    if (!res.ok) throw cloudError(data, res.status);
+    if (!data) throw new Error(`${p.name} sent back something that is not JSON`);
+    if (p.kind === 'anthropic') return (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
     return data.choices?.[0]?.message?.content || '';
   } finally { clearTimeout(t); }
+}
+
+// A provider's models, as { id, name }. OpenAI also lists embedding, speech
+// and image models; those cannot chat, so they are left out.
+const NOT_CHAT = /embed|tts|whisper|dall-e|moderation|transcribe|davinci|babbage|image|audio|realtime|search|computer-use|sora/i;
+async function cloudModels(id) {
+  const p = aiProvider(id);
+  if (!p) throw new Error('Unknown AI provider');
+  const KEY = getAiKey(id);
+  if (!KEY) throw new Error(`No ${p.name} API key set`);
+  const res = await fetch(p.base + '/models' + (p.kind === 'anthropic' ? '?limit=100' : ''), { headers: cloudHeaders(p, KEY) });
+  const raw = await res.text();
+  let data = null; try { data = JSON.parse(raw); } catch {}
+  if (!res.ok) throw cloudError(data, res.status);
+  const list = (data && (data.data || data.models)) || [];
+  return list
+    .map(m => {
+      const mid = String(m.id || m.name || '').replace(/^models\//, '');
+      return { id: mid, name: m.display_name || m.name && !/^models\//.test(m.name) && m.name || mid, ctx: m.context_length || m.context_window || null };
+    })
+    .filter(m => m.id && !(p.id === 'openai' && NOT_CHAT.test(m.id)) && !(p.id === 'google' && /embed|aqa|imagen|veo/i.test(m.id)))
+    .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 // ── Ollama model list ─────────────────────────────────────────────────────────
@@ -149,4 +189,4 @@ async function ollamaFirstModel(host) {
   try { const t = await ollamaTags(host); return t[0] || ''; } catch { return ''; }
 }
 
-module.exports = { AI_IDLE_MS, AI_KEEP_ALIVE, AI_TOTAL_MS, OLLAMA_HOST_DEFAULT, callAI, callOllama, callOpenRouter, ollamaFirstModel, ollamaTags };
+module.exports = { AI_IDLE_MS, AI_KEEP_ALIVE, AI_TOTAL_MS, OLLAMA_HOST_DEFAULT, callAI, callCloud, callOllama, callOpenRouter, cloudModels, ollamaFirstModel, ollamaTags };
