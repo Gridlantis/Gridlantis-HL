@@ -1,6 +1,6 @@
 const { esc } = require("../helpers");
 const { NAME_MAX, haloOn, userName } = require("../profile");
-const { COMMIT, VERSION } = require("../version");
+const { VERSION } = require("../version");
 const { BASE_CSS, FAVICON, FONT, NAV_CSS, THEMES, TOAST_CSS, TOAST_JS, navBar } = require("../ui/assets");
 
 // ─── PERSONALIZE ─────────────────────────────────────────────────────────────
@@ -127,7 +127,7 @@ ${navBar("/personalize")}
     <div class="pz-body"><div class="pz-themes" id="pz-themes">${cards}</div></div>
   </section>
 
-  <p class="pz-version">Open HL ${VERSION ? "version " + esc(VERSION) : "(version unknown)"}${COMMIT ? ` <span title="Git commit this server is running">· ${esc(COMMIT)}</span>` : ""}</p>
+  <p class="pz-version">Open HL ${VERSION ? "version " + esc(VERSION) : "(version unknown)"}</p>
 </main>
 <div class="toast" id="toast"></div>
 <script>
