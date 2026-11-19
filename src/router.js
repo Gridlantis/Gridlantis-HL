@@ -19,6 +19,7 @@ const ROUTES = [
   require("./routes/reminders"),
   require("./routes/calendar"),
   require("./routes/flows"),
+  require("./routes/connectwork"),
   require("./routes/weather"),
   require("./routes/system"),
   require("./routes/finance"),

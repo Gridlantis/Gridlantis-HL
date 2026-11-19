@@ -86,6 +86,7 @@ const DATA_LAYOUT = {
   "reminders.json": "reminders",  "gcal.json": "calendar",
   "homeos.json": "homeos",        "nodes.json": "monitor",          "laptops.json": "laptops",
   "flows.json": "flows",          "webforms.json": "webforms",      "ai_peers.json": "ai",
+  "connectwork.json": "connectwork",
   "settings.json": "",
 };
 const dataFile = name => path.join(DATA_DIR, DATA_LAYOUT[name], name);
