@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const { NOTES_FILE, UPLOAD_DIR, dataFile } = require("../config");
+const { FOLDERS_FILE, NOTES_FILE, UPLOAD_DIR, dataFile } = require("../config");
 const { readReminders } = require("./reminders");
 const containers = require("./docker/containers");
 const laptops = require("./laptops/store");
@@ -29,7 +29,7 @@ const SKIP_DIRS = new Set(["node_modules", "bower_components", "vendor", "dist",
 const PROJECT_MARKERS = [".git", "package.json", "Cargo.toml", "go.mod", "pyproject.toml", "setup.py", "requirements.txt",
   "pom.xml", "build.gradle", "CMakeLists.txt", "Makefile", "composer.json", "Gemfile", "pubspec.yaml"];
 
-const TYPES = ["note", "flow", "rem", "file", "vm", "ctr", "host"];
+const TYPES = ["note", "folder", "flow", "rem", "file", "vm", "ctr", "host"];
 const idOk = id => typeof id === "string" && id.length <= 1100 && TYPES.includes(id.split(":")[0]) && id.indexOf(":") > 0;
 const pairKey = (a, b) => (a < b ? a + "\n" + b : b + "\n" + a);
 const asList = v => (Array.isArray(v) ? v : []);
@@ -83,6 +83,14 @@ async function graph(opts = {}) {
     if (!n || typeof n.id !== "string") continue;
     add({ id: "note:" + n.id, type: "note", title: String(n.title || "Untitled"), sub: n.hidden ? "Locked note" : "Note",
           href: "/notes?open=" + encodeURIComponent(n.id) });
+  }
+  // Note folders, each linked to the notes inside it below.
+  const folders = asList(readJSON(FOLDERS_FILE, []));
+  for (const f of folders) {
+    if (!f || typeof f.id !== "string") continue;
+    const count = notes.filter(n => n && n.folderId === f.id).length;
+    add({ id: "folder:" + f.id, type: "folder", title: ((f.emoji ? f.emoji + " " : "") + String(f.name || "Folder")).trim(),
+          sub: "Note folder, " + count + " note" + (count === 1 ? "" : "s"), href: "/notes?folder=" + encodeURIComponent(f.id) });
   }
   const flows = asList(readJSON(FLOWS_FILE, []));
   for (const f of flows) {
@@ -149,6 +157,9 @@ async function graph(opts = {}) {
   for (const f of flows) {
     if (!f || typeof f.id !== "string") continue;
     for (const n of asList(f.nodes)) if (n && typeof n.noteId === "string") link("flow:" + f.id, "note:" + n.noteId, { why: "Note in this flow" });
+  }
+  for (const n of notes) {
+    if (n && typeof n.id === "string" && typeof n.folderId === "string") link("note:" + n.id, "folder:" + n.folderId, { why: "In this folder" });
   }
   const byTitle = new Map();
   for (const n of notes) if (n && n.title) byTitle.set(String(n.title).trim().toLowerCase(), n.id);

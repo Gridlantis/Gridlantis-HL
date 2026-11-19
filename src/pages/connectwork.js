@@ -10,7 +10,7 @@ function connectworkHtml() {
 <title>Open HL · ConnectWork</title>${FONT}${FAVICON}
 <style>
 ${BASE_CSS}${NAV_CSS}${TOAST_CSS}
-:root{--cw-note:#22b8cf;--cw-flow:#9b7bf0;--cw-rem:#f08c3a;--cw-file:#c45fe0;--cw-vm:#4cc76a;--cw-ctr:#3d7ff5;--cw-host:#ef5a6f;}
+:root{--cw-note:#22b8cf;--cw-folder:#e3c24a;--cw-flow:#9b7bf0;--cw-rem:#f08c3a;--cw-file:#c45fe0;--cw-vm:#4cc76a;--cw-ctr:#3d7ff5;--cw-host:#ef5a6f;}
 .cw-app{display:grid;grid-template-columns:250px minmax(0,1fr) 0;height:var(--app-h);overflow:hidden;}
 .cw-app.picked{grid-template-columns:250px minmax(0,1fr) 300px;}
 .cw-side,.cw-insp{background:var(--surface);overflow-y:auto;min-width:0;}
@@ -108,6 +108,7 @@ ${navBar('/connectwork')}
     <div class="cw-group" role="group" aria-labelledby="cw-show-t">
       <p class="cw-group-t" id="cw-show-t">Show</p>
       <label class="cw-check" style="--c:var(--cw-note)"><input type="checkbox" data-type="note" checked><span class="cw-box"></span><span class="cw-dot"></span>Notes<span class="cw-n" id="n-note"></span></label>
+      <label class="cw-check" style="--c:var(--cw-folder)"><input type="checkbox" data-type="folder" checked><span class="cw-box"></span><span class="cw-dot"></span>Note folders<span class="cw-n" id="n-folder"></span></label>
       <label class="cw-check" style="--c:var(--cw-flow)"><input type="checkbox" data-type="flow" checked><span class="cw-box"></span><span class="cw-dot"></span>Flow spaces<span class="cw-n" id="n-flow"></span></label>
       <label class="cw-check" style="--c:var(--cw-rem)"><input type="checkbox" data-type="rem" checked><span class="cw-box"></span><span class="cw-dot"></span>Reminders<span class="cw-n" id="n-rem"></span></label>
       <label class="cw-check" style="--c:var(--cw-file)"><input type="checkbox" data-type="file" checked><span class="cw-box"></span><span class="cw-dot"></span>Files<span class="cw-n" id="n-file"></span></label>
@@ -120,7 +121,7 @@ ${navBar('/connectwork')}
       <label class="cw-check"><input type="checkbox" id="orphans" checked><span class="cw-box"></span>Unconnected items</label>
       <label class="cw-check"><input type="checkbox" id="labels"><span class="cw-box"></span>Always show names</label>
     </div>
-    <p class="cw-hint">Flows link to the notes placed in them, notes link to what they point at, including <b>[[Note title]]</b>, and virtual machines and containers link to the host they run on. Right-click an item and choose Connect to, or shift-drag from one item to another, to link them. Dotted links are suggestions from AI, turned on from the <a href="/ai">AI page</a>; keep or dismiss them in the side panel.</p>
+    <p class="cw-hint">Flows link to the notes placed in them, notes link to their folder and to what they point at, including <b>[[Note title]]</b>, and virtual machines and containers link to the host they run on. Right-click an item and choose Connect to, or shift-drag from one item to another, to link them. Dotted links are suggestions from AI, turned on from the <a href="/ai">AI page</a>; keep or dismiss them in the side panel.</p>
     <div class="cw-stats" id="stats"></div>
   </aside>
   <section class="cw-main" aria-label="Graph">

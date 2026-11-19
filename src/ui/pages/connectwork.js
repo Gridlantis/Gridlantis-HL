@@ -6,8 +6,8 @@
   var $ = function (id) { return document.getElementById(id); };
   var app = $("app"), cv = $("cv"), ctx = cv.getContext("2d"), insp = $("insp");
   var CLIENT = Math.random().toString(36).slice(2, 10);
-  var TYPES = ["note", "flow", "rem", "file", "vm", "ctr", "host"];
-  var TYPE_NAME = { note: "Note", flow: "Flow space", rem: "Reminder", file: "File", vm: "Virtual machine", ctr: "Container", host: "Host" };
+  var TYPES = ["note", "folder", "flow", "rem", "file", "vm", "ctr", "host"];
+  var TYPE_NAME = { note: "Note", folder: "Note folder", flow: "Flow space", rem: "Reminder", file: "File", vm: "Virtual machine", ctr: "Container", host: "Host" };
   var css = getComputedStyle(document.documentElement);
   var COLOR = {};
   function readColors() {
@@ -24,7 +24,7 @@
   // ── state ──────────────────────────────────────────────────────────────────
   var NODES = [], EDGES = [], BY_ID = {}, ADJ = {};
   var shown = [], shownEdges = [];
-  var show = { note: true, flow: true, rem: true, file: true, vm: true, ctr: true, host: true }, orphans = true, allLabels = false;
+  var show = { note: true, folder: true, flow: true, rem: true, file: true, vm: true, ctr: true, host: true }, orphans = true, allLabels = false;
   var query = "", picked = null, hover = null;
   var linkFrom = null, pointerWorld = null;   // right-click "Connect to…" in progress
   var view = { x: 0, y: 0, k: 1 }, W = 0, H = 0, DPR = 1;
@@ -405,7 +405,7 @@
     if (!picked) return;
     var n = picked;
     var head = el("div", "cw-i-head"); head.appendChild(dot(n.type));
-    var t = el("div", "cw-i-t"); t.appendChild(el("h2", "cw-i-title", n.title)); t.appendChild(el("div", "cw-i-sub", n.type === "file" ? (n.project ? "Code project in " : "File in ") + n.sub : ["vm", "ctr", "host"].indexOf(n.type) >= 0 ? n.sub : TYPE_NAME[n.type]));
+    var t = el("div", "cw-i-t"); t.appendChild(el("h2", "cw-i-title", n.title)); t.appendChild(el("div", "cw-i-sub", n.type === "file" ? (n.project ? "Code project in " : "File in ") + n.sub : ["vm", "ctr", "host", "folder"].indexOf(n.type) >= 0 ? n.sub : TYPE_NAME[n.type]));
     if (n.type === "rem" && n.at) t.lastChild.textContent = sub(n);
     head.appendChild(t);
     var x = el("button", "cw-x"); x.type = "button"; x.title = "Close"; x.setAttribute("aria-label", "Close"); x.innerHTML = '<i class="fa-solid fa-xmark"></i>';
@@ -415,7 +415,7 @@
     var s1 = el("div", "cw-i-sec"), open = el("a", "cw-open");
     open.href = n.href; if (n.type === "file") { open.target = "_blank"; open.rel = "noopener"; }
     open.innerHTML = '<i class="fa-solid fa-arrow-up-right-from-square"></i>';
-    open.appendChild(document.createTextNode(n.type === "file" ? (n.project ? "Open in Files" : "Open file") : n.type === "vm" ? "Open in VM Lab" : n.type === "ctr" ? "Open in Containers" : n.type === "host" ? (n.id.indexOf("host:pc:") === 0 ? "Open in PC host" : "Open in VM Lab") : "Open " + TYPE_NAME[n.type].toLowerCase()));
+    open.appendChild(document.createTextNode(n.type === "file" ? (n.project ? "Open in Files" : "Open file") : n.type === "folder" ? "Open in Notes" : n.type === "vm" ? "Open in VM Lab" : n.type === "ctr" ? "Open in Containers" : n.type === "host" ? (n.id.indexOf("host:pc:") === 0 ? "Open in PC host" : "Open in VM Lab") : "Open " + TYPE_NAME[n.type].toLowerCase()));
     s1.appendChild(open); insp.appendChild(s1);
 
     var s2 = el("div", "cw-i-sec"), links = ADJ[n.id];

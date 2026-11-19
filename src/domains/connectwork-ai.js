@@ -14,7 +14,7 @@ const { readJSON, writeJSONFile } = require("../store");
 const STATE_FILE = dataFile("connectwork_ai.json");
 const EVERY_MS = 6 * 60 * 60 * 1000;     // a run every 6 hours while on
 const MAX_ITEMS = 300, MAX_LINKS = 60, SNIPPET = 160;
-const ORDER = ["note", "flow", "rem", "vm", "ctr", "host", "file"];
+const ORDER = ["note", "folder", "flow", "rem", "vm", "ctr", "host", "file"];
 const pairKey = (a, b) => (a < b ? a + "\n" + b : b + "\n" + a);
 
 function config() {
@@ -86,7 +86,7 @@ function prompt(nodes, notes) {
     if (body) extra += " — " + body;
     return (i + 1) + " | " + n.type + " | " + n.title.replace(/\s+/g, " ").slice(0, 120) + extra;
   });
-  const system = "You find meaningful connections between items someone keeps on their home server: notes, flow spaces (diagrams), " +
+  const system = "You find meaningful connections between items someone keeps on their home server: notes, note folders, flow spaces (diagrams), " +
     "reminders, files, virtual machines, containers and hosts. Link two items only when one clearly relates to the other " +
     "(same project, topic, service, device or task). Do not link items just because they share a type. " +
     "Answer with JSON only, no prose: {\"links\":[{\"a\":<number>,\"b\":<number>,\"why\":\"<under 12 words>\"}]}. " +
