@@ -20,6 +20,14 @@ const LINKS_FILE = dataFile("connectwork.json");
 const FLOWS_FILE = dataFile("flows.json");
 const MAX_FILES = 1500, MAX_DEPTH = 6, MAX_LINKS = 10000;
 const SKIP = /^(\.stfolder|\.stignore|\.stversions)$|^\.syncthing\..*\.tmp$|^~syncthing~/;
+// Folders that hold tools' output, not your files: dependencies, builds, caches.
+// Hidden folders (.git, .venv, .cache...) are skipped too.
+const SKIP_DIRS = new Set(["node_modules", "bower_components", "vendor", "dist", "build", "out", "target", "coverage",
+  "__pycache__", "venv", "env", "site-packages", "Pods", "DerivedData", "obj"]);
+// A folder holding one of these is a code project: it shows as one item, not
+// every source file inside it.
+const PROJECT_MARKERS = [".git", "package.json", "Cargo.toml", "go.mod", "pyproject.toml", "setup.py", "requirements.txt",
+  "pom.xml", "build.gradle", "CMakeLists.txt", "Makefile", "composer.json", "Gemfile", "pubspec.yaml"];
 
 const TYPES = ["note", "flow", "rem", "file", "vm", "ctr", "host"];
 const idOk = id => typeof id === "string" && id.length <= 1100 && TYPES.includes(id.split(":")[0]) && id.indexOf(":") > 0;
@@ -31,6 +39,7 @@ function readLinks() {
 }
 
 // Files under uploads/, breadth first so a deep tree cannot crowd out the top.
+// Returns { path, project } items; a code project folder is one item.
 function listFiles() {
   const out = [], queue = [["", 0]];
   const root = path.resolve(UPLOAD_DIR);
@@ -42,8 +51,14 @@ function listFiles() {
     for (const e of entries) {
       if (SKIP.test(e.name)) continue;
       const r = rel ? rel + "/" + e.name : e.name;
-      if (e.isDirectory()) { if (depth < MAX_DEPTH) queue.push([r, depth + 1]); }
-      else if (e.isFile() && out.length < MAX_FILES) out.push(r);
+      if (e.isDirectory()) {
+        if (e.name.startsWith(".") || SKIP_DIRS.has(e.name)) continue;
+        let inner = [];
+        try { inner = fs.readdirSync(path.join(root, r)); } catch {}
+        if (PROJECT_MARKERS.some(m => inner.includes(m))) { if (out.length < MAX_FILES) out.push({ path: r, project: true }); }
+        else if (depth < MAX_DEPTH) queue.push([r, depth + 1]);
+      }
+      else if (e.isFile() && !e.name.startsWith(".") && out.length < MAX_FILES) out.push({ path: r, project: false });
     }
   }
   return out;
@@ -82,10 +97,10 @@ async function graph() {
           sub: r.enabled === false ? "Reminder, off" : "Reminder", href: "/reminders?edit=" + encodeURIComponent(r.id) });
   }
   const files = listFiles();
-  for (const f of files) {
+  for (const { path: f, project } of files) {
     const slash = f.lastIndexOf("/");
     add({ id: "file:" + f, type: "file", title: f.slice(slash + 1), sub: slash > 0 ? f.slice(0, slash) : "Files",
-          href: "/api/files/preview?path=" + encodeURIComponent(f) });
+          project: project || undefined, href: project ? "/files" : "/api/files/preview?path=" + encodeURIComponent(f) });
   }
 
   // Hosts: the VM Lab machines (this one and remote agents) and the PCs on the

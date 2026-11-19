@@ -395,7 +395,7 @@
     if (!picked) return;
     var n = picked;
     var head = el("div", "cw-i-head"); head.appendChild(dot(n.type));
-    var t = el("div", "cw-i-t"); t.appendChild(el("h2", "cw-i-title", n.title)); t.appendChild(el("div", "cw-i-sub", n.type === "file" ? "File in " + n.sub : ["vm", "ctr", "host"].indexOf(n.type) >= 0 ? n.sub : TYPE_NAME[n.type]));
+    var t = el("div", "cw-i-t"); t.appendChild(el("h2", "cw-i-title", n.title)); t.appendChild(el("div", "cw-i-sub", n.type === "file" ? (n.project ? "Code project in " : "File in ") + n.sub : ["vm", "ctr", "host"].indexOf(n.type) >= 0 ? n.sub : TYPE_NAME[n.type]));
     if (n.type === "rem" && n.at) t.lastChild.textContent = sub(n);
     head.appendChild(t);
     var x = el("button", "cw-x"); x.type = "button"; x.title = "Close"; x.setAttribute("aria-label", "Close"); x.innerHTML = '<i class="fa-solid fa-xmark"></i>';
@@ -405,7 +405,7 @@
     var s1 = el("div", "cw-i-sec"), open = el("a", "cw-open");
     open.href = n.href; if (n.type === "file") { open.target = "_blank"; open.rel = "noopener"; }
     open.innerHTML = '<i class="fa-solid fa-arrow-up-right-from-square"></i>';
-    open.appendChild(document.createTextNode(n.type === "file" ? "Open file" : n.type === "vm" ? "Open in VM Lab" : n.type === "ctr" ? "Open in Containers" : n.type === "host" ? (n.id.indexOf("host:pc:") === 0 ? "Open in PC host" : "Open in VM Lab") : "Open " + TYPE_NAME[n.type].toLowerCase()));
+    open.appendChild(document.createTextNode(n.type === "file" ? (n.project ? "Open in Files" : "Open file") : n.type === "vm" ? "Open in VM Lab" : n.type === "ctr" ? "Open in Containers" : n.type === "host" ? (n.id.indexOf("host:pc:") === 0 ? "Open in PC host" : "Open in VM Lab") : "Open " + TYPE_NAME[n.type].toLowerCase()));
     s1.appendChild(open); insp.appendChild(s1);
 
     var s2 = el("div", "cw-i-sec"), links = ADJ[n.id];
