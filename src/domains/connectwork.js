@@ -73,7 +73,8 @@ function dockerContainers() {
   ]);
 }
 
-async function graph() {
+// `withAi: false` leaves out the AI's suggestions (used when asking it for more).
+async function graph(opts = {}) {
   const nodes = [], have = new Set();
   const add = n => { if (!have.has(n.id)) { have.add(n.id); nodes.push(n); } };
 
@@ -141,6 +142,7 @@ async function graph() {
     if (a === b || !have.has(a) || !have.has(b)) return;
     const k = pairKey(a, b), e = edges.get(k) || { a, b, why: [] };
     if (extra.id) e.id = extra.id;
+    if (extra.ai) e.ai = true;
     if (extra.why && !e.why.includes(extra.why)) e.why.push(extra.why);
     edges.set(k, e);
   };
@@ -163,8 +165,14 @@ async function graph() {
   for (const v of vms) if (v && typeof v.id === "string") link("vm:" + v.id, LOCAL, { why: "Runs on this host" });
   for (const c of ctrs) if (c && c.name) link("ctr:" + c.name, LOCAL, { why: "Runs on this host" });
   for (const l of readLinks()) link(l.a, l.b, { id: l.id });
+  // The AI's suggestions only where nothing else links the pair already.
+  if (opts.withAi !== false) {
+    for (const l of require("./connectwork-ai").suggestions()) {
+      if (!edges.has(pairKey(l.a, l.b))) link(l.a, l.b, { ai: true, why: "Suggested by AI" + (l.why ? ": " + l.why : "") });
+    }
+  }
 
-  return { nodes, edges: [...edges.values()], filesCapped: files.length >= MAX_FILES };
+  return { nodes, edges: [...edges.values()], filesCapped: files.length >= MAX_FILES, auto: opts.withAi === false ? null : require("./connectwork-ai").status() };
 }
 
 const newId = () => "c" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);

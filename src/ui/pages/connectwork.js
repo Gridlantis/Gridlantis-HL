@@ -61,7 +61,9 @@
       TYPES.forEach(function (t) {
         $("n-" + t).textContent = NODES.filter(function (n) { return n.type === t; }).length;
       });
-      $("stats").textContent = EDGES.length + " link" + (EDGES.length === 1 ? "" : "s") + (d.filesCapped ? " · showing the first 1,500 files" : "");
+      var ai = EDGES.filter(function (e) { return e.ai && !e.id; }).length;
+      $("stats").textContent = EDGES.length + " link" + (EDGES.length === 1 ? "" : "s") + (ai ? " · " + ai + " suggested by AI" : "") +
+        (d.auto && d.auto.running ? " · AI is looking…" : "") + (d.filesCapped ? " · showing the first 1,500 files" : "");
       filter(); heat(Object.keys(old).length ? 0.4 : 1);
       renderInsp();
     }).catch(function () { showToast("Couldn't load the graph", "bad"); });
@@ -156,7 +158,10 @@
       ctx.strokeStyle = lit ? COLOR.accent : COLOR.line;
       ctx.lineWidth = (lit ? 1.6 : 1) / view.k;
       ctx.shadowColor = COLOR.accent; ctx.shadowBlur = lit ? 8 * DPR : 0;
-      if (!e.id) ctx.setLineDash([4 / view.k, 3 / view.k]); else ctx.setLineDash([]);
+      // Solid: yours. Dashed: made by the items. Dotted: suggested by AI.
+      if (e.id) ctx.setLineDash([]);
+      else if (e.ai) { ctx.setLineDash([1.5 / view.k, 3.5 / view.k]); ctx.lineWidth = (lit ? 2.2 : 1.6) / view.k; }
+      else ctx.setLineDash([4 / view.k, 3 / view.k]);
       ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
     });
     ctx.setLineDash([]); ctx.shadowBlur = 0;
@@ -370,6 +375,11 @@
       .then(function () { showToast("Linked " + a.title + " and " + b.title, "ok"); picked = a; return load(); })
       .catch(function (err) { showToast(err.message, "bad"); });
   }
+  function dismiss(e) {
+    fetch("/api/connectwork/auto/dismiss", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ a: e.a, b: e.b }) })
+      .then(function (r) { if (!r.ok) throw new Error(); showToast("Suggestion dismissed", "ok"); return load(); })
+      .catch(function () { showToast("Couldn't dismiss that", "bad"); });
+  }
   function unlink(e) {
     fetch("/api/connectwork/links/" + encodeURIComponent(e.id), { method: "DELETE" })
       .then(function (r) { if (!r.ok) throw new Error(); return load(); })
@@ -420,6 +430,15 @@
         b.appendChild(el("small", null, TYPE_NAME[o.type] + (e.why.length ? " · " + e.why.join(", ") : "")));
         b.addEventListener("click", function () { if (!show[o.type]) { show[o.type] = true; syncChecks(); filter(); } pick(o); centerOn(o); });
         li.appendChild(b);
+        if (e.ai && !e.id) {
+          var keep = el("button", "cw-unlink"); keep.type = "button"; keep.title = "Keep this link"; keep.setAttribute("aria-label", "Keep the suggested link to " + o.title);
+          keep.innerHTML = '<i class="fa-solid fa-check"></i>';
+          keep.addEventListener("click", function () { connect(n, o); });
+          var drop = el("button", "cw-unlink"); drop.type = "button"; drop.title = "Dismiss this suggestion"; drop.setAttribute("aria-label", "Dismiss the suggested link to " + o.title);
+          drop.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+          drop.addEventListener("click", function () { dismiss(e); });
+          li.appendChild(keep); li.appendChild(drop);
+        }
         if (e.id) {
           var u = el("button", "cw-unlink"); u.type = "button"; u.title = "Remove this link"; u.setAttribute("aria-label", "Remove the link to " + o.title);
           u.innerHTML = '<i class="fa-solid fa-link-slash"></i>';

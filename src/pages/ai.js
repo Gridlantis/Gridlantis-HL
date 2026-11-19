@@ -38,6 +38,16 @@ ${BASE_CSS}${NAV_CSS}${TOAST_CSS}${GAMEPAD_CSS}
 .or-env{font-size:12.5px;color:var(--muted);margin-top:-4px;}
 .or-env:empty{display:none;}
 .or-card.off{cursor:default;opacity:.6;}
+.cw-toggle{display:flex;align-items:flex-start;gap:12px;cursor:pointer;}
+.cw-toggle-t{flex:1;display:flex;flex-direction:column;gap:3px;font-size:13.5px;}
+.cw-toggle-t span{font-size:12.5px;color:var(--muted);line-height:1.4;}
+.cw-switch{position:relative;flex:0 0 auto;width:44px;height:26px;border-radius:13px;border:1px solid var(--line-strong);background:var(--raised);cursor:pointer;padding:0;margin-top:2px;}
+.cw-switch::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:var(--muted);transition:transform .15s,background .15s;}
+.cw-switch[aria-checked="true"]{background:color-mix(in srgb,var(--accent) 30%,var(--raised));border-color:var(--accent);}
+.cw-switch[aria-checked="true"]::after{transform:translateX(18px);background:var(--accent);}
+.cw-switch:disabled{opacity:.5;cursor:default;}
+#cw-run:disabled{opacity:.5;cursor:default;}
+#cw-info.bad{color:var(--fault);}
 .chat-box{display:flex;flex-direction:column;height:calc(var(--app-h) - 140px);min-height:480px;}
 .chat-header{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;}
 .chat-header-title{font:600 17px var(--font-display);}
@@ -95,6 +105,21 @@ ${navBar('ai')}
             <input class="peer-input" id="or-custom-model" placeholder="Or paste a model ID" aria-label="Model ID">
             <button class="add-peer-btn" onclick="useCustomOrModel()">Use</button>
           </div>
+        </div>
+      </section>
+      <section class="m-panel" id="cw-section" aria-labelledby="cw-t">
+        <div class="m-panel-h"><h2 class="m-panel-t" id="cw-t">ConnectWork</h2><span id="cw-state" class="or-status">off</span></div>
+        <div class="m-panel-b ai-form">
+          <div class="cw-toggle" id="cw-row">
+            <span class="cw-toggle-t" id="cw-l"><b>Auto connections</b><span>Lets AI suggest links between your notes, flows, reminders, files, machines and containers. Suggestions show dotted on the graph until you keep or dismiss them.</span></span>
+            <button class="cw-switch" type="button" role="switch" id="cw-on" aria-checked="false" aria-labelledby="cw-l"></button>
+          </div>
+          <label class="m-label" for="cw-source" style="margin:0">Source</label>
+          <select class="or-model-sel" id="cw-source" onchange="onAutoSource()"></select>
+          <label class="m-label" for="cw-model" style="margin:0">Model</label>
+          <select class="or-model-sel" id="cw-model" onchange="saveAuto({ model: this.value })"></select>
+          <button class="add-peer-btn" id="cw-run" onclick="runAuto()"><i class="fa-solid fa-wand-magic-sparkles"></i> Find connections now</button>
+          <div class="or-env" id="cw-info"></div>
         </div>
       </section>
     </div>
@@ -431,8 +456,106 @@ async function saveOrKey() {
   } catch(e) { showToast('Save failed: ' + e.message, 'error'); }
 }
 
-loadPeers();
-loadOrKeyStatus();
+// ── ConnectWork auto connections ─────────────────────────────────────────
+// The source is a cloud provider with a saved key or one of your machines.
+let AUTO = null;
+function autoSources() {
+  const out = [];
+  PROVIDERS.forEach(p => { if (AI_KEYS[p.id] && AI_KEYS[p.id].set) out.push({ v: 'cloud:' + p.id, t: p.name }); });
+  PEERS.forEach(p => out.push({ v: 'peer:' + p.id, t: p.name + ' (your machine' + (p.online ? '' : ', offline') + ')' }));
+  return out;
+}
+function whenText(iso) {
+  if (!iso) return '';
+  const d = new Date(iso), mins = Math.round((Date.now() - d) / 60000);
+  return mins < 1 ? 'just now' : mins < 60 ? mins + ' min ago' : mins < 1440 ? Math.round(mins / 60) + ' h ago' : d.toLocaleDateString();
+}
+function paintAuto() {
+  if (!AUTO) return;
+  const on = document.getElementById('cw-on'), src = document.getElementById('cw-source');
+  on.setAttribute('aria-checked', AUTO.on ? 'true' : 'false');
+  const list = autoSources();
+  src.innerHTML = '';
+  src.appendChild(opt('', list.length ? 'Pick a source' : 'Save a key or add a machine first'));
+  list.forEach(o => src.appendChild(opt(o.v, o.t)));
+  if (AUTO.source && !list.some(o => o.v === AUTO.source)) src.appendChild(opt(AUTO.source, (AUTO.sourceName || AUTO.source) + ' (not available)'));
+  src.value = AUTO.source || '';
+  document.getElementById('cw-state').textContent = AUTO.running ? 'looking…' : AUTO.on ? 'on' : 'off';
+  document.getElementById('cw-run').disabled = !!AUTO.running || !AUTO.ready;
+  const info = document.getElementById('cw-info');
+  info.classList.toggle('bad', !!AUTO.error);
+  let t = '';
+  if (AUTO.running) t = 'Asking ' + (AUTO.sourceName || 'the AI') + '…';
+  else if (AUTO.error) t = 'Last try ' + whenText(AUTO.ranAt) + ': ' + AUTO.error;
+  else if (AUTO.ranAt) t = 'Last looked ' + whenText(AUTO.ranAt) + ', ' + AUTO.found + ' suggestion' + (AUTO.found === 1 ? '' : 's') + '.';
+  if (!AUTO.running) t += (t ? ' ' : '') + (AUTO.on ? 'Looks again every ' + AUTO.everyHours + ' hours.' : '');
+  t += ' Sends item titles and the start of unlocked notes to the source.';
+  info.textContent = t.trim();
+}
+let autoModelsFor = null;
+async function loadAutoModels() {
+  const sel = document.getElementById('cw-model'), src = AUTO && AUTO.source;
+  if (src === autoModelsFor && sel.options.length > 1) { sel.value = AUTO.model || ''; return; }
+  autoModelsFor = src;
+  sel.innerHTML = '';
+  if (!src) { sel.appendChild(opt('', 'Pick a source first')); return; }
+  let models = [];
+  if (src.indexOf('peer:') === 0) {
+    const p = PEERS.find(x => 'peer:' + x.id === src);
+    models = (p && p.models || []).map(m => ({ id: m, name: m }));
+  } else {
+    sel.appendChild(opt('', 'Loading models…'));
+    const r = await fetch('/api/ai/models?provider=' + encodeURIComponent(src.slice(6))).then(x => x.json()).catch(() => ({}));
+    if (autoModelsFor !== src) return;
+    models = r.models || [];
+    sel.innerHTML = '';
+  }
+  sel.appendChild(opt('', models.length ? 'Pick a model' : 'No models found'));
+  models.forEach(m => sel.appendChild(opt(m.id, m.name || m.id)));
+  if (AUTO.model && !models.some(m => m.id === AUTO.model)) sel.appendChild(opt(AUTO.model, AUTO.model));
+  sel.value = AUTO.model || '';
+}
+async function loadAuto() {
+  try { AUTO = await fetch('/api/connectwork/auto').then(r => r.json()); } catch(e) { return; }
+  paintAuto(); loadAutoModels();
+}
+async function saveAuto(patch) {
+  try {
+    const r = await fetch('/api/connectwork/auto', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(patch) });
+    const d = await r.json();
+    if (!r.ok || d.error) throw new Error(d.error || 'Could not save');
+    AUTO = d; paintAuto();
+    if (patch.on === true) showToast(AUTO.ready ? 'Auto connections on, looking now' : 'Auto connections on. Pick a source and model to start', 'success');
+    if (patch.on === false) showToast('Auto connections off', 'success');
+  } catch(e) { showToast(e.message, 'error'); loadAuto(); }
+}
+function onAutoSource() {
+  const v = document.getElementById('cw-source').value;
+  AUTO.source = v; AUTO.model = '';
+  saveAuto({ source: v, model: '' }).then(loadAutoModels);
+}
+async function runAuto() {
+  const b = document.getElementById('cw-run');
+  b.disabled = true;
+  if (AUTO) { AUTO.running = true; paintAuto(); }
+  try {
+    const r = await fetch('/api/connectwork/auto/run', { method: 'POST' });
+    const d = await r.json();
+    if (!r.ok || d.error) throw new Error(d.error || 'It did not work');
+    AUTO = d; paintAuto();
+    showToast(d.found ? d.found + ' suggestion' + (d.found === 1 ? '' : 's') + ' added to ConnectWork' : 'No new connections found', 'success');
+  } catch(e) { showToast(e.message, 'error'); loadAuto(); }
+}
+(function () {
+  const sw = document.getElementById('cw-on');
+  const flip = () => saveAuto({ on: sw.getAttribute('aria-checked') !== 'true' });
+  sw.addEventListener('click', flip);
+  document.getElementById('cw-row').addEventListener('click', e => { if (e.target !== sw) flip(); });
+  try { openhlEvents().addEventListener('connectwork_changed', () => loadAuto()); } catch(e) {}
+})();
+
+loadPeers().then(() => { if (AUTO) { paintAuto(); autoModelsFor = null; loadAutoModels(); } });
+loadOrKeyStatus().then(loadAuto);
 window.__sseRefresh=function(d){if(d.type==='ai')loadPeers();};
 ${SSE_JS}
 ${GAMEPAD_JS}

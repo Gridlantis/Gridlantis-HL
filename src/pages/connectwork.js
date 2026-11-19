@@ -120,7 +120,7 @@ ${navBar('/connectwork')}
       <label class="cw-check"><input type="checkbox" id="orphans" checked><span class="cw-box"></span>Unconnected items</label>
       <label class="cw-check"><input type="checkbox" id="labels"><span class="cw-box"></span>Always show names</label>
     </div>
-    <p class="cw-hint">Flows link to the notes placed in them, notes link to what they point at, including <b>[[Note title]]</b>, and virtual machines and containers link to the host they run on. Right-click an item and choose Connect to, or shift-drag from one item to another, to link them.</p>
+    <p class="cw-hint">Flows link to the notes placed in them, notes link to what they point at, including <b>[[Note title]]</b>, and virtual machines and containers link to the host they run on. Right-click an item and choose Connect to, or shift-drag from one item to another, to link them. Dotted links are suggestions from AI, turned on from the <a href="/ai">AI page</a>; keep or dismiss them in the side panel.</p>
     <div class="cw-stats" id="stats"></div>
   </aside>
   <section class="cw-main" aria-label="Graph">
