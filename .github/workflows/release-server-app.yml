@@ -1,0 +1,120 @@
+# Builds Open HL Server (server-app/) for Linux, Windows and macOS and
+# attaches the installers to a GitHub release of this repository.
+#
+# gridlantis.org links to /releases/latest/download/<file>, and the file names
+# carry no version, so each new release replaces the downloads by itself.
+#
+# Release it with:
+#   git tag v1.1.0 && git push origin v1.1.0
+# The tag must match the version in server-app/package.json.
+
+name: Release Open HL Server
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Tag to release, e.g. v1.1.0"
+        required: true
+
+concurrency:
+  group: release-${{ github.event.inputs.version || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            script: build:linux
+            artifact: OpenHL-Server-linux-x86_64.AppImage
+          - os: windows-latest
+            script: build:win
+            artifact: OpenHL-Server-windows-x64-setup.exe
+          - os: macos-latest
+            script: build:mac
+            artifact: OpenHL-Server-macos-universal.dmg
+
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: server-app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: server-app/package-lock.json
+
+      - name: Tag matches the app version
+        shell: bash
+        run: |
+          TAG="${{ github.event.inputs.version || github.ref_name }}"
+          VERSION="v$(node -p 'require("./package.json").version')"
+          if [ "$TAG" != "$VERSION" ]; then
+            echo "Tag $TAG does not match server-app/package.json ($VERSION)."
+            exit 1
+          fi
+
+      - run: npm ci
+
+      - name: Open HL starts on this OS
+        run: node scripts/smoke.js
+
+      - run: npm run ${{ matrix.script }}
+        env:
+          # Unsigned builds. Without this electron-builder looks for a signing
+          # certificate and fails the job instead of producing an installer.
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      - name: Confirm the installer exists
+        shell: bash
+        run: |
+          if [ ! -f "dist/${{ matrix.artifact }}" ]; then
+            echo "Expected dist/${{ matrix.artifact }}, found:"
+            ls -la dist/
+            exit 1
+          fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: server-app/dist/${{ matrix.artifact }}
+          retention-days: 3
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: ${{ github.event.inputs.version || github.ref_name }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: installers
+          merge-multiple: true
+
+      - name: Checksums
+        working-directory: installers
+        run: |
+          sha256sum * > SHA256SUMS
+          cat SHA256SUMS
+
+      - name: Publish the release
+        run: |
+          gh release create "$TAG" \
+            --repo "${{ github.repository }}" \
+            --title "Open HL $TAG" \
+            --notes "Open HL Server for Linux, Windows and macOS: run Open HL on your computer without installing anything else. Check your download against SHA256SUMS.
+
+          These builds are unsigned, so Windows SmartScreen and macOS Gatekeeper warn the first time you open them." \
+            installers/* \
+          || gh release upload "$TAG" --repo "${{ github.repository }}" --clobber installers/*

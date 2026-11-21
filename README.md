@@ -4,6 +4,15 @@ A self-hosted dashboard: notes, flows, mail, voicemail and texts, reminders and
 calendar, files and live folders, monitoring, VM Lab, phone and PC hosts,
 containers, smart home, finance and local AI.
 
+## Download
+
+The easiest way to run Open HL is **Open HL Server**, for Linux, Windows and
+macOS, from the [latest release](https://github.com/Gridlantis/Open-HL/releases/latest)
+or [gridlantis.org](https://gridlantis.org/software#open-hl-download). On first
+start it asks for your name, a password and a port, then shows the address to
+open in your browser. It keeps Open HL's data in its own app-data folder; its
+Settings has a button that opens it. The app's source is in `server-app/`.
+
 ## Run
 
     cp .env.example .env    # set PASSWORD at least

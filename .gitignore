@@ -58,3 +58,6 @@ webforms.json
 /live/
 
 !.env.example
+/server-app/node_modules/
+/server-app/dist/
+/server-app/openhl/

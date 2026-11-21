@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; style-src 'self'; script-src 'self'">
+<title>Open HL Server</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div class="glow"></div>
+<main class="card">
+  <div class="brand">
+    <img src="../build/icon.png" alt="">
+    <div><div class="name">Open HL</div><div class="tag" id="version">Server</div></div>
+  </div>
+
+  <!-- First start: name, password and port -->
+  <section id="v-setup" hidden>
+    <h1>Set up Open HL</h1>
+    <p class="sub">Open HL runs on this computer. You open it in your browser and sign in with the password you choose here.</p>
+    <form id="setup-form" autocomplete="off">
+      <label for="s-name">Your name <span class="opt">optional</span></label>
+      <input id="s-name" maxlength="40" placeholder="Shown on the home page">
+      <label for="s-pw">Password</label>
+      <input id="s-pw" type="password" minlength="8" required placeholder="At least 8 characters">
+      <label for="s-pw2">Password again</label>
+      <input id="s-pw2" type="password" required>
+      <label for="s-port">Port</label>
+      <input id="s-port" type="number" min="1024" max="65535" value="3000" required>
+      <p class="hint">3000 suits most people. Change it if another program already uses 3000.</p>
+      <div class="status bad" id="setup-status" role="alert"></div>
+      <button class="primary wide" type="submit" id="setup-go">Start Open HL</button>
+    </form>
+  </section>
+
+  <section id="v-starting" hidden>
+    <h1>Starting Open HL…</h1>
+    <p class="sub">This takes a few seconds.</p>
+    <div class="spinner" aria-hidden="true"></div>
+  </section>
+
+  <section id="v-running" hidden>
+    <h1><span class="dot"></span>Open HL is running</h1>
+    <p class="sub">Open this address in your browser on this computer:</p>
+    <div class="addr">
+      <code id="r-local"></code>
+      <button id="r-copy" type="button">Copy</button>
+      <button id="r-open" class="primary" type="button">Open</button>
+    </div>
+    <div id="r-net-wrap">
+      <p class="sub small">From other devices on your network, try:</p>
+      <ul id="r-net" class="list"></ul>
+    </div>
+    <p class="note">Keep this window open while you use Open HL. Closing it stops Open HL.</p>
+  </section>
+
+  <section id="v-error" hidden>
+    <h1>Open HL couldn't start</h1>
+    <p class="sub" id="e-msg"></p>
+    <pre id="e-log" hidden></pre>
+    <div class="row">
+      <button id="e-retry" class="primary" type="button">Try again</button>
+      <button id="e-log-open" type="button">Open the log</button>
+    </div>
+  </section>
+
+  <details id="settings" hidden>
+    <summary>Settings</summary>
+    <form id="port-form" class="setting">
+      <label for="p-port">Port</label>
+      <div class="row">
+        <input id="p-port" type="number" min="1024" max="65535" required>
+        <button type="submit">Save and restart</button>
+      </div>
+    </form>
+    <form id="pw-form" class="setting" autocomplete="off">
+      <label for="p-pw">New password</label>
+      <div class="row">
+        <input id="p-pw" type="password" minlength="8" required placeholder="At least 8 characters">
+        <button type="submit">Change</button>
+      </div>
+    </form>
+    <div class="status" id="settings-status" role="status"></div>
+    <div class="row links">
+      <button id="x-folder" type="button">Open the data folder</button>
+      <button id="x-quit" type="button">Stop and quit</button>
+    </div>
+  </details>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
