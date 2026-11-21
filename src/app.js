@@ -1,8 +1,9 @@
 const fs = require("fs");
 const http = require("http");
 const os = require("os");
+const path = require("path");
 
-const { NOTES_FILE, PASSWORD, PORT, ROOT, UPLOAD_DIR, UPTIMEROBOT_KEY } = require("./config");
+const { HOME_DIR, NOTES_FILE, PASSWORD, PORT, UPLOAD_DIR, UPTIMEROBOT_KEY } = require("./config");
 const { NODES_FILE, readNodes } = require("./domains/monitor");
 const { advertiseMdns } = require("./mdns");
 const { handleRequest } = require("./router");
@@ -72,7 +73,7 @@ server.on('error', err => {
 server.listen(PORT, '0.0.0.0', () => {
   // Live folders: once set up, make sure the Syncthing hub is running and
   // still listening on this machine's current tailnet address.
-  if (fs.existsSync(ROOT + '/live/home/config.xml')) {
+  if (fs.existsSync(path.join(HOME_DIR, 'live', 'home', 'config.xml'))) {
     require('./domains/live/syncthing').ensure().catch(e => console.error('[live] hub did not start:', e.message));
   }
   const scheme = tlsOptions ? 'https' : 'http';
@@ -94,7 +95,7 @@ server.listen(PORT, '0.0.0.0', () => {
   // directory, every store reads empty and it looks exactly like data loss —
   // this line makes that visible in one glance instead of a bug hunt.
   try {
-    console.log(`   Data dir:    ${ROOT}`);
+    console.log(`   Data dir:    ${HOME_DIR}`);
     console.log(`   Nodes:       ${readNodes().nodes.length} configured`);
     if (fs.existsSync(NODES_FILE + '.corrupt'))
       console.log(`   ! nodes.json was corrupt; previous contents kept in nodes.json.corrupt`);

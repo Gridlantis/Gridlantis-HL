@@ -3,12 +3,12 @@ const os = require("os");
 const path = require("path");
 const { execFileSync } = require("child_process");
 
-const { ROOT } = require("../../config");
+const { HOME_DIR } = require("../../config");
 
 // ─── VM LAB · where everything lives ─────────────────────────────────────────
 // vmlab/ is data, not code (gitignored): base images, persistent disks, the
 // state stores, and optionally the user-space QEMU from tools/vmlab/install-qemu.sh.
-const VMLAB_DIR   = path.resolve(ROOT, process.env.VMLAB_DIR || "vmlab");
+const VMLAB_DIR   = path.resolve(HOME_DIR, process.env.VMLAB_DIR || "vmlab");
 const IMAGES_DIR  = path.join(VMLAB_DIR, "images");    // base disks + ISOs
 const DISKS_DIR   = path.join(VMLAB_DIR, "disks");     // persistent environment disks
 const SCRATCH_DIR = path.join(VMLAB_DIR, "scratch");   // throw-away overlays (deleted on stop)

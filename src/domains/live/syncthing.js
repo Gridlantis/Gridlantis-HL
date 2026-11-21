@@ -5,7 +5,7 @@ const os = require("os");
 const path = require("path");
 const { execFile } = require("child_process");
 
-const { ROOT, UPLOAD_DIR } = require("../../config");
+const { HOME_DIR, ROOT, UPLOAD_DIR } = require("../../config");
 const { tailnetIp } = require("../../net");
 
 // ─── Live folders: Open HL's own Syncthing ─────────────────────────────────────
@@ -31,7 +31,7 @@ const BUILD_SCRIPT = path.join(ROOT, "tools", "live", "build-syncthing.sh");
 const SYNC_PORT = 22100;
 const GUI = { host: "127.0.0.1", port: 8385 };
 
-const LIVE_DIR = path.join(ROOT, "live");
+const LIVE_DIR = path.join(HOME_DIR, "live");
 const DIST_DIR = path.join(LIVE_DIR, "dist");
 const BIN = path.join(LIVE_DIR, "bin", "syncthing");
 const HOME = path.join(LIVE_DIR, "home");

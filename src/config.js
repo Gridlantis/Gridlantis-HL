@@ -14,6 +14,12 @@ const { pipeline } = require("stream");
 // without changing where Open HL reads and writes its state.
 const ROOT = path.resolve(__dirname, "..");
 
+// Where Open HL keeps its state: .env, data/, uploads/, the session secret and
+// the folders features download tools into. That is the project folder unless
+// OPENHL_HOME names another. The Open HL Server app sets it to the user's own
+// app-data folder, because its copy of the program is read-only.
+const HOME_DIR = process.env.OPENHL_HOME ? path.resolve(process.env.OPENHL_HOME) : ROOT;
+
 // Which program this is. The VM Lab agent (vmlab-agent.js) reuses the same
 // domain modules on a second device, but it serves no pages and has no login —
 // it is authenticated by its own bearer token — so it needs neither a .env nor
@@ -23,7 +29,7 @@ const NEEDS_PASSWORD = ROLE !== "vmlab-agent";
 
 // ─── LOAD .env ────────────────────────────────────────────────────────────────
 function loadEnv() {
-  const p = path.join(ROOT, ".env");
+  const p = path.join(HOME_DIR, ".env");
   if (!fs.existsSync(p)) {
     if (!NEEDS_PASSWORD) return;
     console.error("\n✗ No .env file found. Copy .env.example to .env\n");
@@ -44,7 +50,7 @@ loadEnv();
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
 const PORT            = parseInt(process.env.PORT || "3000", 10);
 const PASSWORD        = process.env.PASSWORD;
-const UPLOAD_DIR      = path.join(ROOT, process.env.UPLOAD_DIR || "uploads");
+const UPLOAD_DIR      = path.join(HOME_DIR, process.env.UPLOAD_DIR || "uploads");
 const UPTIMEROBOT_KEY       = process.env.UPTIMEROBOT_KEY || "";
 const JOB_SEARCH_PORT       = parseInt(process.env.JOB_SEARCH_PORT || "1025", 10);
 const DISCORD_BOTS_DIR      = process.env.DISCORD_BOTS_DIR || path.join(os.homedir(), "Servers", "bots");  // one folder per bot; set to "" to stop watching
@@ -76,7 +82,7 @@ if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 // ─── DATA FILES ───────────────────────────────────────────────────────────────
 // Every JSON store lives under data/, grouped into one folder per feature.
 // data/ holds secrets (settings, mail accounts, tokens), so it is owner-only.
-const DATA_DIR = path.join(ROOT, "data");
+const DATA_DIR = path.join(HOME_DIR, "data");
 const DATA_LAYOUT = {
   "notes.json": "notes",          "note_folders.json": "notes",
   "mail_accounts.json": "mail",   "mail_cache.json": "mail",        "mail_state.json": "mail",
@@ -98,10 +104,10 @@ function migrateDataFiles() {
     fs.mkdirSync(path.join(DATA_DIR, dir), { recursive: true, mode: 0o700 });
   for (const name of Object.keys(DATA_LAYOUT)) {
     for (const f of [name, name + ".bak"]) {
-      const from = path.join(ROOT, f), to = path.join(path.dirname(dataFile(name)), f);
+      const from = path.join(HOME_DIR, f), to = path.join(path.dirname(dataFile(name)), f);
       if (!fs.existsSync(from) || fs.existsSync(to)) continue;
       fs.renameSync(from, to);
-      console.log("  moved " + f + " -> " + path.relative(ROOT, to));
+      console.log("  moved " + f + " -> " + path.relative(HOME_DIR, to));
     }
   }
 }
@@ -119,4 +125,4 @@ const SETTINGS_FILE   = dataFile("settings.json");
 const REMINDERS_FILE  = dataFile("reminders.json");
 if (!fs.existsSync(REMINDERS_FILE)) fs.writeFileSync(REMINDERS_FILE, JSON.stringify([], null, 2));
 
-module.exports = { AI_PEERS_FILE, DATA_DIR, BLINK_EMAIL, DISCORD_BOTS_DIR, DISCORD_BOT_AGENTS, BLINK_PASSWORD, BLINK_UUID, FILE_GROUPS_FILE, FINANCE_FILE, FOLDERS_FILE, JOB_SEARCH_PORT, LINKS_FILE, NOTES_FILE, OPENROUTER_API_KEY, PASSWORD, PORT, REMINDERS_FILE, RING_HARDWARE_ID, RING_REFRESH_TOKEN, ROLE, ROOT, SETTINGS_FILE, TUYA_CLIENT_ID, TUYA_CLIENT_SECRET, TUYA_REGION, UPLOAD_DIR, UPTIMEROBOT_KEY, WEBFORMS_FILE, WYZE_API_KEY, WYZE_EMAIL, WYZE_KEY_ID, WYZE_PASSWORD, WYZE_PHONE_ID, dataFile, loadEnv, pipeline };
+module.exports = { AI_PEERS_FILE, DATA_DIR, HOME_DIR, BLINK_EMAIL, DISCORD_BOTS_DIR, DISCORD_BOT_AGENTS, BLINK_PASSWORD, BLINK_UUID, FILE_GROUPS_FILE, FINANCE_FILE, FOLDERS_FILE, JOB_SEARCH_PORT, LINKS_FILE, NOTES_FILE, OPENROUTER_API_KEY, PASSWORD, PORT, REMINDERS_FILE, RING_HARDWARE_ID, RING_REFRESH_TOKEN, ROLE, ROOT, SETTINGS_FILE, TUYA_CLIENT_ID, TUYA_CLIENT_SECRET, TUYA_REGION, UPLOAD_DIR, UPTIMEROBOT_KEY, WEBFORMS_FILE, WYZE_API_KEY, WYZE_EMAIL, WYZE_KEY_ID, WYZE_PASSWORD, WYZE_PHONE_ID, dataFile, loadEnv, pipeline };

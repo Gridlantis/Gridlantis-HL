@@ -2,14 +2,14 @@ const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
 
-const { PASSWORD, ROOT } = require("./config");
+const { HOME_DIR, PASSWORD } = require("./config");
 const { writeSecretFile } = require("./settings");
 
 // ─── SESSIONS ─────────────────────────────────────────────────────────────────
 // ── Sessions: stateless signed tokens (survive restarts; no store needed) ────
 // Token = "<expiry>.<hmac(expiry)>" signed with a random secret persisted to
 // disk on first run. Restarting the server no longer logs anyone out.
-const SESSION_SECRET_FILE = path.join(ROOT, ".session_secret");
+const SESSION_SECRET_FILE = path.join(HOME_DIR, ".session_secret");
 const SESSION_SECRET = (() => {
   try { const s = fs.readFileSync(SESSION_SECRET_FILE, "utf8").trim(); if (s.length >= 32) return s; } catch {}
   const s = crypto.randomBytes(32).toString("hex");

@@ -4,7 +4,7 @@ const https = require("https");
 const path = require("path");
 const { execFile, spawn } = require("child_process");
 
-const { ROOT } = require("../../config");
+const { HOME_DIR } = require("../../config");
 
 // ═══ MOBILE HOST: ADB ═════════════════════════════════════════════════════════
 // Android phones are reached the way scrcpy/QtScrcpy reach them: over adb, by
@@ -14,7 +14,7 @@ const { ROOT } = require("../../config");
 // pushed to the phone (pinned, checksum-verified — client and server must be
 // the exact same version).
 
-const TOOLS_DIR = path.join(ROOT, "mobile");
+const TOOLS_DIR = path.join(HOME_DIR, "mobile");
 const SCRCPY_VERSION = "5.0.1";
 const SCRCPY_SERVER = { url: `https://github.com/Genymobile/scrcpy/releases/download/v${SCRCPY_VERSION}/scrcpy-server-v${SCRCPY_VERSION}`,
   sha256: "764eb6f79811d5211fe9df341120882ba9994c7a61b897d7bf3fb662e53bc536", file: path.join(TOOLS_DIR, `scrcpy-server-v${SCRCPY_VERSION}`) };
