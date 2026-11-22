@@ -338,7 +338,7 @@ html.nav-hidden .m-cell.menu{display:flex;}
 .m-nav-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:8px 10px 12px;scrollbar-width:thin;}
 .m-group-h{font:500 12.5px/1 var(--font-nav);color:var(--nav-muted);padding:16px 10px 8px;margin:0 0 4px;border-bottom:1px solid var(--nav-line);}
 /* Pages hidden from the sidebar. Turning on "Edit navigation bar" on
-   /personalize (html.nav-edit) shows them again, dimmed, with a minus on each
+   /settings (html.nav-edit) shows them again, dimmed, with a minus on each
    shown page and a plus on each hidden one. The page you are on stays listed. */
 .m-nav-item{position:relative;}
 .m-nav-item.off:not(.here){display:none;}
@@ -747,7 +747,7 @@ function navBar(active) {
               : href === '/texts' ? '<span class="m-count" id="nav-count-texts"></span>' : '';
   const link = p => `<a href="${p.href}" class="m-link${cur === p.href ? " active" : ""}" title="${p.title}"${cur === p.href ? ' aria-current="page"' : ''}>${p.icon}<span class="m-link-l">${p.title}</span>${count(p.href)}</a>`;
   // Pages in a category can be hidden. Hidden ones stay in the markup so edit
-  // mode (/personalize) can show them with a plus and bring them back in place.
+  // mode (/settings) can show them with a plus and bring them back in place.
   const item = p => {
     const off = hidden.has(p.href);
     const verb = off ? "Show" : "Hide";
@@ -773,7 +773,7 @@ function navBar(active) {
 <a href="/" class="m-brand" title="Gridlantis-HL home">${LOGO_SVG}<span class="m-brand-name">Gridlantis-HL</span></a>
 <nav class="m-nav-scroll" aria-label="Pages" data-name-max="${GROUP_NAME_MAX}">${links}</nav>
 <div class="m-nav-foot">
-  <a class="m-foot-btn${cur === '/personalize' ? ' active' : ''}" href="/personalize" title="Personalize: your name and themes"${cur === '/personalize' ? ' aria-current="page"' : ''}><i class="fa-solid fa-user"></i><span class="m-foot-l">Personalize</span></a>
+  <a class="m-foot-btn${cur === '/settings' ? ' active' : ''}" href="/settings" title="Settings: your name, themes, keys and updates"${cur === '/settings' ? ' aria-current="page"' : ''}><i class="fa-solid fa-gear"></i><span class="m-foot-l">Settings</span></a>
   <div class="openhl-get-app">
     <button class="m-foot-btn" id="m-apps-btn" type="button" title="Get the app" aria-haspopup="menu" aria-expanded="false" aria-controls="m-apps-menu"><i class="fa-solid fa-download"></i><span class="m-foot-l">Get the app</span><i class="fa-solid fa-chevron-up m-apps-chev"></i></button>
     <div class="m-apps-menu" id="m-apps-menu" role="menu" aria-label="Get the app">

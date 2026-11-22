@@ -2,12 +2,14 @@ const { OPENROUTER_API_KEY } = require("../config");
 const { NAME_MAX, haloOn, hiddenPages, navGroupNames, navGroups, setHaloOn, setHiddenPages, setNavGroups, setUserName, userName } = require("../profile");
 const { NAV_PAGES } = require("../ui/assets");
 const { AI_PROVIDERS, SETTINGS, aiProvider, getAiKey, getOpenRouterKey, maskKey, savedAiKey, saveSettings, setAiKey } = require("../settings");
+const { keysState, restart, saveKeys } = require("../keys");
+const { CURRENT_VERSION, checkForUpdates } = require("../updates");
 
 // UI-editable settings and secrets.
 module.exports = async function settingsRoutes(ctx) {
   const { req, pathname, json, readBody } = ctx;
 
-  // ── Profile (/personalize): the name the pages greet you by ─────────────────
+  // ── Profile (/settings): the name the pages greet you by ─────────────────
   if (pathname === '/api/profile' && req.method === 'GET') return json({ name: userName(), max: NAME_MAX, halo: haloOn() });
   if (pathname === '/api/profile' && req.method === 'PUT') {
     const body = JSON.parse((await readBody(4096)).toString() || '{}');
@@ -38,6 +40,24 @@ module.exports = async function settingsRoutes(ctx) {
       Object.assign(out, setNavGroups(body.names, body.groups, keys, Object.fromEntries(inGroup.map(p => [p.href, p.group]))));
     }
     return json(out);
+  }
+
+  // ── Settings → Keys: .env values per feature ────────────────────────────────
+  if (pathname === '/api/keys' && req.method === 'GET') return json(keysState());
+  if (pathname === '/api/keys' && req.method === 'PUT') {
+    const body = JSON.parse((await readBody(64 * 1024)).toString() || '{}');
+    try { return json(Object.assign({ ok: true }, saveKeys(body.values))); }
+    catch (e) { return json({ error: e.message }, 400); }
+  }
+  if (pathname === '/api/restart' && req.method === 'POST') {
+    if (!restart()) return json({ error: 'Gridlantis-HL was started from a terminal or a service here, so restart it there.' }, 409);
+    return json({ ok: true });
+  }
+
+  // ── Settings → Updates ──────────────────────────────────────────────────────
+  if (pathname === '/api/update' && req.method === 'GET') {
+    try { return json(await checkForUpdates(ctx.parsed.searchParams.get('force') === '1')); }
+    catch (e) { return json({ error: e.message, current: CURRENT_VERSION || 'unknown' }, 502); }
   }
 
   // ── Settings (UI-editable secrets: cloud AI keys) ───────────────────────────

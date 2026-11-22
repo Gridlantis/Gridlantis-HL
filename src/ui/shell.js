@@ -63,7 +63,7 @@
   }
 
   // ── Edit navigation bar: hide and unhide pages ────────────────────────────
-  // Turned on from /personalize (html.nav-edit). Each page in a category then
+  // Turned on from /settings (html.nav-edit). Each page in a category then
   // shows a minus to hide it, and hidden pages show, dimmed, with a plus. The
   // server only remembers the list; the sidebar updates in place.
   function navItems() { return Array.prototype.slice.call(document.querySelectorAll(".m-nav-item")); }

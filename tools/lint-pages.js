@@ -24,7 +24,7 @@ const PASSWORD = process.argv[2] || process.env.PASSWORD || 'test';
 const PORT     = parseInt(process.argv[3] || process.env.LINT_PORT || '3999', 10);
 const PAGES = ['/', '/welcome', '/homeos', '/files', '/notes', '/ai',
                '/mail', '/calendar', '/flows', '/monitoring', '/finance',
-               '/reminders', '/voicemail', '/texts', '/vmlab', '/laptops', '/mobile', '/docker'];
+               '/reminders', '/voicemail', '/texts', '/vmlab', '/laptops', '/mobile', '/docker', '/settings'];
 // Full-screen viewers for one VM, PC or phone. Their pages are static shells: the
 // browser connects afterwards, and this script never runs that code. Only the
 // PC viewer checks its id exists, so makeCopy() adds a dummy PC for it.

@@ -1,7 +1,7 @@
 {
   "name": "openhl-desktop",
   "productName": "Gridlantis-HL",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Gridlantis-HL in its own window: the dashboard, VM Lab consoles with full keyboard capture and two-way clipboard.",
   "author": "Gridlantis-HL",
   "license": "UNLICENSED",

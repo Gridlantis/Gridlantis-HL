@@ -326,6 +326,19 @@ function readPort(folder) {
   } catch {}
   return 3000;
 }
+// Gridlantis-HL exits with 75 after Settings → Keys asks for a restart
+// (src/keys.js); start it again with the same folder and log.
+function watchLocal(proc, folder, log) {
+  proc.on("exit", code => {
+    if (localChild !== proc) return;
+    localChild = null;
+    if (code !== 75) return;
+    localChild = spawn(process.execPath, [path.join(folder, "server.js")], {
+      cwd: folder, env: Object.assign({}, process.env, { ELECTRON_RUN_AS_NODE: "1", OPENHL_SUPERVISOR: "desktop" }), stdio: ["ignore", log, log], windowsHide: true,
+    });
+    watchLocal(localChild, folder, log);
+  });
+}
 ipcMain.handle("connect:start-local", async (e, folder) => {
   if (!fromConnectPage(e)) return null;
   folder = String(folder || "");
@@ -338,9 +351,9 @@ ipcMain.handle("connect:start-local", async (e, folder) => {
     if (localChild) { try { localChild.kill(); } catch {} }
     const log = fs.openSync(path.join(app.getPath("userData"), "openhl-server.log"), "a");
     localChild = spawn(process.execPath, [path.join(folder, "server.js")], {
-      cwd: folder, env: Object.assign({}, process.env, { ELECTRON_RUN_AS_NODE: "1" }), stdio: ["ignore", log, log], windowsHide: true,
+      cwd: folder, env: Object.assign({}, process.env, { ELECTRON_RUN_AS_NODE: "1", OPENHL_SUPERVISOR: "desktop" }), stdio: ["ignore", log, log], windowsHide: true,
     });
-    localChild.on("exit", () => { localChild = null; });
+    watchLocal(localChild, folder, log);
     for (let i = 0; i < 40 && !(st = await probe(origin, 1000)).ok; i++) await new Promise(r => setTimeout(r, 500));
     if (!st.ok) return { ok: false, error: "Gridlantis-HL did not start. See " + path.join(app.getPath("userData"), "openhl-server.log") };
   }

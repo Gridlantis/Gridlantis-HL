@@ -3,7 +3,7 @@ const path = require("path");
 
 const { dataFile, pipeline, UPLOAD_DIR } = require("../config");
 const { insideDir } = require("../helpers");
-const { parseMultipart } = require("../multipart");
+const { boundaryOf, parseMultipart } = require("../multipart");
 const { buildZip, collectFiles } = require("../zip");
 const live = require("../domains/live");
 
@@ -66,8 +66,7 @@ module.exports = async function fileRoutes(ctx) {
   if (pathname === '/api/files/upload' && req.method === 'POST') {
     const dir = inUploads(parsed.searchParams.get('dir'));
     if (!dir) return json({ error: 'Invalid path' }, 400);
-    const ct = req.headers['content-type'] || '';
-    const boundary = ct.split('boundary=')[1];
+    const boundary = boundaryOf(req.headers['content-type']);
     if (!boundary) return json({ error: 'No boundary' }, 400);
     const body = await readBody(0); // uploads: no cap
     const files = parseMultipart(body, boundary);

@@ -1,7 +1,7 @@
 {
   "name": "openhl-server",
   "productName": "Gridlantis-HL Server",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Runs Gridlantis-HL on this computer and shows the address to open it at.",
   "author": "Gridlantis",
   "license": "SEE LICENSE IN LICENSE",

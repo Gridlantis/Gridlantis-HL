@@ -66,8 +66,18 @@ Use your own network's range in place of `192.168.1.0/24`.
 
 Every key below is optional. A feature whose keys are missing simply stays
 off, and the rest of Gridlantis-HL works without it. Unless the table says
-otherwise, put keys in `.env` and restart Gridlantis-HL. On the home page, click
-Halo and choose **Help** to see the same information inside the app.
+otherwise, add keys in **Settings → Keys** (the gear at the bottom of the
+sidebar). They are saved to `.env`; press **Restart now** to apply them. When
+Gridlantis-HL runs from a terminal or a service, restart it there instead. You
+can still edit `.env` by hand. On the home page, click Halo and choose **Help**
+to see the same information inside the app.
+
+## Updates
+
+**Settings → Updates → Check for updates** asks GitHub for the latest release
+(only when pressed) and, with Gridlantis-HL Server, gives a direct download of
+the right installer for this computer. Installing it over the old version keeps
+your password, port and data. A git checkout updates with `git pull`.
 
 | Feature | What it needs | Where to get it |
 | --- | --- | --- |

@@ -28,8 +28,12 @@ const ROLE = process.env.OPENHL_ROLE || "server";
 const NEEDS_PASSWORD = ROLE !== "vmlab-agent";
 
 // ─── LOAD .env ────────────────────────────────────────────────────────────────
+// Variables already set in the shell before .env is read. They win over .env,
+// so Settings → Keys says when a saved value is being overridden.
+const SHELL_ENV_KEYS = new Set(Object.keys(process.env));
+const ENV_FILE = path.join(HOME_DIR, ".env");
 function loadEnv() {
-  const p = path.join(HOME_DIR, ".env");
+  const p = ENV_FILE;
   if (!fs.existsSync(p)) {
     if (!NEEDS_PASSWORD) return;
     console.error("\n✗ No .env file found. Copy .env.example to .env\n");
@@ -125,4 +129,4 @@ const SETTINGS_FILE   = dataFile("settings.json");
 const REMINDERS_FILE  = dataFile("reminders.json");
 if (!fs.existsSync(REMINDERS_FILE)) fs.writeFileSync(REMINDERS_FILE, JSON.stringify([], null, 2));
 
-module.exports = { AI_PEERS_FILE, DATA_DIR, HOME_DIR, BLINK_EMAIL, DISCORD_BOTS_DIR, DISCORD_BOT_AGENTS, BLINK_PASSWORD, BLINK_UUID, FILE_GROUPS_FILE, FINANCE_FILE, FOLDERS_FILE, JOB_SEARCH_PORT, LINKS_FILE, NOTES_FILE, OPENROUTER_API_KEY, PASSWORD, PORT, REMINDERS_FILE, RING_HARDWARE_ID, RING_REFRESH_TOKEN, ROLE, ROOT, SETTINGS_FILE, TUYA_CLIENT_ID, TUYA_CLIENT_SECRET, TUYA_REGION, UPLOAD_DIR, UPTIMEROBOT_KEY, WEBFORMS_FILE, WYZE_API_KEY, WYZE_EMAIL, WYZE_KEY_ID, WYZE_PASSWORD, WYZE_PHONE_ID, dataFile, loadEnv, pipeline };
+module.exports = { AI_PEERS_FILE, DATA_DIR, ENV_FILE, HOME_DIR, SHELL_ENV_KEYS, BLINK_EMAIL, DISCORD_BOTS_DIR, DISCORD_BOT_AGENTS, BLINK_PASSWORD, BLINK_UUID, FILE_GROUPS_FILE, FINANCE_FILE, FOLDERS_FILE, JOB_SEARCH_PORT, LINKS_FILE, NOTES_FILE, OPENROUTER_API_KEY, PASSWORD, PORT, REMINDERS_FILE, RING_HARDWARE_ID, RING_REFRESH_TOKEN, ROLE, ROOT, SETTINGS_FILE, TUYA_CLIENT_ID, TUYA_CLIENT_SECRET, TUYA_REGION, UPLOAD_DIR, UPTIMEROBOT_KEY, WEBFORMS_FILE, WYZE_API_KEY, WYZE_EMAIL, WYZE_KEY_ID, WYZE_PASSWORD, WYZE_PHONE_ID, dataFile, loadEnv, pipeline };

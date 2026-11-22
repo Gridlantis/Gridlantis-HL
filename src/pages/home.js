@@ -697,7 +697,7 @@ function qlSave(){
     { href:'/vmlab',      k:['vm','vms','vm lab','virtual machine','virtualbox','qemu','iso','boot'] },
     { href:'/finance',    k:['finance','money','budget','stocks','portfolio','bank'] },
     { href:'/reminders',  k:['reminders','reminder','alarm','alarms','remind','timer'] },
-    { href:'/personalize', k:['personalize','personalise','theme','themes','name','profile','appearance'] }
+    { href:'/settings', k:['settings','preferences','personalize','personalise','theme','themes','name','profile','appearance','keys','api keys','api','env','update','updates','version'] }
   ];
   var inp = document.getElementById('home-search');
   inp.addEventListener('keydown', function(e){

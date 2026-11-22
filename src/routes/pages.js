@@ -9,7 +9,7 @@ const { homeosHtml } = require("../pages/homeos");
 const { mailHtml } = require("../pages/mail");
 const { monitoringHtml } = require("../pages/monitoring");
 const { notesHtml } = require("../pages/notes");
-const { personalizeHtml } = require("../pages/personalize");
+const { settingsHtml } = require("../pages/settings");
 const { remindersHtml } = require("../pages/reminders");
 const { textsHtml } = require("../pages/texts");
 const { voicemailHtml } = require("../pages/voicemail");
@@ -25,7 +25,7 @@ const PAGE_JS = path.join(__dirname, "../ui/pages");
 
 // The HTML pages.
 module.exports = async function pageRoutes(ctx) {
-  const { res, pathname, html } = ctx;
+  const { res, pathname, html, redirect } = ctx;
 
   // ── Home page art ───────────────────────────────────────────────────────────
   if (pathname.startsWith('/home/halo/')) {
@@ -60,5 +60,6 @@ module.exports = async function pageRoutes(ctx) {
   if (pathname === '/reminders') return html(remindersHtml());
   if (pathname === '/voicemail') return html(voicemailHtml());
   if (pathname === '/texts')     return html(textsHtml());
-  if (pathname === '/personalize') return html(personalizeHtml());
+  if (pathname === '/settings') return html(settingsHtml());
+  if (pathname === '/personalize') return redirect('/settings');   // its old name
 };

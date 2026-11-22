@@ -1,6 +1,6 @@
 const { SETTINGS, saveSettings } = require("./settings");
 
-// The user's display name, set on /personalize. Kept with the other settings
+// The user's display name, set on /settings. Kept with the other settings
 // on the server so every device greets the same person.
 const NAME_MAX = 40;
 
@@ -16,7 +16,7 @@ function setUserName(raw) {
   return name;
 }
 
-// Halo, the home page helper. On unless turned off on /personalize; kept on
+// Halo, the home page helper. On unless turned off on /settings; kept on
 // the server like the name, so turning it off holds on every device.
 function haloOn() { return SETTINGS.haloOff !== true; }
 function setHaloOn(on) {

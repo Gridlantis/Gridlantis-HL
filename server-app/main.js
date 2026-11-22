@@ -22,6 +22,8 @@ if (!app.requestSingleInstanceLock()) { app.quit(); process.exit(0); }
 
 const DEFAULT_PORT = 3000;
 const START_TIMEOUT_MS = 45000;
+// Gridlantis-HL exits with this after Settings → Keys asks for a restart (src/keys.js).
+const RESTART_CODE = 75;
 // Packaged: the program ships as a resource. From source: the repo itself.
 const PROGRAM_DIR = app.isPackaged ? path.join(process.resourcesPath, "openhl") : path.resolve(__dirname, "..");
 const HOME = () => path.join(app.getPath("userData"), "Open HL");
@@ -137,14 +139,16 @@ async function startServer() {
   const log = fs.openSync(LOG_FILE(), "w");
   const proc = spawn(process.execPath, [path.join(PROGRAM_DIR, "server.js")], {
     cwd: PROGRAM_DIR,
-    env: Object.assign({}, process.env, { ELECTRON_RUN_AS_NODE: "1", OPENHL_HOME: HOME() }),
+    env: Object.assign({}, process.env, { ELECTRON_RUN_AS_NODE: "1", OPENHL_HOME: HOME(),
+      OPENHL_SUPERVISOR: "server-app", OPENHL_APP_VERSION: app.getVersion() }),
     stdio: ["ignore", log, log],
     windowsHide: true,
   });
   fs.closeSync(log);
   child = proc;
-  proc.on("exit", () => {
+  proc.on("exit", code => {
     if (child === proc) child = null;
+    if (!quitting && code === RESTART_CODE && state.pid === proc.pid) return startServer();
     if (!quitting && state.phase === "running" && state.pid === proc.pid)
       setState({ phase: "error", port, message: "Gridlantis-HL stopped unexpectedly.", log: logTail() });
   });

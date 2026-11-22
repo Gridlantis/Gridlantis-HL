@@ -8,7 +8,8 @@ import * as THREE from 'three';
 import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 
 // ── What each feature needs ──────────────────────────────────────────────────
-// keys: [name, what it is, where to get it]. Names in CAPS go in .env;
+// keys: [name, what it is, where to get it]. Names in CAPS are set in
+// Settings → Keys (they live in .env);
 // lower-case ones are typed into the page itself.
 const FEATURES = [
   { id: 'ai', name: 'AI chat', href: '/ai',
@@ -22,7 +23,7 @@ const FEATURES = [
            ['GOOGLE_CLIENT_SECRET', 'The secret of that same OAuth client.', 'Google Cloud console'],
            ['GOOGLE_REDIRECT_URI', 'Optional. Only if you do not use http://localhost:<PORT>/api/calendar/callback.', 'Must match the redirect URI on the client']],
     free: 'The calendar itself works without Google. Keys are only for syncing.',
-    where: 'Put them in .env, restart Gridlantis-HL, then press Connect on the Calendar page.' },
+    where: 'Add them in Settings → Keys, restart, then press Connect on the Calendar page.' },
   { id: 'mail', name: 'Mail', href: '/mail',
     about: 'Reads your inboxes over IMAP.',
     keys: [['account address', 'The email address to read.', 'Your mail provider'],
@@ -34,7 +35,7 @@ const FEATURES = [
     keys: [['TWILIO_ACCOUNT_SID', 'Your Twilio account SID (starts with AC).', 'console.twilio.com'],
            ['TWILIO_AUTH_TOKEN', 'Your Twilio auth token.', 'console.twilio.com'],
            ['TWILIO_NUMBER', 'Optional. Only keep messages left on this number, like +18335550100.', 'Your Twilio phone numbers']],
-    where: 'Put them in .env and restart Gridlantis-HL. Both pages stay off until the SID and token are set.' },
+    where: 'Add them in Settings → Keys and restart. Both pages stay off until the SID and token are set.' },
   { id: 'homeos', name: 'HomeOS (smart home)', href: '/homeos',
     about: 'Controls lights, plugs and cameras. Kasa, Sonoff and Tuya-local devices are found on your network and need nothing.',
     keys: [['WYZE_EMAIL / WYZE_PASSWORD', 'Your Wyze login.', 'Wyze app'],
@@ -42,16 +43,16 @@ const FEATURES = [
            ['BLINK_EMAIL / BLINK_PASSWORD', 'Your Blink login. Set BLINK_UUID too so you are not asked for 2FA after every restart.', 'Blink app'],
            ['RING_REFRESH_TOKEN', 'A Ring refresh token.', 'The ring-client-api command-line tool'],
            ['TUYA_CLIENT_ID / TUYA_CLIENT_SECRET', 'Only for Tuya devices that cannot be reached locally.', 'iot.tuya.com']],
-    where: 'Only add the vendors you own. Put them in .env and restart Gridlantis-HL.' },
+    where: 'Only add the vendors you own, in Settings → Keys, then restart.' },
   { id: 'monitoring', name: 'Monitoring', href: '/monitoring',
     about: 'Watches your machines and services and shows what is up or down.',
     keys: [['UPTIMEROBOT_KEY', 'Optional. A read-only UptimeRobot API key, to show your UptimeRobot monitors too.', 'uptimerobot.com: Integrations and API']],
     free: 'Checking your own machines needs no key.',
-    where: 'Put it in .env and restart Gridlantis-HL.' },
+    where: 'Add it in Settings → Keys and restart.' },
   { id: 'weather', name: 'Weather', href: '/',
     about: 'The weather line under the greeting on this page.',
     keys: [],
-    free: 'No key needed. Set WEATHER_LAT and WEATHER_LON in .env to choose the location.' },
+    free: 'No key needed. Set the location in Settings → Keys → Weather.' },
   { id: 'finance', name: 'Finance', href: '/finance',
     about: 'Stock and portfolio prices.',
     keys: [],
@@ -63,7 +64,7 @@ const FEATURES = [
   { id: 'login', name: 'Signing in', href: '/',
     about: 'The password that protects this dashboard.',
     keys: [['PASSWORD', 'Required. Gridlantis-HL will not start without it.', 'You choose it']],
-    where: 'Set it in .env.' },
+    where: 'Gridlantis-HL Server: its window, under Settings. Otherwise PASSWORD in .env.' },
 ];
 
 // ── The panel ────────────────────────────────────────────────────────────────
