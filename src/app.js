@@ -66,7 +66,7 @@ process.on('uncaughtException',  err => console.error('[UncaughtException]', err
 // running every background job (mail polling, the post queue, the VM Lab
 // watcher) against the same data as the real one. Without the port, quit.
 server.on('error', err => {
-  console.error('[Listen] ' + (err.code === 'EADDRINUSE' ? `port ${PORT} is already in use — is Open HL already running?` : err.message));
+  console.error('[Listen] ' + (err.code === 'EADDRINUSE' ? `port ${PORT} is already in use — is Gridlantis-HL already running?` : err.message));
   process.exit(1);
 });
 
@@ -77,7 +77,7 @@ server.listen(PORT, '0.0.0.0', () => {
     require('./domains/live/syncthing').ensure().catch(e => console.error('[live] hub did not start:', e.message));
   }
   const scheme = tlsOptions ? 'https' : 'http';
-  console.log(`💻 Open HL is running! → ${scheme}://localhost:${PORT}`);
+  console.log(`💻 Gridlantis-HL is running! → ${scheme}://localhost:${PORT}`);
   const ifaces = os.networkInterfaces();
   for (const iface of Object.values(ifaces)) {
     for (const i of iface) {
@@ -91,7 +91,7 @@ server.listen(PORT, '0.0.0.0', () => {
   console.log(`   UptimeRobot: ${UPTIMEROBOT_KEY ? 'key set' : 'no key'}`);
   console.log(`   OpenRouter:  ${getOpenRouterKey() ? 'key set' : 'no key'}`);
   console.log(`   Password:    ${PASSWORD ? 'set' : 'none (open)'}`);
-  // Print where data actually lives. If Open HL is ever launched from a different
+  // Print where data actually lives. If Gridlantis-HL is ever launched from a different
   // directory, every store reads empty and it looks exactly like data loss —
   // this line makes that visible in one glance instead of a bug hunt.
   try {

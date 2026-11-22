@@ -1,7 +1,7 @@
-// Open HL Server: runs Open HL on this computer and shows the address to
+// Gridlantis-HL Server: runs Gridlantis-HL on this computer and shows the address to
 // open it at.
 //
-// Open HL itself is unchanged. It runs as a child process on Electron's own
+// Gridlantis-HL itself is unchanged. It runs as a child process on Electron's own
 // Node (ELECTRON_RUN_AS_NODE), so people need nothing installed. Its state
 // (.env, data/, uploads/) lives in this app's user-data folder, passed to it
 // as OPENHL_HOME, because the app's own copy of the program is read-only.
@@ -13,7 +13,10 @@ const os = require("os");
 const path = require("path");
 const { spawn } = require("child_process");
 
-app.setName("Open HL Server");
+app.setName("Gridlantis-HL Server");
+// The app was called Open HL Server before; its data stays in that folder so
+// existing installs keep their password, port and Open HL data.
+app.setPath("userData", path.join(app.getPath("appData"), "Open HL Server"));
 if (process.platform === "win32") app.setAppUserModelId("app.gridlantis.openhl.server");
 if (!app.requestSingleInstanceLock()) { app.quit(); process.exit(0); }
 
@@ -29,7 +32,7 @@ const iconPath = () => path.join(__dirname, "build", "icon.png");
 let win = null, child = null, state = { phase: "setup" }, quitting = false;
 
 // ── .env ─────────────────────────────────────────────────────────────────────
-// Open HL's own .env, in its own format (src/config.js loadEnv): KEY=value per
+// Gridlantis-HL's own .env, in its own format (src/config.js loadEnv): KEY=value per
 // line, one quote stripped from each end. Values are written in double quotes
 // so a password that starts or ends with a space or a quote survives.
 function readEnv() {
@@ -49,8 +52,8 @@ function readEnv() {
 function writeEnv(changes) {
   let lines = [];
   try { lines = fs.readFileSync(ENV_FILE(), "utf8").split("\n"); } catch {
-    lines = ["# Open HL settings, written by Open HL Server.",
-             "# Other keys from Open HL's .env.example can be added here; restart Open HL to apply them.", ""];
+    lines = ["# Gridlantis-HL settings, written by Gridlantis-HL Server.",
+             "# Other keys from Gridlantis-HL's .env.example can be added here; restart Gridlantis-HL to apply them.", ""];
   }
   const left = new Map(Object.entries(changes));
   lines = lines.map(line => {
@@ -75,7 +78,7 @@ function validPort(v) {
   if (!Number.isInteger(p) || p < 1024 || p > 65535) throw new Error("Pick a port from 1024 to 65535.");
   return p;
 }
-// Open HL listens on every interface, so test the same.
+// Gridlantis-HL listens on every interface, so test the same.
 function portFree(port) {
   return new Promise(resolve => {
     const s = net.createServer();
@@ -106,17 +109,17 @@ function logTail(n = 15) {
   try { return fs.readFileSync(LOG_FILE(), "utf8").trim().split("\n").slice(-n).join("\n"); } catch { return ""; }
 }
 
-// Resolves once Open HL answers on its port.
+// Resolves once Gridlantis-HL answers on its port.
 function waitForServer(port, proc) {
   const until = Date.now() + START_TIMEOUT_MS;
   return new Promise((resolve, reject) => {
     const tryOnce = () => {
-      if (proc.exitCode !== null || proc.signalCode) return reject(new Error("Open HL stopped while starting."));
+      if (proc.exitCode !== null || proc.signalCode) return reject(new Error("Gridlantis-HL stopped while starting."));
       const req = http.get({ host: "127.0.0.1", port, path: "/", timeout: 2000 }, res => { res.resume(); resolve(); });
       req.on("error", retry);
       req.on("timeout", () => { req.destroy(); });
     };
-    const retry = () => Date.now() > until ? reject(new Error("Open HL didn't answer in time.")) : setTimeout(tryOnce, 400);
+    const retry = () => Date.now() > until ? reject(new Error("Gridlantis-HL didn't answer in time.")) : setTimeout(tryOnce, 400);
     tryOnce();
   });
 }
@@ -128,7 +131,7 @@ async function startServer() {
   setState({ phase: "starting", port });
   if (!(await portFree(port)))
     return setState({ phase: "error", port, portBusy: true,
-      message: `Port ${port} is already in use. Open HL may already be running, or another program is using it.` });
+      message: `Port ${port} is already in use. Gridlantis-HL may already be running, or another program is using it.` });
 
   fs.mkdirSync(HOME(), { recursive: true, mode: 0o700 });
   const log = fs.openSync(LOG_FILE(), "w");
@@ -143,7 +146,7 @@ async function startServer() {
   proc.on("exit", () => {
     if (child === proc) child = null;
     if (!quitting && state.phase === "running" && state.pid === proc.pid)
-      setState({ phase: "error", port, message: "Open HL stopped unexpectedly.", log: logTail() });
+      setState({ phase: "error", port, message: "Gridlantis-HL stopped unexpectedly.", log: logTail() });
   });
   try {
     await waitForServer(port, proc);
@@ -168,8 +171,8 @@ function stopServer() {
 }
 
 // ── Setup ─────────────────────────────────────────────────────────────────────
-// The name goes where Open HL keeps it (data/settings.json, userName), only
-// when Open HL hasn't stored settings yet.
+// The name goes where Gridlantis-HL keeps it (data/settings.json, userName), only
+// when Gridlantis-HL hasn't stored settings yet.
 function saveName(name) {
   const clean = String(name || "").replace(/[\u0000-\u001f\u007f]/g, "").trim().slice(0, 40);
   if (!clean) return;
@@ -226,7 +229,7 @@ ipcMain.handle("quit", () => app.quit());
 function createWindow() {
   win = new BrowserWindow({
     width: 560, height: 680, minWidth: 420, minHeight: 520,
-    title: "Open HL Server", backgroundColor: "#0b0b10", icon: iconPath(), autoHideMenuBar: true, show: false,
+    title: "Gridlantis-HL Server", backgroundColor: "#0b0b10", icon: iconPath(), autoHideMenuBar: true, show: false,
     webPreferences: { preload: path.join(__dirname, "preload.js"), contextIsolation: true, sandbox: true, nodeIntegration: false },
   });
   win.setMenuBarVisibility(false);

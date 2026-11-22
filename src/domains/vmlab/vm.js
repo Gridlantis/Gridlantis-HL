@@ -20,7 +20,7 @@ const { errorWithStatus } = require("../../helpers");
 //   ephemeral   — overlay in vmlab/scratch; the environment and everything it
 //                 wrote are deleted the moment the VM stops.
 // QEMU runs as a transient systemd --user unit when available, so restarting
-// Open HL (or its own service) never takes running VMs down with it.
+// Gridlantis-HL (or its own service) never takes running VMs down with it.
 const LOG_DIR = path.join(VMLAB_DIR, "logs");
 fs.mkdirSync(LOG_DIR, { recursive: true });
 
@@ -55,7 +55,7 @@ hoststats.setVmPids(() => store.envs.read().filter(e => e.pid && e.status !== "s
 // ── Validation / normalization ───────────────────────────────────────────────
 const clampInt = (v, lo, hi, def) => { const n = parseInt(v, 10); return Number.isFinite(n) ? Math.min(hi, Math.max(lo, n)) : def; };
 
-// Default guest login: the account Open HL itself runs as, so a new VM has the
+// Default guest login: the account Gridlantis-HL itself runs as, so a new VM has the
 // same username you already type on this machine.
 function defaultUser() {
   try { return require("os").userInfo().username || "user"; } catch { return "user"; }
@@ -301,7 +301,7 @@ async function startEnv(id, { forceTcg = false } = {}) {
       try { await execP("systemctl", ["--user", "reset-failed", unitName(id)], 5000); } catch {}
       try {
         await execP("systemd-run", ["--user", "--collect", "--quiet", "--unit=" + unitName(id),
-          "--description=Open HL VM Lab · " + env.name,
+          "--description=Gridlantis-HL VM Lab · " + env.name,
           "-p", "StandardOutput=append:" + logFile, "-p", "StandardError=append:" + logFile,
           "-p", "TimeoutStopSec=20", "--", qemu].concat(args), 15000);
         viaSystemd = true;
@@ -430,7 +430,7 @@ async function cleanupAfterExit(env, extra = {}) {
 }
 
 // Watch running VMs: notice shutdowns from inside the guest, reattach after a
-// Open HL restart, and probe the guest agent so the UI can show it.
+// Gridlantis-HL restart, and probe the guest agent so the UI can show it.
 let watchBusy = false;
 async function watch() {
   if (watchBusy) return;

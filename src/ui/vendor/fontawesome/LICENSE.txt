@@ -8,4 +8,4 @@ Code:  MIT License (https://opensource.org/licenses/MIT)
 Copyright 2023 Fonticons, Inc.
 
 Only the woff2 webfonts are kept; the .ttf fallbacks were removed from
-css/all.min.css since every browser Open HL supports reads woff2.
+css/all.min.css since every browser Gridlantis-HL supports reads woff2.

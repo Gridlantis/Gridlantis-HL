@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; style-src 'self'; script-src 'self'">
-<title>Open HL Server</title>
+<title>Gridlantis-HL Server</title>
 <link rel="stylesheet" href="app.css">
 </head>
 <body>
@@ -11,13 +11,13 @@
 <main class="card">
   <div class="brand">
     <img src="../build/icon.png" alt="">
-    <div><div class="name">Open HL</div><div class="tag" id="version">Server</div></div>
+    <div><div class="name">Gridlantis-HL</div><div class="tag" id="version">Server</div></div>
   </div>
 
   <!-- First start: name, password and port -->
   <section id="v-setup" hidden>
-    <h1>Set up Open HL</h1>
-    <p class="sub">Open HL runs on this computer. You open it in your browser and sign in with the password you choose here.</p>
+    <h1>Set up Gridlantis-HL</h1>
+    <p class="sub">Gridlantis-HL runs on this computer. You open it in your browser and sign in with the password you choose here.</p>
     <form id="setup-form" autocomplete="off">
       <label for="s-name">Your name <span class="opt">optional</span></label>
       <input id="s-name" maxlength="40" placeholder="Shown on the home page">
@@ -29,18 +29,18 @@
       <input id="s-port" type="number" min="1024" max="65535" value="3000" required>
       <p class="hint">3000 suits most people. Change it if another program already uses 3000.</p>
       <div class="status bad" id="setup-status" role="alert"></div>
-      <button class="primary wide" type="submit" id="setup-go">Start Open HL</button>
+      <button class="primary wide" type="submit" id="setup-go">Start Gridlantis-HL</button>
     </form>
   </section>
 
   <section id="v-starting" hidden>
-    <h1>Starting Open HL…</h1>
+    <h1>Starting Gridlantis-HL…</h1>
     <p class="sub">This takes a few seconds.</p>
     <div class="spinner" aria-hidden="true"></div>
   </section>
 
   <section id="v-running" hidden>
-    <h1><span class="dot"></span>Open HL is running</h1>
+    <h1><span class="dot"></span>Gridlantis-HL is running</h1>
     <p class="sub">Open this address in your browser on this computer:</p>
     <div class="addr">
       <code id="r-local"></code>
@@ -51,11 +51,11 @@
       <p class="sub small">From other devices on your network, try:</p>
       <ul id="r-net" class="list"></ul>
     </div>
-    <p class="note">Keep this window open while you use Open HL. Closing it stops Open HL.</p>
+    <p class="note">Keep this window open while you use Gridlantis-HL. Closing it stops Gridlantis-HL.</p>
   </section>
 
   <section id="v-error" hidden>
-    <h1>Open HL couldn't start</h1>
+    <h1>Gridlantis-HL couldn't start</h1>
     <p class="sub" id="e-msg"></p>
     <pre id="e-log" hidden></pre>
     <div class="row">

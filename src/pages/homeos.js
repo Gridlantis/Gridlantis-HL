@@ -3,7 +3,7 @@ const { BASE_CSS, FAVICON, FONT, NAV_CSS, TOAST_CSS, TOAST_JS, navBar } = requir
 function homeosHtml() {
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Open HL \xb7 HomeOS</title>${FONT}${FAVICON}
+<title>Gridlantis-HL \xb7 HomeOS</title>${FONT}${FAVICON}
 <style>
 ${BASE_CSS}${NAV_CSS}${TOAST_CSS}
 .ho{max-width:1440px;}
@@ -185,7 +185,7 @@ ${navBar("/homeos")}
           <div><div class="fl">Local key</div><input class="fi" id="f-localkey" placeholder="16-char key"></div>
         </div>
         <div class="fhint">Both come from the Tuya IoT console (<b>iot.tuya.com</b> \u2192 Cloud \u2192 Devices).
-          The local key is what lets Open HL talk to the plug directly on your LAN with no internet round-trip.</div>
+          The local key is what lets Gridlantis-HL talk to the plug directly on your LAN with no internet round-trip.</div>
       </div>
       <div id="wrap-sonoff" style="display:none">
         <div><div class="fl">Firmware</div>
@@ -205,7 +205,7 @@ ${navBar("/homeos")}
         <div><div class="fl">RTSP URL (optional)</div>
           <input class="fi" id="f-rtsp" placeholder="rtsp://user:pass@192.168.1.60:554/stream1"></div>
         <div class="fhint">Kasa KC-series and most ONVIF cameras expose <b>/stream1</b> (HD) and <b>/stream2</b> (SD).
-          Open HL stores this server-side and never sends the credentials to your browser.</div>
+          Gridlantis-HL stores this server-side and never sends the credentials to your browser.</div>
       </div>
       <div id="wrap-typhur" style="display:none">
         <div><div class="fl">Read power from</div>
@@ -214,7 +214,7 @@ ${navBar("/homeos")}
           <div><div class="fl">Idle watts \u2264</div><input class="fi" id="f-idlew" placeholder="10" value="10"></div>
           <div><div class="fl">Cooking watts \u2265</div><input class="fi" id="f-cookw" placeholder="400" value="400"></div>
         </div>
-        <div class="fhint">Typhur publishes <b>no API</b>. Bind an energy-monitoring plug and Open HL infers
+        <div class="fhint">Typhur publishes <b>no API</b>. Bind an energy-monitoring plug and Gridlantis-HL infers
           idle / preheating / cooking / finished from the power curve, and alerts when a cook ends.
           <b>Use a 15A-rated plug</b> \u2014 the Dome draws ~1800W.</div>
       </div>
@@ -569,7 +569,7 @@ function syncForm(){
   var note = el('vendor-note');
   if (c.needsCreds && !c.ready){
     note.innerHTML = '<b>Credentials required.</b> Add ' + (c.envKeys || []).join(', ') +
-      ' to your .env and restart Open HL. Nothing here will work until then.';
+      ' to your .env and restart Gridlantis-HL. Nothing here will work until then.';
   } else if (c.note){
     note.innerHTML = c.note;
   } else note.textContent = '';
@@ -680,7 +680,7 @@ async function discover(){
     if (!j.found || !j.found.length){
       var e = document.createElement('div'); e.className = 'fhint';
       e.innerHTML = 'Nothing new found. Kasa answers a UDP broadcast on :9999 and Tuya/Gosund beacon on ' +
-        ':6666-6667 \\u2014 both need Open HL to be on the <b>same subnet</b> as the devices. ' +
+        ':6666-6667 \\u2014 both need Gridlantis-HL to be on the <b>same subnet</b> as the devices. ' +
         'Sonoff, Wyze, Ring and Blink are not broadcast-discoverable and must be added manually.';
       body.appendChild(e);
     } else {

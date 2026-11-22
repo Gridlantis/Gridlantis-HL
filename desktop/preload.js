@@ -1,4 +1,4 @@
-// Bridge exposed to Open HL pages as window.openhlDesktop. Every call is checked
+// Bridge exposed to Gridlantis-HL pages as window.openhlDesktop. Every call is checked
 // again in the main process against the page's origin.
 const { contextBridge, ipcRenderer, webFrame } = require("electron");
 

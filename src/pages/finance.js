@@ -3,7 +3,7 @@ const { BASE_CSS, FAVICON, FONT, NAV_CSS, SSE_JS, THEME_JS, TOAST_CSS, TOAST_JS,
 function financeHtml() {
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Open HL · Finance</title>${FONT}${FAVICON}
+<title>Gridlantis-HL · Finance</title>${FONT}${FAVICON}
 <style>
 ${BASE_CSS}${NAV_CSS}${TOAST_CSS}
 .fin-reminder{display:flex;align-items:center;gap:12px;padding:12px 16px;margin-bottom:16px;border-color:color-mix(in srgb,var(--warn) 45%,var(--line));}
@@ -444,7 +444,7 @@ function renderTrend(){
     document.getElementById('pf-delta').textContent = '—';
     document.getElementById('pf-delta').className = 'pf-delta flat';
     stats.textContent = '';
-    note.textContent = 'Not enough data yet. Add a bank balance or a stock, and Open HL records a point every hour.';
+    note.textContent = 'Not enough data yet. Add a bank balance or a stock, and Gridlantis-HL records a point every hour.';
     drawTrend([]);
     return;
   }
@@ -463,8 +463,8 @@ function renderTrend(){
     sp.appendChild(b); stats.appendChild(sp);
   });
   note.textContent = d.reconstructed
-    ? 'Reconstructed from market close prices plus your current bank and income baseline. Once Open HL has recorded its own daily snapshots, the line switches to measured data.'
-    : 'Measured from ' + d.measuredCount + ' daily snapshot' + (d.measuredCount === 1 ? '' : 's') + ' recorded by Open HL.';
+    ? 'Reconstructed from market close prices plus your current bank and income baseline. Once Gridlantis-HL has recorded its own daily snapshots, the line switches to measured data.'
+    : 'Measured from ' + d.measuredCount + ' daily snapshot' + (d.measuredCount === 1 ? '' : 's') + ' recorded by Gridlantis-HL.';
   drawTrend(d.series);
 }
 function drawTrend(series){

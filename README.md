@@ -1,4 +1,4 @@
-# Open HL
+# Gridlantis-HL
 
 A self-hosted dashboard: notes, flows, mail, voicemail and texts, reminders and
 calendar, files and live folders, monitoring, VM Lab, phone and PC hosts,
@@ -6,11 +6,11 @@ containers, smart home, finance and local AI.
 
 ## Download
 
-The easiest way to run Open HL is **Open HL Server**, for Linux, Windows and
-macOS, from the [latest release](https://github.com/Gridlantis/Open-HL/releases/latest)
-or [gridlantis.org](https://gridlantis.org/software#open-hl-download). On first
+The easiest way to run Gridlantis-HL is **Gridlantis-HL Server**, for Linux, Windows and
+macOS, from the [latest release](https://github.com/Gridlantis/Gridlantis-HL/releases/latest)
+or [gridlantis.org](https://gridlantis.org/software#gridlantis-hl-download). On first
 start it asks for your name, a password and a port, then shows the address to
-open in your browser. It keeps Open HL's data in its own app-data folder; its
+open in your browser. It keeps Gridlantis-HL's data in its own app-data folder; its
 Settings has a button that opens it. The app's source is in `server-app/`.
 
 ## Run
@@ -25,17 +25,17 @@ Check every page renders: `node tools/lint-pages.js`.
 
 ## Password
 
-`PASSWORD` is the only required setting. Open HL refuses to start without it.
+`PASSWORD` is the only required setting. Gridlantis-HL refuses to start without it.
 
 1. Copy the example file: `cp .env.example .env`
 2. Open `.env` and replace `change-me` with a password of your own:
 
        PASSWORD=your-own-long-password
 
-3. Start Open HL (`node server.js`) and open http://localhost:3000. The sign-in
+3. Start Gridlantis-HL (`node server.js`) and open http://localhost:3000. The sign-in
    page asks for that password. The desktop and Android apps use the same one.
 
-To change the password, edit `PASSWORD` in `.env` and restart Open HL.
+To change the password, edit `PASSWORD` in `.env` and restart Gridlantis-HL.
 
 A few rules for `.env`: one `KEY=value` per line, comments on their own line
 (a `#` after a value becomes part of the value), and a variable already set in
@@ -43,13 +43,13 @@ your shell overrides the file.
 
 ## Use it from other devices
 
-Open HL listens on every network interface, so nothing in Open HL needs
+Gridlantis-HL listens on every network interface, so nothing in Gridlantis-HL needs
 changing to reach it from another device.
 
 **Use [Tailscale](https://tailscale.com).** Install it on the machine running
-Open HL and on your phone or laptop, sign both into the same tailnet, then open
+Gridlantis-HL and on your phone or laptop, sign both into the same tailnet, then open
 `http://<tailscale-ip>:3000`. This works at home and away, and the traffic is
-encrypted. Don't forward port 3000 on your router: Open HL is plain HTTP behind
+encrypted. Don't forward port 3000 on your router: Gridlantis-HL is plain HTTP behind
 one password.
 
 **Home network without Tailscale.** Open `http://<machine-ip>:3000` or
@@ -65,8 +65,8 @@ Use your own network's range in place of `192.168.1.0/24`.
 ## API keys
 
 Every key below is optional. A feature whose keys are missing simply stays
-off, and the rest of Open HL works without it. Unless the table says
-otherwise, put keys in `.env` and restart Open HL. On the home page, click
+off, and the rest of Gridlantis-HL works without it. Unless the table says
+otherwise, put keys in `.env` and restart Gridlantis-HL. On the home page, click
 Halo and choose **Help** to see the same information inside the app.
 
 | Feature | What it needs | Where to get it |
@@ -83,7 +83,7 @@ Halo and choose **Help** to see the same information inside the app.
 
 ## License
 
-Open HL is source-available under the [PolyForm Strict License 1.0.0](LICENSE):
+Gridlantis-HL is source-available under the [PolyForm Strict License 1.0.0](LICENSE):
 you may use it for personal and other noncommercial purposes, but not change it,
 build on it, or redistribute it. Bundled third-party parts keep their own
 licenses: three.js (MIT, `src/ui/vendor/three-0.170.0/LICENSE`), the fonts

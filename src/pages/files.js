@@ -3,7 +3,7 @@ const { BASE_CSS, FAVICON, FONT, GAMEPAD_CSS, GAMEPAD_JS, NAV_CSS, SSE_JS, TOAST
 function filesHtml(){
   const seedGroups = '[]';
   const seedItems  = '[]';
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Open HL \xb7 Files</title>${FONT}${FAVICON}<style>
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Gridlantis-HL \xb7 Files</title>${FONT}${FAVICON}<style>
 ${BASE_CSS}${NAV_CSS}${TOAST_CSS}${GAMEPAD_CSS}
 .files-layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:16px;align-items:start;}
 .files-sidebar{position:sticky;top:calc(var(--pulse-h) + 16px);}

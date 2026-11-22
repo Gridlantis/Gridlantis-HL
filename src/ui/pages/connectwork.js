@@ -531,7 +531,7 @@
     ["change", "flows_changed", "reminders_changed", "vmlab", "docker", "laptops"].forEach(function (t) { es.addEventListener(t, soon); });
   } catch (e) {}
   document.addEventListener("visibilitychange", function () { if (!document.hidden) soon(); });
-  // Containers can start and stop outside Open HL, so look again now and then.
+  // Containers can start and stop outside Gridlantis-HL, so look again now and then.
   setInterval(function () { if (!document.hidden && !drag.node && !linkFrom) load(); }, 60000);
   // Theme switches change the colours the canvas paints with.
   new MutationObserver(function () { readColors(); kick(); }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme", "class", "style"] });

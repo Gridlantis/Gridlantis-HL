@@ -9,9 +9,9 @@ const { VMLAB_DIR } = require("./paths");
 const { errorWithStatus } = require("../../helpers");
 
 // ─── VM LAB · hosts ──────────────────────────────────────────────────────────
-// VM Lab can drive more than one machine. "local" is this Open HL itself and is
+// VM Lab can drive more than one machine. "local" is this Gridlantis-HL itself and is
 // always present; every other host is a second device running the VM Lab agent
-// (vmlab-agent.js) that Open HL talks to over HTTP with a bearer token.
+// (vmlab-agent.js) that Gridlantis-HL talks to over HTTP with a bearer token.
 //
 // The file holds agent tokens, so it lives in vmlab/ on the SSD (never on the
 // symlinked NTFS volume, where a mode of 0600 would be a no-op) and is written
@@ -59,7 +59,7 @@ function normalizeName(name, url) {
 
 function newHostId(name) {
   const base = String(name || "host").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 24) || "host";
-  // "test" is the path Open HL uses to probe an address that is not saved yet.
+  // "test" is the path Gridlantis-HL uses to probe an address that is not saved yet.
   const taken = new Set(read().map(h => h.id).concat([LOCAL_ID, "test"]));
   if (!taken.has(base)) return base;
   for (let i = 2; i < 100; i++) if (!taken.has(base + "-" + i)) return base + "-" + i;

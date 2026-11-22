@@ -69,7 +69,7 @@ function httpPost(url, body, headers={}, timeoutMs=10000) {
   });
 }
 
-// This Open HL's own tailnet address — the one another machine on the tailnet
+// This Gridlantis-HL's own tailnet address — the one another machine on the tailnet
 // should call back on, and the only one a laptop's VNC server should let in.
 // 100.64.0.0/10 is the CGNAT range Tailscale hands out.
 function tailnetIp() {

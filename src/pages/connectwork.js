@@ -7,7 +7,7 @@ const { BASE_CSS, FAVICON, FONT, NAV_CSS, TOAST_CSS, TOAST_JS, navBar } = requir
 function connectworkHtml() {
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Open HL · ConnectWork</title>${FONT}${FAVICON}
+<title>Gridlantis-HL · ConnectWork</title>${FONT}${FAVICON}
 <style>
 ${BASE_CSS}${NAV_CSS}${TOAST_CSS}
 :root{--cw-note:#22b8cf;--cw-folder:#e3c24a;--cw-flow:#9b7bf0;--cw-rem:#f08c3a;--cw-file:#c45fe0;--cw-vm:#4cc76a;--cw-ctr:#3d7ff5;--cw-host:#ef5a6f;}

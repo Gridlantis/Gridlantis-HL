@@ -11,14 +11,14 @@ const { laptopsHtml, viewerHtml } = require("../pages/laptops");
 
 // PC host: the saved laptops, their reachability, and the remote-desktop
 // tunnel. The setup script itself is served by routes/public.js, since the
-// laptop that fetches it has no Open HL session.
+// laptop that fetches it has no Gridlantis-HL session.
 const STATIC_ROOTS = {
   "/laptops/assets/": path.join(__dirname, "../ui/laptops"),
   "/laptops/shared/": path.join(__dirname, "../ui/shared"),
 };
 const SETUP_SCRIPT = path.join(__dirname, "../../tools/laptop/setup-remote.sh");
 
-// The script with this Open HL's address filled in as the default.
+// The script with this Gridlantis-HL's address filled in as the default.
 function setupScript() {
   const src = fs.readFileSync(SETUP_SCRIPT, "utf8");
   const ip = tailnetIp();
@@ -117,7 +117,7 @@ module.exports = async function laptopRoutes(ctx) {
 module.exports.setupScript = setupScript;
 
 // ── Remote desktop over WebSocket ────────────────────────────────────────────
-// Only reachable through an Open HL session; Open HL then signs in to the laptop
+// Only reachable through an Gridlantis-HL session; Gridlantis-HL then signs in to the laptop
 // with the saved password (see domains/laptops/rfb.js).
 module.exports.handleUpgrade = function handleUpgrade(req, socket, head) {
   const ws = require("../ws");

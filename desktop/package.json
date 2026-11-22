@@ -1,9 +1,9 @@
 {
   "name": "openhl-desktop",
-  "productName": "Open HL",
+  "productName": "Gridlantis-HL",
   "version": "1.1.0",
-  "description": "Open HL in its own window: the dashboard, VM Lab consoles with full keyboard capture and two-way clipboard.",
-  "author": "Open HL",
+  "description": "Gridlantis-HL in its own window: the dashboard, VM Lab consoles with full keyboard capture and two-way clipboard.",
+  "author": "Gridlantis-HL",
   "license": "UNLICENSED",
   "homepage": "http://openhl.local:3000",
   "desktopName": "openhl.desktop",
@@ -23,8 +23,8 @@
   },
   "build": {
     "appId": "local.openhl.desktop",
-    "productName": "Open HL",
-    "copyright": "Open HL",
+    "productName": "Gridlantis-HL",
+    "copyright": "Gridlantis-HL",
     "directories": {
       "output": "dist",
       "buildResources": "build"
@@ -44,8 +44,8 @@
       ],
       "category": "Utility",
       "icon": "build/icon.png",
-      "maintainer": "Open HL <openhl@localhost>",
-      "synopsis": "Open HL dashboard and VM Lab client",
+      "maintainer": "Gridlantis-HL <openhl@localhost>",
+      "synopsis": "Gridlantis-HL dashboard and VM Lab client",
       "executableName": "openhl",
       "syncDesktopName": true
     },

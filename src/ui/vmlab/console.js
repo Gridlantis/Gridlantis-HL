@@ -3,7 +3,7 @@ import RFB from "/vmlab/novnc/core/rfb.js";
 
 const { api, h, icon, fmtBytes, toast, writeClipboard, readClipboard, clipboardMode } = window.VL;
 const ID = document.body.dataset.env;
-// Which machine this VM lives on. The page is always served by Open HL, but the
+// Which machine this VM lives on. The page is always served by Gridlantis-HL, but the
 // VM itself may be on a second device running the VM Lab agent — every API
 // call and the console tunnel have to name it.
 const HOST = document.body.dataset.host || "local";
@@ -39,7 +39,7 @@ function applyQuality() {
   $("#m-quality").querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.q === quality));
 }
 
-// How this browser reaches Open HL. Funnel and relayed tailnet traffic take a
+// How this browser reaches Gridlantis-HL. Funnel and relayed tailnet traffic take a
 // detour through Tailscale's servers, which is the usual reason the console
 // lags; the menu explains it and links to the faster tailnet address.
 async function loadConnection() {
@@ -52,20 +52,20 @@ async function loadConnection() {
     text = "This page came in over the public internet through Tailscale's Funnel servers, so every screen update takes a detour. That is the slowest way in.";
   } else if ((c.via === "tailnet" || c.via === "tailnet-https") && c.path === "relay") {
     tone = "warn"; label = "Relayed"; title = "Tailscale, through a relay";
-    text = "This computer" + who + " is on your tailnet but can't reach Open HL directly, so traffic goes through Tailscale's relay in " + c.relay + ". A firewall or strict router usually causes this; running \"tailscale netcheck\" on that computer shows whether UDP gets out.";
+    text = "This computer" + who + " is on your tailnet but can't reach Gridlantis-HL directly, so traffic goes through Tailscale's relay in " + c.relay + ". A firewall or strict router usually causes this; running \"tailscale netcheck\" on that computer shows whether UDP gets out.";
   } else if ((c.via === "tailnet" || c.via === "tailnet-https") && c.path === "peer-relay") {
     tone = "warn"; label = "Relayed"; title = "Tailscale, through a peer relay";
-    text = "This computer" + who + " reaches Open HL through another tailnet device (" + c.endpoint + "), not directly.";
+    text = "This computer" + who + " reaches Gridlantis-HL through another tailnet device (" + c.endpoint + "), not directly.";
   } else if (c.via === "tailnet" || c.via === "tailnet-https") {
     label = "Direct"; title = "Tailscale, direct";
-    text = "This computer" + who + " talks to Open HL directly over Tailscale" + (c.endpoint ? " (" + c.endpoint + ")" : "") + ". That is as fast as it gets away from home."
+    text = "This computer" + who + " talks to Gridlantis-HL directly over Tailscale" + (c.endpoint ? " (" + c.endpoint + ")" : "") + ". That is as fast as it gets away from home."
       + (c.via === "tailnet-https" ? " The https ts.net address adds a small local proxy step; the plain address below skips it." : "");
   } else if (c.via === "lan") {
     label = "Local network"; title = "Same local network";
-    text = "This computer is on the same network as Open HL, the fastest way in.";
+    text = "This computer is on the same network as Gridlantis-HL, the fastest way in.";
   } else if (c.via === "local") {
-    label = "This PC"; title = "On the Open HL machine";
-    text = "This browser is running on the Open HL machine itself.";
+    label = "This PC"; title = "On the Gridlantis-HL machine";
+    text = "This browser is running on the Gridlantis-HL machine itself.";
   } else {
     tone = "warn"; label = "Internet"; title = "Over the internet";
     text = "This page came in over the internet, not through Tailscale or the local network.";
@@ -74,7 +74,7 @@ async function loadConnection() {
   $("#conn-label").textContent = label;
   const m = $("#m-conn"); m.innerHTML = "";
   m.append(h("div", { class: "ct" }, title), h("p", null, text));
-  if (HOST !== "local") m.append(h("p", null, "This VM runs on " + (document.body.dataset.hostName || HOST) + ", so the picture also passes through this Open HL on its way to you."));
+  if (HOST !== "local") m.append(h("p", null, "This VM runs on " + (document.body.dataset.hostName || HOST) + ", so the picture also passes through this Gridlantis-HL on its way to you."));
   // Only worth offering when the browser isn't already on the plain tailnet address.
   if ((c.via === "funnel" || c.via === "internet" || c.via === "tailnet-https") && c.fastUrl) {
     const here = location.pathname + location.search;
@@ -100,7 +100,7 @@ async function refresh() {
 }
 
 function paint() {
-  document.title = env.name + " · Open HL VM console";
+  document.title = env.name + " · Gridlantis-HL VM console";
   $("#c-name").textContent = env.name;
   const status = env.running ? (env.status === "stopping" ? "stopping" : "running") : env.status;
   $("#c-dot").className = "dot " + status;
@@ -243,7 +243,7 @@ function sendCombo(keysyms) {
 
 // Ctrl+V / Ctrl+Shift+V / Shift+Insert: update the guest clipboard first, then let the paste through.
 //
-// In a browser the clipboard usually cannot be read on demand (Open HL is plain
+// In a browser the clipboard usually cannot be read on demand (Gridlantis-HL is plain
 // http on the tailnet, and even on https it asks permission), but the browser
 // still hands a real paste its text — only not on the console canvas, which is
 // not editable. So: let noVNC skip the key, move focus to a hidden box so the

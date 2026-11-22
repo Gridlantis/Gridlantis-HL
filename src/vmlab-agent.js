@@ -5,10 +5,10 @@ const os = require("os");
 const path = require("path");
 
 // ─── VM LAB AGENT ────────────────────────────────────────────────────────────
-// Turns a second device into a VM host for Open HL. It serves exactly one thing:
+// Turns a second device into a VM host for Gridlantis-HL. It serves exactly one thing:
 // the /api/vmlab/* API from src/routes/vmlab-api.js, which is the same module
-// Open HL mounts for its own machine. There is no UI, no login page and no other
-// Open HL subsystem here — an Open HL elsewhere on the tailnet proxies to this
+// Gridlantis-HL mounts for its own machine. There is no UI, no login page and no other
+// Gridlantis-HL subsystem here — an Gridlantis-HL elsewhere on the tailnet proxies to this
 // process with a bearer token and renders the pages itself.
 //
 //   OPENHL_ROLE=vmlab-agent node vmlab-agent.js
@@ -87,7 +87,7 @@ function authorize(req, res, ip) {
 }
 
 // ── Request handling ─────────────────────────────────────────────────────────
-// The same ctx the Open HL router builds, so vmlab-api.js cannot tell the
+// The same ctx the Gridlantis-HL router builds, so vmlab-api.js cannot tell the
 // difference — including the writeHead/end wrapper that marks a request as
 // answered.
 async function handle(req, res) {
@@ -158,7 +158,7 @@ server.requestTimeout = 0;
 server.headersTimeout = 60 * 1000;
 
 // ── The console tunnel ───────────────────────────────────────────────────────
-// Open HL relays the browser's WebSocket onto this one, so the bytes arriving
+// Gridlantis-HL relays the browser's WebSocket onto this one, so the bytes arriving
 // here are already noVNC's, and the far end is this machine's QEMU.
 const ws = require("./ws");
 server.on("upgrade", (req, socket, head) => {
@@ -189,7 +189,7 @@ server.on("error", err => {
 });
 
 server.listen(PORT, BIND, async () => {
-  console.log("🖥  Open HL VM Lab agent on " + os.hostname() + " → http://" + (BIND === "0.0.0.0" ? "0.0.0.0" : BIND) + ":" + PORT);
+  console.log("🖥  Gridlantis-HL VM Lab agent on " + os.hostname() + " → http://" + (BIND === "0.0.0.0" ? "0.0.0.0" : BIND) + ":" + PORT);
   for (const [name, addrs] of Object.entries(os.networkInterfaces())) {
     for (const a of addrs) if (a.family === "IPv4" && !a.internal) console.log("   " + name + ": http://" + a.address + ":" + PORT);
   }

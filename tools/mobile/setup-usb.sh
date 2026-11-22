@@ -1,7 +1,7 @@
 #!/bin/bash
-# setup-usb.sh — let Open HL open Android phones plugged into this computer by USB
-# (Open HL → Mobile host). Run once on the machine running Open HL, from the
-# Open HL folder:
+# setup-usb.sh — let Gridlantis-HL open Android phones plugged into this computer by USB
+# (Gridlantis-HL → Mobile host). Run once on the machine running Gridlantis-HL, from the
+# Gridlantis-HL folder:
 #
 #   sudo bash tools/mobile/setup-usb.sh
 #   sudo bash tools/mobile/setup-usb.sh --uninstall
@@ -23,7 +23,7 @@ if [ "${1:-}" = "--uninstall" ]; then
 fi
 
 cat > "$RULE" <<'EOF'
-# Android debug bridge (adb) — written by Open HL setup-usb.sh
+# Android debug bridge (adb) — written by Gridlantis-HL setup-usb.sh
 SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ENV{ID_USB_INTERFACES}=="*:ff4201:*", MODE="0660", GROUP="plugdev", TAG+="uaccess"
 EOF
 getent group plugdev >/dev/null || groupadd -r plugdev

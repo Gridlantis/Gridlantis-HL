@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# install-piper.sh — local neural TTS for Open HL. No cloud, no DRM, no 403.
+# install-piper.sh — local neural TTS for Gridlantis-HL. No cloud, no DRM, no 403.
 #
 #   tools/tts/install-piper.sh
 #
@@ -90,7 +90,7 @@ done
 # ── 4. prove it works ────────────────────────────────────────
 echo
 echo "→ Testing..."
-echo "Open HL online. Piper text to speech is working." \
+echo "Gridlantis-HL online. Piper text to speech is working." \
   | piper --model "$VOICE_DIR/$VOICE.onnx" --output_file /tmp/piper-test.wav
 
 if [ -s /tmp/piper-test.wav ]; then
@@ -108,7 +108,7 @@ cat <<EOF
 ────────────────────────────────────────────────────────────
 ✓ Piper is ready.
 
-Open HL picks it up automatically — ttsSettings() defaults to
+Gridlantis-HL picks it up automatically — ttsSettings() defaults to
 "piper" whenever the binary is present.
 
 To pin it explicitly, add to .env:

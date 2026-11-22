@@ -124,7 +124,7 @@ pre.log{background:#05070b;color:#cfe3f5;border-radius:var(--r-panel);padding:12
 
 function dockerHtml() {
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Open HL · Containers</title>${FONT}${FAVICON}
+<title>Gridlantis-HL · Containers</title>${FONT}${FAVICON}
 <link rel="stylesheet" href="/docker/vendor/xterm.css">
 <style>${BASE_CSS}${NAV_CSS}${TOAST_CSS}${DOCKER_CSS}</style><script>${THEME_JS}</script></head><body>
 ${navBar("/docker")}

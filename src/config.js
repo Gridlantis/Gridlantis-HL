@@ -11,12 +11,12 @@ const { pipeline } = require("stream");
 
 // Project root. Every data file and upload path is resolved from here rather
 // than from the module's own directory, so code can move between directories
-// without changing where Open HL reads and writes its state.
+// without changing where Gridlantis-HL reads and writes its state.
 const ROOT = path.resolve(__dirname, "..");
 
-// Where Open HL keeps its state: .env, data/, uploads/, the session secret and
+// Where Gridlantis-HL keeps its state: .env, data/, uploads/, the session secret and
 // the folders features download tools into. That is the project folder unless
-// OPENHL_HOME names another. The Open HL Server app sets it to the user's own
+// OPENHL_HOME names another. The Gridlantis-HL Server app sets it to the user's own
 // app-data folder, because its copy of the program is read-only.
 const HOME_DIR = process.env.OPENHL_HOME ? path.resolve(process.env.OPENHL_HOME) : ROOT;
 

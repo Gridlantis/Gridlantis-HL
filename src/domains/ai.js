@@ -113,7 +113,7 @@ function callOpenRouter(messages, model, system, ms = 120000) {
 function cloudHeaders(p, key) {
   if (p.kind === 'anthropic') return { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'Content-Type': 'application/json' };
   const h = { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json', 'User-Agent': 'OpenHL/1.0' };
-  if (p.id === 'openrouter') { h['HTTP-Referer'] = 'http://openhl.local'; h['X-Title'] = 'Open HL'; }
+  if (p.id === 'openrouter') { h['HTTP-Referer'] = 'http://openhl.local'; h['X-Title'] = 'Gridlantis-HL'; }
   return h;
 }
 function cloudError(data, status) {

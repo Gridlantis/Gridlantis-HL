@@ -10,10 +10,10 @@ const { errorWithStatus } = require("../../helpers");
 
 // ─── LAPTOPS · saved machines ────────────────────────────────────────────────
 // Each laptop runs tools/laptop/setup-remote.sh once. That script starts a VNC
-// server bound to the laptop's tailnet address, lets only Open HL in, and prints
+// server bound to the laptop's tailnet address, lets only Gridlantis-HL in, and prints
 // a pairing code — the laptop's address plus a random password, the way
 // RustDesk shows an ID and a permanent password. Pasting the code here is the
-// last time anyone handles that password: Open HL logs in with it on every
+// last time anyone handles that password: Gridlantis-HL logs in with it on every
 // connect (see rfb.js) and never sends it to a browser.
 //
 // The file holds those passwords, so it sits in the project root on the SSD

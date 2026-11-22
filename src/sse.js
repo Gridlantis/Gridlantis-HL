@@ -1,7 +1,7 @@
 const sseClients = new Set();
 // Two framings of the same event. Named (`event: x`) is the classic one, read
 // with es.addEventListener('x'). Wrapped puts the name on the first data line so
-// one generic onmessage sees every event — the shared stream every Open HL tab
+// one generic onmessage sees every event — the shared stream every Gridlantis-HL tab
 // reads through (openhlEvents in ui/assets.js) relies on that, since it cannot
 // know in advance which event names the pages will want.
 function sseFrame(event, json, wrapped) {

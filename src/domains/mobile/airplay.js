@@ -11,7 +11,7 @@ const { TOOLS_DIR } = require("./adb");
 
 // ═══ MOBILE HOST: AIRPLAY (iPhone / iPad / Mac) ═══════════════════════════════
 // iOS has nothing like adb, so an iPhone cannot be controlled from Linux. It
-// can mirror its screen and sound over AirPlay, though, and Open HL receives it
+// can mirror its screen and sound over AirPlay, though, and Gridlantis-HL receives it
 // with UxPlay (an open-source AirPlay server). View and listen only.
 //
 // UxPlay builds a GStreamer pipeline whose parser/decoder/converter/sink are
@@ -22,10 +22,10 @@ const { TOOLS_DIR } = require("./adb");
 //          ! tcpclientsink host=127.0.0.1 port=<V>
 //   audio: … ! audioconvert ! audioresample ! volume ! level
 //          ! audio/x-raw,format=S16LE,rate=48000,channels=2 ! tcpclientsink … port=<A>
-// Open HL listens on those two local ports and passes the stream to viewers in
+// Gridlantis-HL listens on those two local ports and passes the stream to viewers in
 // the same shape as a phone's (see routes/mobile.js), so one viewer serves both.
 //
-// Like adb, Open HL keeps its own UxPlay: `apt-get download` + `dpkg -x` need no
+// Like adb, Gridlantis-HL keeps its own UxPlay: `apt-get download` + `dpkg -x` need no
 // root. A system uxplay is used if there is one.
 
 const UX_DIR = path.join(TOOLS_DIR, "uxplay");
@@ -63,7 +63,7 @@ function install() {
 
 // ── Settings ─────────────────────────────────────────────────────────────────
 function cfg() {
-  const c = Object.assign({ enabled: false, name: "Open HL", pin: "" }, SETTINGS.airplay || {});
+  const c = Object.assign({ enabled: false, name: "Gridlantis-HL", pin: "" }, SETTINGS.airplay || {});
   if (!/^\d{4}$/.test(c.pin)) {                       // chosen once, then kept: the iPhone remembers the pairing
     c.pin = String(crypto.randomInt(0, 10000)).padStart(4, "0");
     SETTINGS.airplay = c; saveSettings();
@@ -216,7 +216,7 @@ function status() {
 // Late joiners get the cached config and frames since the last key frame.
 const snapshot = () => (GOP.config ? [{ config: true, key: false, data: GOP.config }].concat(GOP.frames.map(f => ({ config: false, key: f.key, data: f.data }))) : []);
 
-// Back on after an Open HL restart if it was on.
+// Back on after an Gridlantis-HL restart if it was on.
 setTimeout(() => { if (cfg().enabled) start().catch(e => pushLog(e.message)); }, 4000).unref();
 process.on("exit", () => { try { child && child.kill(); } catch {} });
 

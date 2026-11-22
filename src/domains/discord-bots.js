@@ -3,7 +3,7 @@ const os = require("os");
 const path = require("path");
 
 // Run directly (`node discord-bots.js`), this file is the bot agent for another
-// machine: it needs no Open HL config, only DISCORD_BOTS_DIR and where to listen.
+// machine: it needs no Gridlantis-HL config, only DISCORD_BOTS_DIR and where to listen.
 const AGENT = require.main === module;
 const { DISCORD_BOTS_DIR, DISCORD_BOT_AGENTS } = AGENT
   ? { DISCORD_BOTS_DIR: process.env.DISCORD_BOTS_DIR || "", DISCORD_BOT_AGENTS: [] }
@@ -14,7 +14,7 @@ const { DISCORD_BOTS_DIR, DISCORD_BOT_AGENTS } = AGENT
 // a bot counts as online when a node/python process is running from its folder
 // and holds an open HTTPS connection, which is the Discord gateway socket.
 // Bots on other machines are checked the same way by this file running there
-// as an agent; Open HL polls each agent in DISCORD_BOT_AGENTS.
+// as an agent; Gridlantis-HL polls each agent in DISCORD_BOT_AGENTS.
 
 const RUNTIMES = /^(node|nodejs|bun|deno|python[\d.]*)$/;
 // The gateway reconnects now and then. Keep a running bot online for this long

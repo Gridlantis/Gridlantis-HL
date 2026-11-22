@@ -7,7 +7,7 @@ const adb = require("../mobile/adb");
 
 // ─── VM LAB · Cuttlefish ─────────────────────────────────────────────────────
 // Google's Cuttlefish virtual Android phones, run by the `cvd` tool from a
-// folder of host tools and images (CUTTLEFISH_DIR). Open HL does not create the
+// folder of host tools and images (CUTTLEFISH_DIR). Gridlantis-HL does not create the
 // group — it reads `cvd fleet`, starts and stops the existing group (data is
 // kept), and reaches each phone over adb like any other phone, so the Mobile
 // host mirror works on them unchanged.
@@ -26,7 +26,7 @@ function cvdPath() {
 // cvd logs to stderr; stdout carries the answer (JSON for `fleet`).
 // `ownScope` runs it in a transient systemd scope of its own: `cvd start`
 // leaves the phones running as its children, and inside openhl.service they
-// would be killed with it on every Open HL restart (the reason VM Lab gives each
+// would be killed with it on every Gridlantis-HL restart (the reason VM Lab gives each
 // VM its own unit too). Without systemd it falls back to running directly.
 function cvd(args, timeout = 60000, ownScope = false) {
   const bin = cvdPath();
@@ -35,7 +35,7 @@ function cvd(args, timeout = 60000, ownScope = false) {
   if (ownScope && hasSystemdRun()) {
     cmd = "systemd-run";
     argv = ["--user", "--scope", "--collect", "--quiet", "--unit=openhl-cuttlefish-" + Date.now(),
-      "--description=Open HL VM Lab · Cuttlefish phones", "--", bin].concat(args);
+      "--description=Gridlantis-HL VM Lab · Cuttlefish phones", "--", bin].concat(args);
   }
   return new Promise((resolve, reject) =>
     execFile(cmd, argv, { cwd: CF_DIR, timeout, maxBuffer: 16 * 1024 * 1024 }, (e, stdout, stderr) => {

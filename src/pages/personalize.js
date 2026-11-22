@@ -38,7 +38,7 @@ function personalizeHtml() {
   const cards = Object.entries(THEMES).map(([id, th]) => themeCard(id, th)).join("");
   return `<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Open HL · Personalize</title>${FONT}${FAVICON}
+<title>Gridlantis-HL · Personalize</title>${FONT}${FAVICON}
 <style>
 ${BASE_CSS}${NAV_CSS}${TOAST_CSS}
 .pz{max-width:980px;}
@@ -88,13 +88,13 @@ ${BASE_CSS}${NAV_CSS}${TOAST_CSS}
 </style></head><body>
 ${navBar("/personalize")}
 <main class="m-page pz">
-  <div class="m-head"><div><h1 class="m-title">Personalize</h1><p class="m-sub">Make Open HL yours: what it calls you and how it looks.</p></div></div>
+  <div class="m-head"><div><h1 class="m-title">Personalize</h1><p class="m-sub">Make Gridlantis-HL yours: what it calls you and how it looks.</p></div></div>
 
   <section class="m-panel pz-sec" aria-labelledby="pz-name-t">
     <div class="m-panel-h"><h2 class="m-panel-t" id="pz-name-t">Your name</h2><span class="m-panel-meta">Saved on this server, so every device uses it</span></div>
     <form class="pz-body" id="pz-form" autocomplete="off">
       <div class="pz-name">
-        <input class="m-input" id="pz-name" maxlength="${NAME_MAX}" placeholder="What should Open HL call you?" value="${esc(name)}" aria-label="Your name">
+        <input class="m-input" id="pz-name" maxlength="${NAME_MAX}" placeholder="What should Gridlantis-HL call you?" value="${esc(name)}" aria-label="Your name">
         <button class="m-btn primary" type="submit" id="pz-save">Save</button>
       </div>
       <div class="pz-hello" id="pz-hello"></div>
@@ -127,7 +127,7 @@ ${navBar("/personalize")}
     <div class="pz-body"><div class="pz-themes" id="pz-themes">${cards}</div></div>
   </section>
 
-  <p class="pz-version">Open HL ${VERSION ? "version " + esc(VERSION) : "(version unknown)"}</p>
+  <p class="pz-version">Gridlantis-HL ${VERSION ? "version " + esc(VERSION) : "(version unknown)"}</p>
 </main>
 <div class="toast" id="toast"></div>
 <script>

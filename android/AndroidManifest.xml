@@ -4,7 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <!-- Asked for only when an Open HL page wants the microphone or camera. -->
+    <!-- Asked for only when an Gridlantis-HL page wants the microphone or camera. -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
@@ -13,9 +13,9 @@
     <uses-feature android:name="android.hardware.camera" android:required="false" />
     <uses-feature android:name="android.hardware.microphone" android:required="false" />
 
-    <!-- Cleartext: Open HL usually runs as plain http on the LAN or Tailscale. -->
+    <!-- Cleartext: Gridlantis-HL usually runs as plain http on the LAN or Tailscale. -->
     <application
-        android:label="Open HL"
+        android:label="Gridlantis-HL"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher"
         android:theme="@style/OpenHL"

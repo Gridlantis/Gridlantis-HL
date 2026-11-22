@@ -277,11 +277,11 @@ function receiveUpload(req, name, meta) {
   });
 }
 
-// ── Browse Open HL Files for bootable media ───────────────────────────────────
+// ── Browse Gridlantis-HL Files for bootable media ───────────────────────────────────
 // Anything you drop in the Files app (or download straight into uploads/) is a
 // boot candidate. Walk a few levels deep and hand back paths the import
 // endpoint accepts, marking the ones already registered as images.
-// Where to look for bootable media you already have. Open HL Files first, then
+// Where to look for bootable media you already have. Gridlantis-HL Files first, then
 // any extra folders from VMLAB_MEDIA_DIRS (colon-separated) — e.g. the "OS
 // isos" folder on the big drive. Paths that do not exist are skipped, so an
 // unmounted drive just means one fewer group rather than an error.

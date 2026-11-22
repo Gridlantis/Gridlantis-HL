@@ -96,7 +96,7 @@ const EVENTS_JS = `<script>(function(){
   window.openhlEvents = function(){ return bus; };
 })();</script>`;
 
-// The head every page shares: fonts, icons (both served by Open HL, see
+// The head every page shares: fonts, icons (both served by Gridlantis-HL, see
 // routes/assets.js; bump ?v= when the files change) and the shared event stream.
 // Small helpers every page script can use. esc() is for text going into HTML,
 // attributes included, so it escapes quotes too. timeAgo() takes ms or an ISO
@@ -116,7 +116,7 @@ function timeAgo(t){
 }
 </script>`;
 const FONT = `<link rel="stylesheet" href="/ui/vendor/fonts/fonts.css?v=2"><link rel="stylesheet" href="/ui/vendor/fontawesome/css/all.min.css?v=6.5.1">` + HELPERS_JS + EVENTS_JS;
-// The Open HL monogram: an upright L with a sideways H over its upper right.
+// The Gridlantis-HL monogram: an upright L with a sideways H over its upper right.
 // LOGO_SVG is the bare mark (sidebar); the favicon puts it on the app tile.
 const LOGO_PATHS = "<path d='M15 22V49H48' fill='none' stroke='%COLOR_L%' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/>" +
   "<path d='M24 14H49M24 32H49M36.5 14V32' fill='none' stroke='%COLOR_H%' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/>";
@@ -770,7 +770,7 @@ function navBar(active) {
       g.pages.map(p => item(p)).join("");
   }).join("");
   return `<header class="m-nav" id="m-nav">
-<a href="/" class="m-brand" title="Open HL home">${LOGO_SVG}<span class="m-brand-name">Open HL</span></a>
+<a href="/" class="m-brand" title="Gridlantis-HL home">${LOGO_SVG}<span class="m-brand-name">Gridlantis-HL</span></a>
 <nav class="m-nav-scroll" aria-label="Pages" data-name-max="${GROUP_NAME_MAX}">${links}</nav>
 <div class="m-nav-foot">
   <a class="m-foot-btn${cur === '/personalize' ? ' active' : ''}" href="/personalize" title="Personalize: your name and themes"${cur === '/personalize' ? ' aria-current="page"' : ''}><i class="fa-solid fa-user"></i><span class="m-foot-l">Personalize</span></a>
@@ -781,7 +781,7 @@ function navBar(active) {
       <a href="/download#android" class="m-apps-item" role="menuitem"><i class="fa-brands fa-android"></i><span><b>Android app</b><small>Android 7 and newer</small></span></a>
     </div>
   </div>
-  <button class="m-foot-btn openhl-switch-server" type="button" title="Connect to a different Open HL server" hidden><i class="fa-solid fa-server"></i><span class="m-foot-l">Switch server</span></button>
+  <button class="m-foot-btn openhl-switch-server" type="button" title="Connect to a different Gridlantis-HL server" hidden><i class="fa-solid fa-server"></i><span class="m-foot-l">Switch server</span></button>
   <button class="m-foot-btn m-collapse" id="m-collapse" type="button" title="Collapse sidebar"><i class="fa-solid fa-angles-left"></i><span class="m-foot-l">Collapse</span></button>
   <button class="m-foot-btn m-hide" id="m-hide" type="button" title="Hide sidebar (bring it back with the menu button, top left)"><i class="fa-solid fa-eye-slash"></i><span class="m-foot-l">Hide sidebar</span></button>
   <form method="POST" action="/logout"><button class="m-foot-btn" type="submit" title="Sign out"><i class="fa-solid fa-arrow-right-from-bracket"></i><span class="m-foot-l">Sign out</span></button></form>

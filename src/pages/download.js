@@ -16,7 +16,7 @@ function downloadHtml(files, host) {
       <div class="m-panel-h"><h2 class="m-panel-t" id="os-${os}"><i class="${icon} os-ic" aria-hidden="true"></i>${title}</h2><span class="m-panel-meta">${blurb}</span><span class="m-badge info mine">${os === "android" ? "This phone" : "This computer"}</span></div>${items}</section>`;
   };
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Open HL · Apps</title>${FONT}${FAVICON}
+<title>Gridlantis-HL · Apps</title>${FONT}${FAVICON}
 <style>${BASE_CSS}${NAV_CSS}${TOAST_CSS}
 .dl{max-width:980px;}
 .os-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;}
@@ -37,7 +37,7 @@ code{font-size:13px;background:var(--raised);border:1px solid var(--line);border
 </style></head><body>${navBar("/download")}
 <main class="m-page dl">
   <div class="m-head"><div><h1 class="m-title">Apps</h1>
-    <p class="m-sub">Open HL in its own window on your computer or phone. The browser version keeps working.</p></div></div>
+    <p class="m-sub">Gridlantis-HL in its own window on your computer or phone. The browser version keeps working.</p></div></div>
 
   <h2 class="sec" id="desktop">Desktop app</h2>
   <div class="os-list">
@@ -49,9 +49,9 @@ code{font-size:13px;background:var(--raised);border:1px solid var(--line);border
     <ol>
       <li>Install and open the app. On Windows, run the portable .exe or unzip the zip. On Linux, install the .deb, or make the AppImage executable and run it.</li>
       <li>Enter this server's address: <span class="url" id="srv">${esc(host)}</span></li>
-      <li>Sign in with your Open HL password. The app remembers the server and keeps you signed in.</li>
+      <li>Sign in with your Gridlantis-HL password. The app remembers the server and keeps you signed in.</li>
     </ol>
-    <div class="note">From outside your home network, connect the client to Tailscale and use this host's Tailscale address, or publish Open HL over HTTPS with <code>tailscale serve</code>.</div>
+    <div class="note">From outside your home network, connect the client to Tailscale and use this host's Tailscale address, or publish Gridlantis-HL over HTTPS with <code>tailscale serve</code>.</div>
   </section>
 
   <h2 class="sec" id="android">Android app</h2>
@@ -63,7 +63,7 @@ code{font-size:13px;background:var(--raised);border:1px solid var(--line);border
     <ol>
       <li>Open this page on the phone and tap the .apk above.</li>
       <li>When Android asks, allow your browser to install unknown apps, then tap Install. Play Protect may warn that it doesn't know the app; choose Install anyway.</li>
-      <li>Open Open HL and enter <span class="url srv-url">${esc(host)}</span>, then sign in. To switch servers later, open the sidebar and tap Switch server.</li>
+      <li>Open Gridlantis-HL and enter <span class="url srv-url">${esc(host)}</span>, then sign in. To switch servers later, open the sidebar and tap Switch server.</li>
     </ol>
     <div class="note">The phone has to reach this host too: the same Wi-Fi, or the Tailscale app on the phone.</div>
   </section>

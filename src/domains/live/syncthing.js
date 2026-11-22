@@ -8,8 +8,8 @@ const { execFile } = require("child_process");
 const { HOME_DIR, ROOT, UPLOAD_DIR } = require("../../config");
 const { tailnetIp } = require("../../net");
 
-// ─── Live folders: Open HL's own Syncthing ─────────────────────────────────────
-// Open HL is the hub. It runs a private Syncthing (systemd user unit
+// ─── Live folders: Gridlantis-HL's own Syncthing ─────────────────────────────────────
+// Gridlantis-HL is the hub. It runs a private Syncthing (systemd user unit
 // openhl-live.service) that keeps an always-on copy of every live folder under
 // uploads/Live folders/, so PCs sync through it even when they are never on at
 // the same time, and the Files page can browse the copy. It listens on the
@@ -17,11 +17,11 @@ const { tailnetIp } = require("../../net");
 // user already runs is left alone), with discovery, relays, NAT and usage
 // reporting off: devices find each other by fixed tailnet addresses only.
 //
-// The binaries are Open HL's own build of Syncthing: upstream v2.1.7 plus
+// The binaries are Gridlantis-HL's own build of Syncthing: upstream v2.1.7 plus
 // tools/live/syncthing-conflicts.patch, which stops a 3-device same-second
 // edit from losing one version and removes duplicate conflict copies (see
 // tools/live/build-syncthing.sh). Built once
-// into live/dist; Open HL serves the PC builds to the setup scripts, so every
+// into live/dist; Gridlantis-HL serves the PC builds to the setup scripts, so every
 // device runs the same patched version.
 
 const VERSION = "v2.1.7-openhl.2";
@@ -115,7 +115,7 @@ async function ensureService(binaryChanged) {
   }
   const envChanged = writeIfChanged(ENV_FILE, `STGUIAPIKEY=${apiKey()}\nSTNOUPGRADE=1\n`, 0o600);
   const unitChanged = writeIfChanged(UNIT_FILE, `[Unit]
-Description=Open HL live folders (Syncthing hub)
+Description=Gridlantis-HL live folders (Syncthing hub)
 After=network-online.target
 
 [Service]
@@ -177,7 +177,7 @@ async function configure() {
   });
   await api("PATCH", "/rest/config/defaults/folder", { fsWatcherDelayS: 1 });
   const me = await myId();
-  await api("PATCH", "/rest/config/devices/" + me, { name: "Open HL" }).catch(() => {});
+  await api("PATCH", "/rest/config/devices/" + me, { name: "Gridlantis-HL" }).catch(() => {});
   fs.mkdirSync(HUB_DIR, { recursive: true });
   fs.mkdirSync(VERSIONS_DIR, { recursive: true });
 }
@@ -189,7 +189,7 @@ async function myId() {
   return idCache;
 }
 
-// Brought up once per Open HL start; every API call waits on it, and a failure
+// Brought up once per Gridlantis-HL start; every API call waits on it, and a failure
 // is retried on the next call instead of sticking.
 let ready = null, lastError = null;
 function ensure() {
@@ -205,7 +205,7 @@ function ensure() {
   return ready;
 }
 
-// ── Metadata Open HL keeps beside Syncthing's config ───────────────────────────
+// ── Metadata Gridlantis-HL keeps beside Syncthing's config ───────────────────────────
 function readMeta() {
   try { return JSON.parse(fs.readFileSync(META_FILE, "utf8")); } catch { return { devices: {} }; }
 }

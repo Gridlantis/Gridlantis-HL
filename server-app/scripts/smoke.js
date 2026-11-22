@@ -1,6 +1,6 @@
-// Starts Open HL the way Open HL Server does (state in an outside folder) and
+// Starts Gridlantis-HL the way Gridlantis-HL Server does (state in an outside folder) and
 // checks that the sign-in page answers. Run on each OS before building, so a
-// download that can't start Open HL is never published.
+// download that can't start Gridlantis-HL is never published.
 const { spawn } = require("child_process");
 const fs = require("fs");
 const http = require("http");
@@ -26,7 +26,7 @@ function finish(ok, why) {
   process.exit(ok ? 0 : 1);
 }
 
-proc.on("exit", code => finish(false, "Open HL exited with code " + code));
+proc.on("exit", code => finish(false, "Gridlantis-HL exited with code " + code));
 const until = Date.now() + 30000;
 (function poll() {
   http.get({ host: "127.0.0.1", port: PORT, path: "/login", timeout: 2000 }, res => {

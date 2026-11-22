@@ -2,7 +2,7 @@ const https = require("https");
 
 // ═══ TWILIO — the account behind Voicemail and Texts ═══════════════════════════
 // Read-only use of the REST API: both features poll it rather than taking
-// webhooks, so Open HL works without being reachable from the internet.
+// webhooks, so Gridlantis-HL works without being reachable from the internet.
 const ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID || "";
 const AUTH_TOKEN  = process.env.TWILIO_AUTH_TOKEN || "";
 const NUMBER      = process.env.TWILIO_NUMBER || "";   // only keep what reached this number; blank = any

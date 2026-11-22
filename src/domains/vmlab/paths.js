@@ -41,7 +41,7 @@ function firstExecutable(list) {
   for (const p of list) { if (!p) continue; try { fs.accessSync(p, fs.constants.X_OK); return p; } catch {} }
   return null;
 }
-// Resolved on every call so installing QEMU while Open HL runs needs no restart.
+// Resolved on every call so installing QEMU while Gridlantis-HL runs needs no restart.
 function qemuBinary() {
   return firstExecutable([process.env.VMLAB_QEMU, path.join(VMLAB_DIR, "qemu/bin/qemu-system-x86_64"),
     onPath("qemu-system-x86_64"), "/usr/libexec/qemu-kvm"]);

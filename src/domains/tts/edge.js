@@ -8,7 +8,7 @@ const tls = require("tls");
 // CAVEATS, up front:
 //  · This is an UNDOCUMENTED endpoint. Microsoft has broken it before (they added
 //    the Sec-MS-GEC DRM token in 2024, which killed every client overnight). If
-//    TTS suddenly 403s, that is almost certainly what happened — Open HL falls back
+//    TTS suddenly 403s, that is almost certainly what happened — Gridlantis-HL falls back
 //    to espeak/spd-say automatically rather than going silent.
 //  · It is a WebSocket protocol, not REST. We hand-roll a minimal WS client over
 //    tls rather than using Node's global WebSocket, because the WHATWG API cannot

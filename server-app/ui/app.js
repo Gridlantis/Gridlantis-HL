@@ -60,7 +60,7 @@ function settingsStatus(text, ok) {
 
 $("port-form").addEventListener("submit", async e => {
   e.preventDefault();
-  try { await window.server.changePort(Number($("p-port").value)); settingsStatus("Port saved. Open HL is restarting.", true); }
+  try { await window.server.changePort(Number($("p-port").value)); settingsStatus("Port saved. Gridlantis-HL is restarting.", true); }
   catch (err) { settingsStatus(msg(err)); }
 });
 
@@ -69,7 +69,7 @@ $("pw-form").addEventListener("submit", async e => {
   try {
     await window.server.changePassword($("p-pw").value);
     $("p-pw").value = "";
-    settingsStatus("Password changed. Open HL is restarting; sign in again with the new one.", true);
+    settingsStatus("Password changed. Gridlantis-HL is restarting; sign in again with the new one.", true);
   } catch (err) { settingsStatus(msg(err)); }
 });
 

@@ -5,9 +5,9 @@
 # On Debian/Ubuntu/Mint this downloads the distro's own packages with
 # `apt-get download` (no root needed), unpacks them with dpkg-deb, and writes
 # small wrapper scripts that point the binaries at the unpacked libraries,
-# modules and firmware. Open HL finds vmlab/qemu/bin automatically.
+# modules and firmware. Gridlantis-HL finds vmlab/qemu/bin automatically.
 #
-# If you have root, the system packages are the better option and Open HL will
+# If you have root, the system packages are the better option and Gridlantis-HL will
 # use them from PATH instead:
 #     sudo apt install qemu-system-x86 qemu-utils ovmf
 #
@@ -65,7 +65,7 @@ export LD_LIBRARY_PATH="$LIB\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}"
 exec "\$ROOT/usr/bin/qemu-img" "\$@"
 WRAP
 chmod +x "$TARGET.new/bin/"*
-# Open HL looks here for UEFI firmware when OVMF is not installed system-wide.
+# Gridlantis-HL looks here for UEFI firmware when OVMF is not installed system-wide.
 ln -sfn root/usr/share/OVMF "$TARGET.new/ovmf"
 
 # Fix the absolute firmware symlinks in qemu-system-data to point inside ROOT.

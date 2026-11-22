@@ -7,10 +7,10 @@ const live = require("../domains/live");
 const st = require("../domains/live/syncthing");
 const { liveHtml } = require("../pages/live");
 
-// Live folders: OneDrive-style folders kept in sync across PCs through Open HL
+// Live folders: OneDrive-style folders kept in sync across PCs through Gridlantis-HL
 // (see domains/live). The setup scripts and the Syncthing builds they fetch
 // are public (routes/public.js calls publicLive), since a PC asks for them
-// before it has an Open HL session; they carry no secrets, only Open HL's device
+// before it has an Gridlantis-HL session; they carry no secrets, only Gridlantis-HL's device
 // ID and address. So is POST /live/report, which only takes a report from the
 // PC's own tailnet address.
 const SCRIPTS = {
@@ -43,7 +43,7 @@ async function publicLive(ctx) {
   if (SCRIPTS[pathname]) {
     let body;
     try { body = await script(pathname, req.headers.host || ""); }
-    catch (e) { res.writeHead(503, { "Content-Type": "text/plain" }); return res.end("echo 'Open HL live folders are not running: " + e.message.replace(/'/g, "") + "' >&2; exit 1\n"); }
+    catch (e) { res.writeHead(503, { "Content-Type": "text/plain" }); return res.end("echo 'Gridlantis-HL live folders are not running: " + e.message.replace(/'/g, "") + "' >&2; exit 1\n"); }
     res.writeHead(200, { "Content-Type": SCRIPTS[pathname].type, "Cache-Control": "no-cache" });
     return res.end(body);
   }

@@ -8,10 +8,10 @@ const { readJSON } = require("../store");
 const { broadcast } = require("../sse");
 const { RINGING, readReminders, writeReminders } = require("./reminders");
 
-// ═══ GOOGLE CALENDAR — two-way sync with Open HL reminders ═══════════════════════
-// Open HL → Google: every reminder you make or edit in Open HL becomes an event in
+// ═══ GOOGLE CALENDAR — two-way sync with Gridlantis-HL reminders ═══════════════════════
+// Gridlantis-HL → Google: every reminder you make or edit in Gridlantis-HL becomes an event in
 // the calendar (tagged with its reminder id), repeating ones as a recurring event.
-// Google → Open HL: renaming, moving or deleting one of those events in Google
+// Google → Gridlantis-HL: renaming, moving or deleting one of those events in Google
 // changes or removes the reminder. Everything else in the calendar is shown on
 // /calendar next to the reminders but left alone.
 //
@@ -115,7 +115,7 @@ async function finishAuth(code, state) {
     { form: { code, client_id: CLIENT_ID, client_secret: CLIENT_SECRET, redirect_uri: REDIRECT_URI, grant_type: "authorization_code" } });
   // Reconnecting to add a permission may come back without a new refresh
   // token; the one already held stays valid, so keep it.
-  if (!t.refresh_token && !G.refreshToken) throw new Error("Google sent no refresh token. Remove Open HL at myaccount.google.com/permissions and connect again.");
+  if (!t.refresh_token && !G.refreshToken) throw new Error("Google sent no refresh token. Remove Gridlantis-HL at myaccount.google.com/permissions and connect again.");
   Object.assign(G, { refreshToken: t.refresh_token || G.refreshToken, accessToken: t.access_token, scopes: t.scope || "",
                      expiresAt: Date.now() + (t.expires_in - 60) * 1000, lastError: null, lastSync: null });
   saveState();
@@ -219,7 +219,7 @@ function eventFor(rem) {
     start: { dateTime: new Date(rem.at).toISOString(), timeZone: TZ },
     end:   { dateTime: new Date(rem.at + EVENT_MINUTES * 60000).toISOString(), timeZone: TZ },
     recurrence: RRULE[rem.repeat] ? [RRULE[rem.repeat]] : [],
-    // openhlApp is a fixed tag so the sync can list every Open HL event: Google
+    // openhlApp is a fixed tag so the sync can list every Gridlantis-HL event: Google
     // only filters on name=value, never on "has this property".
     extendedProperties: { private: { openhlId: rem.id, openhlApp: "1" } },
   };
@@ -240,9 +240,9 @@ function setReminderField(id, patch) {
   writeReminders(list);
 }
 
-// ── Open HL → Google ───────────────────────────────────────────────────────────
+// ── Gridlantis-HL → Google ───────────────────────────────────────────────────────────
 const PUSHING = new Set();
-const LAST_PUSH = new Map();   // id -> when Open HL last sent it, so a sync already under way cannot undo the edit
+const LAST_PUSH = new Map();   // id -> when Gridlantis-HL last sent it, so a sync already under way cannot undo the edit
 async function pushReminder(rem) {
   if (!connected() || !rem || rem.fromEvent || PUSHING.has(rem.id)) return;
   PUSHING.add(rem.id);
@@ -269,11 +269,11 @@ async function removeReminder(rem) {
   catch (e) { if (e.status !== 404 && e.status !== 410) console.error("[gcal:delete]", e.message); }
 }
 // Fire-and-forget versions for the reminder routes: the reminder is saved in
-// Open HL whether or not Google answers.
+// Gridlantis-HL whether or not Google answers.
 const queuePush   = rem => { pushReminder(rem).catch(() => {}); };
 const queueRemove = rem => { removeReminder(rem).catch(() => {}); };
 
-// ── Google → Open HL ───────────────────────────────────────────────────────────
+// ── Google → Gridlantis-HL ───────────────────────────────────────────────────────────
 let syncing = null;
 function sync() {
   if (!connected()) return Promise.resolve(false);

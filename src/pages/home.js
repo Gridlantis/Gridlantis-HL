@@ -12,7 +12,7 @@ function homeHtml() {
   const halo = haloOn();
   return `<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Open HL · Home</title>${FONT}${FAVICON}
+<title>Gridlantis-HL · Home</title>${FONT}${FAVICON}
 <style>
 ${BASE_CSS}${NAV_CSS}${TOAST_CSS}
 /* ── Home · glass dashboard ─────────────────────────────────────────────── */
@@ -195,7 +195,7 @@ ${navBar("/")}
 <main class="m-page home">
   <header class="hero">
     <div class="hero-top">
-      <nav class="crumbs" aria-label="Where you are"><span><i class="fa-solid fa-house"></i> Open HL</span><span class="sep">/</span>
+      <nav class="crumbs" aria-label="Where you are"><span><i class="fa-solid fa-house"></i> Gridlantis-HL</span><span class="sep">/</span>
         <span class="now"><i class="fa-regular fa-calendar"></i><span id="crumb-date"></span></span></nav>
       <div class="tools">
         <label class="search" for="home-search"><i class="fa-solid fa-magnifying-glass"></i>
@@ -487,8 +487,8 @@ var USER_NAME = ${scriptString(userName())};
   paintVoice();
   function notify(title, body){ try { if ('Notification' in window && Notification.permission === 'granted') new Notification(title, { body: body }); } catch(e){} }
   function announce(name, online){
-    if (online){ showToast(name + ' is back online', 'ok'); speak(name + ' is back online.'); notify('Open HL: node recovered', name + ' is back online'); }
-    else { showToast(name + ' is offline', 'bad'); speak('Alert. ' + name + ' is offline.'); notify('Open HL: node offline', name + ' is offline'); }
+    if (online){ showToast(name + ' is back online', 'ok'); speak(name + ' is back online.'); notify('Gridlantis-HL: node recovered', name + ' is back online'); }
+    else { showToast(name + ' is offline', 'bad'); speak('Alert. ' + name + ' is offline.'); notify('Gridlantis-HL: node offline', name + ' is offline'); }
     if (window.__homeReload) window.__homeReload();
   }
   if ('EventSource' in window) {

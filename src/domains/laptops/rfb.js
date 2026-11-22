@@ -4,14 +4,14 @@ const path = require("path");
 const vm = require("vm");
 const { errorWithStatus } = require("../../helpers");
 
-// ─── LAPTOPS · VNC (RFB) handshake done by Open HL ─────────────────────────────
-// A laptop runs a VNC server locked to Open HL's tailnet address and protected by
-// a password that Open HL keeps. Open HL logs in to that server itself and hands
+// ─── LAPTOPS · VNC (RFB) handshake done by Gridlantis-HL ─────────────────────────────
+// A laptop runs a VNC server locked to Gridlantis-HL's tailnet address and protected by
+// a password that Gridlantis-HL keeps. Gridlantis-HL logs in to that server itself and hands
 // the browser a session that is already authenticated, so noVNC never asks for
 // a password and the password never reaches the browser.
 //
-//   browser (noVNC) ─ws─ Open HL ─tcp─ laptop x11vnc
-//   Open HL plays the server for the browser (offering "no auth") and the client
+//   browser (noVNC) ─ws─ Gridlantis-HL ─tcp─ laptop x11vnc
+//   Gridlantis-HL plays the server for the browser (offering "no auth") and the client
 //   for the laptop (answering its VNC-auth challenge). After both handshakes the
 //   bytes, starting at ClientInit, are spliced straight through.
 
@@ -91,7 +91,7 @@ function login(laptop, timeoutMs = 8000) {
       } else if (types.includes(SEC_NONE)) {
         sock.write(Buffer.from([SEC_NONE]));
       } else {
-        throw err("the PC only offers VNC security types Open HL cannot speak (" + types.join(", ") + ")");
+        throw err("the PC only offers VNC security types Gridlantis-HL cannot speak (" + types.join(", ") + ")");
       }
       const result = (await r.read(4)).readUInt32BE(0);
       if (result !== 0) {

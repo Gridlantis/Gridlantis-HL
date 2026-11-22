@@ -2,7 +2,7 @@ const { BASE_CSS, FAVICON, FONT, NAV_CSS, THEME_JS, TOAST_CSS, TOAST_JS, navBar 
 const { DOCKER_CSS } = require("./docker");
 
 // ─── LIVE FOLDERS PAGE ────────────────────────────────────────────────────────
-// Folders kept in sync on several PCs through Open HL. Markup here; behaviour in
+// Folders kept in sync on several PCs through Gridlantis-HL. Markup here; behaviour in
 // src/ui/live/live.js. Borrows the Containers card language, like PC host.
 
 const LIVE_CSS = `
@@ -49,7 +49,7 @@ const LIVE_CSS = `
 
 function liveHtml() {
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Open HL · Live folders</title>${FONT}${FAVICON}
+<title>Gridlantis-HL · Live folders</title>${FONT}${FAVICON}
 <style>${BASE_CSS}${NAV_CSS}${TOAST_CSS}${DOCKER_CSS}${LIVE_CSS}</style><script>${THEME_JS}</script></head><body>
 ${navBar("/live")}
 <div class="grid"></div>
@@ -57,7 +57,7 @@ ${navBar("/live")}
   <div class="dk-top">
     <div>
       <div class="dk-title">Live folders</div>
-      <div class="dk-sub">Folders that stay the same on every PC you pick, in real time. Open HL keeps a copy, so PCs sync even when they are never on together.</div>
+      <div class="dk-sub">Folders that stay the same on every PC you pick, in real time. Gridlantis-HL keeps a copy, so PCs sync even when they are never on together.</div>
     </div>
     <div class="row">
       <button class="btn" id="b-pc"><i class="fa-solid fa-computer"></i>Add a PC</button>

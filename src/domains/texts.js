@@ -9,7 +9,7 @@ const { NUMBER, POLL_MS, api, configured, twilioGet } = require("./twilio");
 
 // ═══ TEXTS — incoming SMS to the Twilio number, pulled ═════════════════════════
 // Twilio keeps every inbound message whatever the number's SMS URL does, so
-// Open HL polls the Messages API the same way Voicemail polls Recordings. Receive
+// Gridlantis-HL polls the Messages API the same way Voicemail polls Recordings. Receive
 // only: the number is toll-free and unverified, so anything it sent would be
 // blocked (error 30032). Picture messages keep a count of their attachments;
 // the attachments themselves stay on Twilio.
@@ -64,7 +64,7 @@ async function doPoll() {
   if (seeding) return;
   for (const t of fresh) {
     const extra = t.media ? " [" + t.media + " attachment" + (t.media > 1 ? "s" : "") + "]" : "";
-    sendAlert("Open HL · Text from " + (t.from || "unknown sender"), (t.body.slice(0, ALERT_CHARS) || "(no text)") + extra, false)
+    sendAlert("Gridlantis-HL · Text from " + (t.from || "unknown sender"), (t.body.slice(0, ALERT_CHARS) || "(no text)") + extra, false)
       .catch(e => console.error("[texts:alert]", e.message));
   }
 }

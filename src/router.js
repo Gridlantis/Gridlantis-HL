@@ -48,7 +48,7 @@ async function handleRequest(req, res) {
   const pathname = parsed.pathname;
 
   // A handler "claims" the request by touching the response. Every reply in
-  // Open HL starts with writeHead — including the SSE stream, which writes its
+  // Gridlantis-HL starts with writeHead — including the SSE stream, which writes its
   // headers and then deliberately stays open — so wrapping writeHead and end
   // catches all of them without each handler having to report back.
   let handled = false;

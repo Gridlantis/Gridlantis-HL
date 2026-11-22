@@ -6,7 +6,7 @@ const { loginHtml } = require("../pages/login");
 const { SESSION_TTL_MS, makeSession } = require("../session");
 
 // ── Login throttling ──────────────────────────────────────────────────────────
-// Open HL is reachable from the WAN, so slow down password guessing: after 5 bad
+// Gridlantis-HL is reachable from the WAN, so slow down password guessing: after 5 bad
 // passwords from one address within 15 minutes, refuse logins from it for 15.
 const LOGIN_FAILS = new Map();   // ip -> { count, first, lockedUntil }
 const FAIL_WINDOW_MS = 15 * 60 * 1000, MAX_FAILS = 5, LOCK_MS = 15 * 60 * 1000;
@@ -27,7 +27,7 @@ setInterval(() => {
 // laptop setup script (a laptop fetches it with curl before it has anything to
 // sign in with; it holds no secrets — each laptop makes its own password), and
 // Google's OAuth callback (it carries a one-time state that only a signed-in
-// Open HL page could have minted).
+// Gridlantis-HL page could have minted).
 module.exports = async function publicRoutes(ctx) {
   const { req, res, pathname, json, html, readBody } = ctx;
 

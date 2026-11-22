@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Open HL">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Gridlantis-HL">
   <defs>
     <linearGradient id="tile" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#1B2430"/>
@@ -7,7 +7,7 @@
   </defs>
   <rect width="64" height="64" rx="14" fill="url(#tile)"/>
   <rect x=".75" y=".75" width="62.5" height="62.5" rx="13.3" fill="none" stroke="#2C3846" stroke-width="1.5"/>
-  <!-- Open HL monogram: an upright L with a sideways H laid over its upper
+  <!-- Gridlantis-HL monogram: an upright L with a sideways H laid over its upper
        right. Two strokes, so it still reads at 16px. -->
   <path d="M15 22V49H48" fill="none" stroke="#E4E9EF" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
   <path d="M24 14H49M24 32H49M36.5 14V32" fill="none" stroke="#62A8E5" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>

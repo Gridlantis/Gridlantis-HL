@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
-# Open HL live folders — set up this Linux PC.
+# Gridlantis-HL live folders — set up this Linux PC.
 #
 # Run it as yourself (not with sudo): the live folders go in your home.
 #   curl -fsSL http://<openhl>:3000/live/setup.sh | bash
 #   curl -fsSL http://<openhl>:3000/live/setup.sh | bash -s -- --name "work PC"
 #   curl -fsSL http://<openhl>:3000/live/setup.sh | bash -s -- --uninstall
 #
-# It installs a private Syncthing (the same version Open HL runs, downloaded
-# from Open HL) as a user service, pointed at Open HL only: no discovery, relays
-# or internet, just Open HL's tailnet address. Folders Open HL shares with this PC
-# appear in ~/Open HL Live/<name>. Then it prints a pairing code to paste into
-# Open HL → Live folders → Add a PC.
+# It installs a private Syncthing (the same version Gridlantis-HL runs, downloaded
+# from Gridlantis-HL) as a user service, pointed at Gridlantis-HL only: no discovery, relays
+# or internet, just Gridlantis-HL's tailnet address. Folders Gridlantis-HL shares with this PC
+# appear in ~/Gridlantis-HL Live/<name>. Then it prints a pairing code to paste into
+# Gridlantis-HL → Live folders → Add a PC.
 set -euo pipefail
 
 OPENHL_URL="${OPENHL_URL:-__OPENHL_URL__}"
@@ -18,7 +18,7 @@ OPENHL_ID="${OPENHL_ID:-__OPENHL_ID__}"
 OPENHL_IP="${OPENHL_IP:-__OPENHL_IP__}"
 SYNC_PORT=__SYNC_PORT__
 GUI="127.0.0.1:8386"
-NAME=""; UNINSTALL=0; FOLDERS="$HOME/Open HL Live"
+NAME=""; UNINSTALL=0; FOLDERS="$HOME/Gridlantis-HL Live"
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -43,17 +43,17 @@ RUNIT="$HOME/.config/systemd/user/openhl-live-report.service"
 command -v systemctl >/dev/null || die "this PC has no systemd"
 
 if [ "$UNINSTALL" = 1 ]; then
-  say "Removing Open HL live folders"
+  say "Removing Gridlantis-HL live folders"
   systemctl --user disable --now openhl-live.service openhl-live-report.service 2>/dev/null || true
   rm -f "$UNIT" "$RUNIT"; systemctl --user daemon-reload 2>/dev/null || true
   rm -rf "$APP" "$STHOME"
-  echo "Done. Your files in $FOLDERS are left as they are. Remove this PC in Open HL too."
+  echo "Done. Your files in $FOLDERS are left as they are. Remove this PC in Gridlantis-HL too."
   exit 0
 fi
 
 # ── Checks ───────────────────────────────────────────────────────────────────
 say "1/4  Checking this PC"
-case "$OPENHL_ID" in __*) die "this script must be downloaded from Open HL (…/live/setup.sh)" ;; esac
+case "$OPENHL_ID" in __*) die "this script must be downloaded from Gridlantis-HL (…/live/setup.sh)" ;; esac
 command -v curl >/dev/null || die "curl is missing"
 command -v tailscale >/dev/null || die "Tailscale is not installed — https://tailscale.com/download/linux"
 TS_IP="$(tailscale ip -4 2>/dev/null | head -n1 || true)"
@@ -66,16 +66,16 @@ esac
 [ -n "$NAME" ] || NAME="$(hostname)"
 NAME="$(printf '%s' "$NAME" | tr -cd 'A-Za-z0-9 ._-' | cut -c1-60)"
 echo "   this PC:  $NAME at $TS_IP"
-echo "   Open HL:    $OPENHL_IP"
+echo "   Gridlantis-HL:    $OPENHL_IP"
 echo "   folders:  $FOLDERS"
 
 # ── Install ──────────────────────────────────────────────────────────────────
-say "2/4  Installing Syncthing (from Open HL)"
+say "2/4  Installing Syncthing (from Gridlantis-HL)"
 mkdir -p "$APP" "$STHOME" "$FOLDERS" "$(dirname "$UNIT")"
 TMP="$(mktemp -d)"; trap 'rm -rf "$TMP"' EXIT
-curl -fsSL "$OPENHL_URL/live/dl/linux-$ARCH" -o "$TMP/st.tgz" || die "could not download Syncthing from Open HL ($OPENHL_URL)"
+curl -fsSL "$OPENHL_URL/live/dl/linux-$ARCH" -o "$TMP/st.tgz" || die "could not download Syncthing from Gridlantis-HL ($OPENHL_URL)"
 ENTRY="$(tar -tzf "$TMP/st.tgz" | grep -E '^[^/]+/syncthing$' | head -n1)"
-[ -n "$ENTRY" ] || die "the Syncthing download from Open HL is not what was expected"
+[ -n "$ENTRY" ] || die "the Syncthing download from Gridlantis-HL is not what was expected"
 tar -xzf "$TMP/st.tgz" -C "$TMP" --strip-components=1 "$ENTRY"
 install -m 755 "$TMP/syncthing" "$APP/syncthing.new" && mv -f "$APP/syncthing.new" "$APP/syncthing"
 "$APP/syncthing" --version | sed 's/^/   /'
@@ -90,7 +90,7 @@ KEY="$(cat "$KEYF")"
 say "3/4  Starting the service"
 cat > "$UNIT" <<EOF
 [Unit]
-Description=Open HL live folders (Syncthing, synced with Open HL)
+Description=Gridlantis-HL live folders (Syncthing, synced with Gridlantis-HL)
 After=network-online.target
 
 [Service]
@@ -118,21 +118,21 @@ api GET /rest/system/ping >/dev/null 2>&1 || { journalctl --user -u openhl-live 
 # JSON string escaping for paths and names.
 js() { printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'; }
 api PATCH /rest/config/options "{\"listenAddresses\":[\"tcp://$TS_IP:$SYNC_PORT\"],\"globalAnnounceEnabled\":false,\"localAnnounceEnabled\":false,\"relaysEnabled\":false,\"natEnabled\":false,\"urAccepted\":-1,\"crashReportingEnabled\":false,\"autoUpgradeIntervalH\":0,\"startBrowser\":false,\"reconnectionIntervalS\":10}" >/dev/null
-# Folders Open HL shares land in ~/Open HL Live/<name>, and changes go out a second after they happen.
+# Folders Gridlantis-HL shares land in ~/Gridlantis-HL Live/<name>, and changes go out a second after they happen.
 api PATCH /rest/config/defaults/folder "{\"path\":\"$(js "$FOLDERS")\",\"fsWatcherDelayS\":1}" >/dev/null
 MY_ID="$("$APP/syncthing" device-id --home "$STHOME")"
 api PATCH "/rest/config/devices/$MY_ID" "{\"name\":\"$(js "$NAME")\"}" >/dev/null || true
-api PUT "/rest/config/devices/$OPENHL_ID" "{\"deviceID\":\"$OPENHL_ID\",\"name\":\"Open HL\",\"addresses\":[\"tcp://$OPENHL_IP:$SYNC_PORT\"],\"autoAcceptFolders\":true,\"compression\":\"metadata\"}" >/dev/null
-echo "   running; it talks to Open HL only ($OPENHL_IP:$SYNC_PORT)"
+api PUT "/rest/config/devices/$OPENHL_ID" "{\"deviceID\":\"$OPENHL_ID\",\"name\":\"Gridlantis-HL\",\"addresses\":[\"tcp://$OPENHL_IP:$SYNC_PORT\"],\"autoAcceptFolders\":true,\"compression\":\"metadata\"}" >/dev/null
+echo "   running; it talks to Gridlantis-HL only ($OPENHL_IP:$SYNC_PORT)"
 
-# Syncthing never tells Open HL when a folder here is in trouble (say the folder
+# Syncthing never tells Gridlantis-HL when a folder here is in trouble (say the folder
 # was replaced and lost its .stfolder marker), so a small reporter posts this
-# PC's own view of each folder to Open HL every 10 seconds for the Live folders
+# PC's own view of each folder to Gridlantis-HL every 10 seconds for the Live folders
 # page: state, errors, what it still has to download and to upload.
 ( umask 077; printf 'GUI=%s\nKEYF=%q\nOPENHL_URL=%q\nOPENHL_ID=%s\nMY_ID=%s\n' "$GUI" "$KEYF" "$OPENHL_URL" "$OPENHL_ID" "$MY_ID" > "$STHOME/report.env" )
 cat > "$APP/report.sh" <<'EOF'
 #!/usr/bin/env bash
-# Open HL live folders: tell Open HL how this PC's copy of each folder is doing.
+# Gridlantis-HL live folders: tell Gridlantis-HL how this PC's copy of each folder is doing.
 . "$HOME/.local/state/openhl-live/report.env"
 KEY="$(cat "$KEYF")"
 api() { curl -fsS -m 5 -H "X-API-Key: $KEY" "http://$GUI$1" 2>/dev/null; }
@@ -155,7 +155,7 @@ EOF
 chmod 755 "$APP/report.sh"
 cat > "$RUNIT" <<EOF
 [Unit]
-Description=Open HL live folders: report this PC's sync status to Open HL
+Description=Gridlantis-HL live folders: report this PC's sync status to Gridlantis-HL
 
 [Service]
 ExecStart=/usr/bin/env bash "$APP/report.sh"
@@ -168,10 +168,10 @@ EOF
 systemctl --user daemon-reload
 systemctl --user enable openhl-live-report.service >/dev/null 2>&1
 systemctl --user restart openhl-live-report.service
-echo "   reporting its sync status to Open HL"
+echo "   reporting its sync status to Gridlantis-HL"
 
 # ── Pairing code ─────────────────────────────────────────────────────────────
-say "4/4  Pairing code — paste it into Open HL → Live folders → Add a PC"
+say "4/4  Pairing code — paste it into Gridlantis-HL → Live folders → Add a PC"
 JSON="$(printf '{"v":1,"name":"%s","id":"%s","host":"%s","os":"linux"}' "$(js "$NAME")" "$MY_ID" "$TS_IP")"
 CODE="openhl-live:$(printf '%s' "$JSON" | base64 -w0 | tr '+/' '-_' | tr -d '=')"
 printf '\n  %s\n\n' "$CODE"

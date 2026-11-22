@@ -11,7 +11,7 @@ const { BASE_CSS, FAVICON, FONT, NAV_CSS, TOAST_CSS, TOAST_JS, navBar } = requir
 function flowsHtml() {
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Open HL · Flow Space</title>${FONT}${FAVICON}
+<title>Gridlantis-HL · Flow Space</title>${FONT}${FAVICON}
 <style>
 ${BASE_CSS}${NAV_CSS}${TOAST_CSS}
 .fs-app{display:grid;grid-template-columns:230px minmax(0,1fr) 280px;height:var(--app-h);overflow:hidden;}

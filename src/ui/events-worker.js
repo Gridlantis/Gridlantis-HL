@@ -1,4 +1,4 @@
-// One /api/events connection shared by every Open HL tab in this browser.
+// One /api/events connection shared by every Gridlantis-HL tab in this browser.
 //
 // Browsers allow only six HTTP/1.1 connections per server, and an event stream
 // holds one for as long as its page is open. With a stream per tab, three tabs

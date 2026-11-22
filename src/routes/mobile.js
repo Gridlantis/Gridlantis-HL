@@ -69,7 +69,7 @@ module.exports = async function mobileRoutes(ctx) {
     if (pathname === "/api/mobile/airplay" && req.method === "GET") return json(airplay.status());
     if (pathname === "/api/mobile/airplay" && req.method === "POST") {
       const b = await body();
-      const name = typeof b.name === "string" && b.name.trim() ? { name: b.name.trim().replace(/[^\w .'-]/g, "").slice(0, 40) || "Open HL" } : {};
+      const name = typeof b.name === "string" && b.name.trim() ? { name: b.name.trim().replace(/[^\w .'-]/g, "").slice(0, 40) || "Gridlantis-HL" } : {};
       return json(await airplay.setEnabled(b.enabled !== false, name));
     }
     if (pathname === "/api/mobile/airplay/pin" && req.method === "POST") return json(await airplay.newPin());

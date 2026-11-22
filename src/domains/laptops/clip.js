@@ -2,11 +2,11 @@ const net = require("net");
 
 // Clipboard bridge for PCs whose VNC server cannot reach the clipboard itself
 // (krfb on Wayland: Qt's clipboard needs a focused window). The setup script
-// installs a socket two ports below VNC — tailnet address, Open HL only — that
+// installs a socket two ports below VNC — tailnet address, Gridlantis-HL only — that
 // talks to Klipper (see tools/laptop/setup-remote.sh, clip.sh). A PC without
 // it refuses the connection, and the viewer then sticks to VNC's clipboard.
 //
-// While a viewer polls, Open HL holds one "watch" connection per PC and keeps
+// While a viewer polls, Gridlantis-HL holds one "watch" connection per PC and keeps
 // the latest text with a sequence number; it hangs up after a quiet minute.
 const MAX = 1024 * 1024;
 const IDLE_MS = 60 * 1000;

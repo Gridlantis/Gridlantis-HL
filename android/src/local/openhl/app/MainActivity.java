@@ -1,8 +1,8 @@
 package local.openhl.app;
 
-// Open HL for Android: a WebView around an Open HL server, like the desktop app.
+// Gridlantis-HL for Android: a WebView around an Gridlantis-HL server, like the desktop app.
 //
-// It holds no Open HL logic of its own. It remembers which servers you use,
+// It holds no Gridlantis-HL logic of its own. It remembers which servers you use,
 // keeps the login cookie, and adds what a plain browser tab handles poorly:
 // file uploads and downloads with the session, the back button, microphone
 // and camera prompts, and pinning a self-signed HTTPS certificate.
@@ -187,7 +187,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    // What Open HL pages can see: that they run in the app, and a way back to
+    // What Gridlantis-HL pages can see: that they run in the app, and a way back to
     // the connect screen. Only answers for the server the app connected to.
     class AppBridge {
         @JavascriptInterface public String version() { return BuildInfo.VERSION; }

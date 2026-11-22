@@ -9,9 +9,9 @@ const st = require("./syncthing");
 // them; meta.json only adds what Syncthing has no field for (a PC's OS and
 // address as the setup script reported them).
 //
-// Every folder is shared between Open HL and the PCs picked for it, never PC to
-// PC directly, so a change on one PC reaches Open HL first and Open HL passes it
-// on. Open HL keeps the last 10 versions of each deleted or replaced file for 30
+// Every folder is shared between Gridlantis-HL and the PCs picked for it, never PC to
+// PC directly, so a change on one PC reaches Gridlantis-HL first and Gridlantis-HL passes it
+// on. Gridlantis-HL keeps the last 10 versions of each deleted or replaced file for 30
 // days ("simple" versioning: "staggered" thins quick edits to one per 30 s, so
 // a delete right after an edit would restore the file from before the edit).
 // Versions live outside the folder, so they never sync back out.
@@ -38,7 +38,7 @@ function parseCode(code) {
 async function addDevice(code, name) {
   await st.ensure();
   const p = parseCode(code);
-  if (p.id === await st.myId()) throw err("that code is Open HL's own device");
+  if (p.id === await st.myId()) throw err("that code is Gridlantis-HL's own device");
   const existing = (await st.api("GET", "/rest/config/devices")).find(d => d.deviceID === p.id);
   const dev = {
     deviceID: p.id, name: (name && String(name).trim()) || p.name,
@@ -62,7 +62,7 @@ async function renameDevice(id, name) {
 
 async function removeDevice(id) {
   await st.ensure();
-  if (id === await st.myId()) throw err("Open HL cannot be removed");
+  if (id === await st.myId()) throw err("Gridlantis-HL cannot be removed");
   // Unshare every folder first so nothing keeps waiting on this PC.
   for (const f of await st.api("GET", "/rest/config/folders")) {
     if (f.devices.some(d => d.deviceID === id)) {
@@ -99,9 +99,9 @@ async function createFolder(label, deviceIds) {
   // A plain folder already there under that name becomes the live folder's starting content.
   const dir = path.join(st.HUB_DIR, label);
   fs.mkdirSync(dir, { recursive: true });
-  // The ID follows the name. A PC keeps a folder's config after Open HL stops
+  // The ID follows the name. A PC keeps a folder's config after Gridlantis-HL stops
   // sharing it, so a random ID for a re-made "Work" would make each PC put the
-  // new one beside the old at ~/Open HL Live/live-xxxx. The same ID picks the
+  // new one beside the old at ~/Gridlantis-HL Live/live-xxxx. The same ID picks the
   // PC's existing folder back up. (A renamed folder keeps its old ID, so add a
   // suffix if that ID is still in use.)
   const base = "live-" + crypto.createHash("sha1").update(label.toLowerCase()).digest("hex").slice(0, 8);
@@ -133,7 +133,7 @@ async function updateFolder(id, { label, devices } = {}) {
   return { ok: true };
 }
 
-// Stop syncing. Every copy, Open HL's included, stays on disk; the old versions
+// Stop syncing. Every copy, Gridlantis-HL's included, stays on disk; the old versions
 // go with the folder.
 async function removeFolder(id) {
   await st.ensure();
@@ -149,7 +149,7 @@ async function getFolderConfig(id) {
   return f;
 }
 
-// ── Versions (deleted and replaced files Open HL kept) ─────────────────────────
+// ── Versions (deleted and replaced files Gridlantis-HL kept) ─────────────────────────
 async function versions(id) {
   await st.ensure();
   const f = await getFolderConfig(id);
@@ -180,9 +180,9 @@ async function restore(id, file, versionTime) {
   return { ok: true };
 }
 
-// ── Keeping versions of changes made on Open HL itself ─────────────────────────
+// ── Keeping versions of changes made on Gridlantis-HL itself ─────────────────────────
 // Syncthing only versions a file when another device's change deletes or
-// replaces it. A delete or overwrite done on Open HL's copy (Files page, the Live
+// replaces it. A delete or overwrite done on Gridlantis-HL's copy (Files page, the Live
 // folders browser) would otherwise reach every PC with nothing kept anywhere,
 // since PCs keep no versions. So before such a change, move whatever it would
 // destroy into the folder's versions dir under Syncthing's own naming
@@ -235,7 +235,7 @@ async function archiveBeforeChange(target) {
 }
 
 // ── What each PC says about its own copy ─────────────────────────────────────
-// Syncthing never tells Open HL that a PC's folder is in an error state: a PC
+// Syncthing never tells Gridlantis-HL that a PC's folder is in an error state: a PC
 // whose folder stopped ("folder path missing" after the folder was replaced)
 // still looked 100% in sync from here. So each PC runs a small reporter
 // (installed by the setup scripts) that posts its own folder states every 10 s
@@ -270,7 +270,7 @@ async function report(remoteIp, b) {
       globalBytes: num(s.globalBytes), localBytes: num(s.localBytes), needBytes: num(s.needBytes),
       needFiles: num(s.needFiles) + num(s.needDeletes), pullErrors: num(s.pullErrors),
       fileErrors: (Array.isArray(e.errors) ? e.errors : []).slice(0, 5).map(x => ({ path: str(x && x.path), error: str(x && x.error) })),
-      // From the PC's side: how much of what it has Open HL still lacks (= uploading).
+      // From the PC's side: how much of what it has Gridlantis-HL still lacks (= uploading).
       toOpenHL: c && typeof c.completion === "number" ? { completion: c.completion, needBytes: num(c.needBytes), needItems: num(c.needItems) } : null,
     };
   }

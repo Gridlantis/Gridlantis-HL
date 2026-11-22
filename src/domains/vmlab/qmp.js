@@ -2,7 +2,7 @@ const net = require("net");
 
 // ─── VM LAB · QMP (QEMU monitor) and QGA (guest agent) over unix sockets ─────
 // Both speak newline-delimited JSON. One short-lived connection per call keeps
-// this stateless: nothing to reconnect after a VM or Open HL restarts.
+// this stateless: nothing to reconnect after a VM or Gridlantis-HL restarts.
 
 function jsonLines(sock, onMsg) {
   let buf = "";

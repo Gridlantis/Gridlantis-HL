@@ -1,4 +1,4 @@
-/* Open HL shell — status strip, sidebar behaviour. Loaded on every page with the nav. */
+/* Gridlantis-HL shell — status strip, sidebar behaviour. Loaded on every page with the nav. */
 (function () {
   "use strict";
   var root = document.documentElement;

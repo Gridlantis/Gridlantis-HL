@@ -12,7 +12,7 @@ flows.json
 
 # ── App state / personal data (JSON stores) ──
 # Everything lives under data/ now; the root-level names below cover old installs
-# until Open HL first starts and moves them.
+# until Gridlantis-HL first starts and moves them.
 /data/
 *.json.bak
 notes.json

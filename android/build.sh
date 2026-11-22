@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Builds the Open HL Android app into android/dist/OpenHL-<version>.apk.
+# Builds the Gridlantis-HL Android app into android/dist/OpenHL-<version>.apk.
 #
 # No Gradle: aapt2, javac, d8, zipalign and apksigner straight from the SDK.
 # Needs a JDK 17 and an Android SDK with platforms;android-35 and
@@ -62,7 +62,7 @@ fi
 if [ ! -f "$KEYSTORE" ]; then
   echo "  making signing key $KEYSTORE"
   keytool -genkeypair -keystore "$KEYSTORE" -alias openhl -keyalg RSA -keysize 3072 -validity 10000 \
-    -storepass "$KEYPASS" -keypass "$KEYPASS" -dname "CN=Open HL" >/dev/null 2>&1
+    -storepass "$KEYPASS" -keypass "$KEYPASS" -dname "CN=Gridlantis-HL" >/dev/null 2>&1
 fi
 "$BT/zipalign" -f -p 4 "$B/unsigned.apk" "$B/aligned.apk"
 APK="$OUT/OpenHL-$VERSION-android.apk"

@@ -3,7 +3,7 @@ const { EventEmitter } = require("events");
 
 // ─── Minimal WebSocket server side (RFC 6455) ────────────────────────────────
 // Just enough for binary tunnels such as the VM Lab VNC console: handshake,
-// masked client frames, fragmentation, ping/pong and close. Open HL stays
+// masked client frames, fragmentation, ping/pong and close. Gridlantis-HL stays
 // dependency-free, so no `ws` package.
 const GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 const MAX_MESSAGE = 16 * 1024 * 1024;

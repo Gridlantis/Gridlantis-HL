@@ -164,7 +164,7 @@ pre.log{background:var(--bg);border:1px solid var(--border);border-radius:var(--
 
 function vmlabHtml() {
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Open HL · VM Lab</title>${FONT}${FAVICON}
+<title>Gridlantis-HL · VM Lab</title>${FONT}${FAVICON}
 <style>${BASE_CSS}${NAV_CSS}${TOAST_CSS}${VMLAB_CSS}</style></head><body>
 ${navBar("/vmlab")}
 <div class="grid"></div>
@@ -239,7 +239,7 @@ body{padding:0;background:#050508;display:flex;flex-direction:column;}
 
 function consoleHtml(id, host) {
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Open HL · VM console</title>${FONT}${FAVICON}
+<title>Gridlantis-HL · VM console</title>${FONT}${FAVICON}
 <style>${BASE_CSS}${TOAST_CSS}${VMLAB_CSS}${CONSOLE_CSS}</style><script>${THEME_JS}</script></head><body data-env="${esc(id)}" data-host="${esc((host && host.id) || "local")}" data-host-name="${esc((host && host.name) || "")}">
 <div class="cbar">
   <a class="btn sm" href="/vmlab" title="Back to VM Lab"><i class="fa-solid fa-arrow-left"></i></a>
@@ -254,7 +254,7 @@ function consoleHtml(id, host) {
   </div>
   <button class="btn sm" id="b-clip" title="Clipboard panel"><i class="fa-regular fa-clipboard"></i> Clipboard</button>
   <div class="menu-wrap">
-    <button class="btn sm" id="b-conn" title="How this browser reaches Open HL"><span class="dot" id="conn-dot"></span> <span id="conn-label">Checking…</span></button>
+    <button class="btn sm" id="b-conn" title="How this browser reaches Gridlantis-HL"><span class="dot" id="conn-dot"></span> <span id="conn-label">Checking…</span></button>
     <div class="menu" id="m-conn"></div>
   </div>
   <div class="menu-wrap">

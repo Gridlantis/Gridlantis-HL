@@ -1,5 +1,5 @@
 /* IBM Plex (Sans, Sans Condensed, Mono), Space Mono and Syne, from Google Fonts.
-   All under the SIL Open Font License 1.1. Served by Open HL so pages never
+   All under the SIL Open Font License 1.1. Served by Gridlantis-HL so pages never
    wait on fonts.googleapis.com. Each subset is only downloaded when a page
    uses characters in its unicode-range. */
 
@@ -598,7 +598,7 @@
 }
 
 /* Dendritic Voltage by Raymond Larabie (Typodermic), released under CC0 1.0
-   (public domain). Used for the "Open HL" wordmark in the sidebar. */
+   (public domain). Used for the "Gridlantis-HL" wordmark in the sidebar. */
 @font-face {
   font-family: 'Dendritic Voltage';
   font-style: normal;

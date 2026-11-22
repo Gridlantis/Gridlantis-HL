@@ -3,7 +3,7 @@ const { execFile } = require("child_process");
 const { PORT } = require("../../config");
 const { tailnetIp } = require("../../net");
 
-// How the browser viewing the VM console reached this Open HL, so the console can
+// How the browser viewing the VM console reached this Gridlantis-HL, so the console can
 // say why it feels slow. Tailscale Funnel and `tailscale serve` both arrive from
 // 127.0.0.1 through tailscaled; Funnel marks its requests with a header, and
 // serve adds the tailnet user's identity. For a tailnet client, `tailscale

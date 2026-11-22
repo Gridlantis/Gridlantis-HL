@@ -54,7 +54,7 @@ function ringReminder(rem) {
   // Also out to whatever alert channels are configured, so a reminder still
   // reaches you when no browser is open at all.
   Promise.resolve()
-    .then(() => sendAlert('Open HL · ' + (rem.title || 'Reminder'), rem.note || 'Reminder is due', true))
+    .then(() => sendAlert('Gridlantis-HL · ' + (rem.title || 'Reminder'), rem.note || 'Reminder is due', true))
     .catch(e => console.error('[reminder:alert]', e.message));
 }
 

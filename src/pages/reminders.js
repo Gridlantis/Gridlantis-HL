@@ -3,7 +3,7 @@ const { BASE_CSS, FAVICON, FONT, NAV_CSS, TOAST_CSS, TOAST_JS, navBar } = requir
 function remindersHtml() {
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Open HL · Reminders</title>${FONT}${FAVICON}
+<title>Gridlantis-HL · Reminders</title>${FONT}${FAVICON}
 <style>
 ${BASE_CSS}${NAV_CSS}${TOAST_CSS}
 .rm-page{max-width:1180px;}
@@ -57,14 +57,14 @@ ${BASE_CSS}${NAV_CSS}${TOAST_CSS}
 ${navBar('/reminders')}
 <main class="m-page rm-page">
   <div class="m-head">
-    <div><h1 class="m-title">Reminders</h1><p class="m-sub">Alarms ring on whichever Open HL page you have open.</p></div>
+    <div><h1 class="m-title">Reminders</h1><p class="m-sub">Alarms ring on whichever Gridlantis-HL page you have open.</p></div>
     <div style="display:flex;align-items:center;gap:14px"><div class="rm-clock" id="rm-clock" aria-live="off"></div>
       <a class="m-btn" href="/calendar"><i class="fa-regular fa-calendar"></i>Calendar</a></div>
   </div>
 
   <div class="m-panel rm-perm" id="rm-perm" style="display:none">
     <i class="fa-regular fa-bell"></i>
-    <span>Allow notifications so alarms reach you even when Open HL is in a background tab.</span>
+    <span>Allow notifications so alarms reach you even when Gridlantis-HL is in a background tab.</span>
     <button class="m-btn" id="rm-perm-btn">Allow notifications</button>
   </div>
 
@@ -162,7 +162,7 @@ function render(){
   $('rm-count').textContent = rows.length ? live + ' on, ' + rows.length + ' total' : '';
 
   if (!rows.length) {
-    list.innerHTML = '<div class="rm-empty">Nothing scheduled.<br>Set a reminder and it will ring on any Open HL page.</div>';
+    list.innerHTML = '<div class="rm-empty">Nothing scheduled.<br>Set a reminder and it will ring on any Gridlantis-HL page.</div>';
     return;
   }
 

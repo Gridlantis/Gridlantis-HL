@@ -11,7 +11,7 @@ const { SCRCPY_SERVER, SCRCPY_VERSION, adbOn, adbSpawn } = require("./adb");
 //   adb forward tcp:<port> localabstract:scrcpy_<scid>
 //   adb shell … app_process / com.genymobile.scrcpy.Server 5.0.1 scid=… tunnel_forward=true …
 //
-// Open HL then opens the sockets through the forward, in this order:
+// Gridlantis-HL then opens the sockets through the forward, in this order:
 //   video   — dummy byte, codec id (u32), then per capture session a 12-byte
 //             session packet (MSB set; width, height) and media packets with a
 //             12-byte header (config/key-frame flags + PTS, size) — H.264 here.

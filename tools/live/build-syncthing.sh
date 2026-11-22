@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build Open HL's patched Syncthing for live folders.
+# Build Gridlantis-HL's patched Syncthing for live folders.
 #
 #   tools/live/build-syncthing.sh        # → live/dist/syncthing-<os>-<arch>-<VERSION>.{tar.gz,zip}
 #
@@ -17,7 +17,7 @@
 #
 # Downloads a pinned Go toolchain (checked against SHA-256) and the Syncthing
 # source at the tag into live/, applies the patch, runs Syncthing's own model and
-# versioner tests, and builds Linux amd64/arm64 and Windows amd64. Open HL
+# versioner tests, and builds Linux amd64/arm64 and Windows amd64. Gridlantis-HL
 # (src/domains/live/syncthing.js) runs and serves these builds.
 set -euo pipefail
 
@@ -71,4 +71,4 @@ for t in $TARGETS; do
   mv -f "$SRC/syncthing-$os-$arch-$BUILD_VERSION.$ext" "$DIST/"
   echo "   $DIST/syncthing-$os-$arch-$BUILD_VERSION.$ext"
 done
-say "Done — restart Open HL (systemctl --user restart openhl) to roll it out"
+say "Done — restart Gridlantis-HL (systemctl --user restart openhl) to roll it out"

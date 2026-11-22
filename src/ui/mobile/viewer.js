@@ -1,4 +1,4 @@
-/* Mobile host — mirror and control one Android phone (scrcpy over Open HL). Plain script, uses window.VL. */
+/* Mobile host — mirror and control one Android phone (scrcpy over Gridlantis-HL). Plain script, uses window.VL. */
 (function () {
   "use strict";
   const { h, toast, writeClipboard } = window.VL;
@@ -19,7 +19,7 @@
 
   // ── Display: WebCodecs on a canvas when the page is secure, otherwise
   // jMuxer feeding a <video> through Media Source Extensions (works on plain
-  // http, which is how Open HL is usually reached; a little more latency).
+  // http, which is how Gridlantis-HL is usually reached; a little more latency).
   const USE_WEBCODECS = typeof window.VideoDecoder === "function" && window.isSecureContext;
   const canvas = $("#cv");
   let media = canvas;                              // the element that shows the phone and takes input
@@ -412,6 +412,6 @@
 
   window.addEventListener("beforeunload", () => { closing = true; if (ws) ws.close(); });
   if (!USE_WEBCODECS && !window.MediaSource && !window.ManagedMediaSource) {
-    overlay("This browser cannot play the phone's video", "It has neither WebCodecs (secure pages) nor Media Source Extensions. Try Chrome, Edge, Firefox or the Open HL desktop app.", [backBtn()]);
+    overlay("This browser cannot play the phone's video", "It has neither WebCodecs (secure pages) nor Media Source Extensions. Try Chrome, Edge, Firefox or the Gridlantis-HL desktop app.", [backBtn()]);
   } else connect();
 })();

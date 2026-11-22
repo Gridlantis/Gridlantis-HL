@@ -2,11 +2,11 @@
 /**
  * lint-pages.js — catches the bugs `node --check server.js` cannot.
  *
- * Boots Open HL, fetches every page, and for each one:
+ * Boots Gridlantis-HL, fetches every page, and for each one:
  *   1. node --check on every inline <script>  (catches template-literal damage:
  *      an eaten backslash turns /^https?:\/\// into /^https?:/// and kills the
  *      entire page's JS, while server.js itself parses perfectly), and on every
- *      script the page loads from Open HL itself (/vmlab/assets/vmlab.js etc.)
+ *      script the page loads from Gridlantis-HL itself (/vmlab/assets/vmlab.js etc.)
  *   2. flags leftover ${...} in markup (unresolved interpolation)
  *   3. checks the nav rail is identical on every page (the full-screen viewers
  *      have none)
@@ -41,7 +41,7 @@ function req(p, o = {}) {
 }
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'openhllint-'));
 
-// A second Open HL on the live tree would share data/ and vmlab/ with the real
+// A second Gridlantis-HL on the live tree would share data/ and vmlab/ with the real
 // one (and can delete running VMs' run dirs), so lint a copy instead.
 const ROOT = path.join(__dirname, '..');
 const APP  = path.join(tmp, 'app');
@@ -102,7 +102,7 @@ function makeCopy() {
         console.log(`  ✗ ${p} inline script #${i}:\n      ${msg}`);
       }
     });
-    // Scripts served by Open HL itself. Most pages share /ui/shell.js, so each URL
+    // Scripts served by Gridlantis-HL itself. Most pages share /ui/shell.js, so each URL
     // is fetched and checked once; CDN scripts are not ours to lint.
     for (const m of r.b.matchAll(/<script\b([^>]*)>/gi)) {
       const src = (m[1].match(/\bsrc="([^"]+)"/) || [])[1];

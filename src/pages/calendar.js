@@ -1,12 +1,12 @@
 const { BASE_CSS, FAVICON, FONT, NAV_CSS, TOAST_CSS, TOAST_JS, navBar } = require("../ui/assets");
 
-// Month view of Open HL reminders and Google Calendar events. Reminders are drawn
+// Month view of Gridlantis-HL reminders and Google Calendar events. Reminders are drawn
 // from /api/reminders, Google events from /api/calendar/events; an event that is
 // itself a synced reminder is shown once, as the reminder.
 function calendarHtml() {
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Open HL · Calendar</title>${FONT}${FAVICON}
+<title>Gridlantis-HL · Calendar</title>${FONT}${FAVICON}
 <style>
 ${BASE_CSS}${NAV_CSS}${TOAST_CSS}
 .cl-page{max-width:1440px;--rem:#fb923c;--gev:#4f8ff7;--card-r:20px;}
@@ -128,7 +128,7 @@ ${navBar('/calendar')}
         </div>
       </div>
       <div class="cl-grid" id="cl-grid"></div>
-      <div class="cl-legend" id="cl-legend"><span class="r">Open HL reminder</span><span>Google Calendar</span></div>
+      <div class="cl-legend" id="cl-legend"><span class="r">Gridlantis-HL reminder</span><span>Google Calendar</span></div>
     </section>
     <aside class="cl-side" aria-labelledby="cl-day-t">
       <div class="cl-side-h"><div><h2 id="cl-day-t">Scheduled</h2><small id="cl-day-s"></small></div>
@@ -287,7 +287,7 @@ function isRemote(s){
   return !local && /[/][/]localhost[:/]/.test(s.redirectUri);
 }
 function pasteBox(){
-  return '<div style="margin-top:6px">Google will send you back to <code>localhost</code>, which only works on the Open HL host. ' +
+  return '<div style="margin-top:6px">Google will send you back to <code>localhost</code>, which only works on the Gridlantis-HL host. ' +
     'If that page fails to load here, copy its whole address from the address bar and paste it below.</div>' +
     '<div class="cl-paste"><input id="cl-paste" placeholder="http://localhost:…/api/calendar/callback?code=…" aria-label="Address from the address bar">' +
     '<button class="m-btn" id="cl-finish">Finish</button></div>';
@@ -309,7 +309,7 @@ function openPicker(){
   if (!s.canListCalendars) {
     var remote = isRemote(s);
     p.innerHTML = '<h3>Choose which calendars to show</h3>' +
-      '<p>Open HL needs one more permission to see your list of calendars (for example a work schedule that shows up in Google Calendar).</p>' +
+      '<p>Gridlantis-HL needs one more permission to see your list of calendars (for example a work schedule that shows up in Google Calendar).</p>' +
       '<ol><li>In Google Cloud, open <b>Google Auth Platform → Data access → Add or remove scopes</b>, tick <code>.../auth/calendar.calendarlist.readonly</code>, click <b>Update</b>, then <b>Save</b>.</li>' +
       '<li>Click <b>Reconnect</b> below and allow the new permission. Your reminders stay as they are.</li></ol>' +
       (remote ? pasteBox() : '') +
@@ -343,7 +343,7 @@ function openPicker(){
 }
 function renderLegend(){
   var shown = CALS ? CALS.filter(function(c){ return c.shown; }) : [];
-  $('cl-legend').innerHTML = '<span class="r">Open HL reminder</span>' + (shown.length
+  $('cl-legend').innerHTML = '<span class="r">Gridlantis-HL reminder</span>' + (shown.length
     ? shown.map(function(c){ return '<span' + colorStyle(c.color) + '>' + esc(c.name) + '</span>'; }).join('')
     : '<span>Google Calendar</span>');
 }
@@ -356,14 +356,14 @@ function renderConn(){
     el.innerHTML = '<i class="fa-brands fa-google"></i><div class="grow cl-setup"><b>Connect Google Calendar</b>' +
       '<ol><li>In Google Cloud Console, enable the <b>Google Calendar API</b>, set up the OAuth consent screen (add yourself as a test user, or publish it so the sign-in does not lapse every 7 days).</li>' +
       '<li>Create an OAuth client of type <b>Web application</b> with this redirect URI: <code>' + esc(s.redirectUri) + '</code></li>' +
-      '<li>Add <code>GOOGLE_CLIENT_ID</code> and <code>GOOGLE_CLIENT_SECRET</code> to Open HL\\'s .env and restart Open HL.</li></ol></div>';
+      '<li>Add <code>GOOGLE_CLIENT_ID</code> and <code>GOOGLE_CLIENT_SECRET</code> to Gridlantis-HL\\'s .env and restart Gridlantis-HL.</li></ol></div>';
     return;
   }
   if (!s.connected) {
     var remote = isRemote(s);
     $('cl-cals').style.display = 'none';
     el.innerHTML = '<i class="fa-brands fa-google"></i><div class="grow"><b>Google Calendar is not connected.</b> ' +
-      'Your reminders will be added to it, and changes made in Google come back to Open HL.' + err +
+      'Your reminders will be added to it, and changes made in Google come back to Gridlantis-HL.' + err +
       (remote ? pasteBox() : '') +
       '</div><a class="m-btn primary" href="/api/calendar/connect"' + (remote ? ' target="_blank" rel="noopener"' : '') + '>Connect</a>';
     wireFinish();
@@ -398,7 +398,7 @@ function renderConn(){
 function post(url, body){
   return fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body || {}) })
     .then(function(r){ return r.json().then(function(d){ return { ok: r.ok, d: d }; }); })
-    .catch(function(){ return { ok: false, d: { error: 'Open HL did not answer' } }; });
+    .catch(function(){ return { ok: false, d: { error: 'Gridlantis-HL did not answer' } }; });
 }
 function setGrid(){
   gridStart = new Date(view); gridStart.setDate(1 - view.getDay());

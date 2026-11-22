@@ -1,9 +1,9 @@
-// Open HL desktop — a native window around an Open HL server.
+// Gridlantis-HL desktop — a native window around an Gridlantis-HL server.
 //
-// The app holds no Open HL logic of its own: it remembers which server to open,
+// The app holds no Gridlantis-HL logic of its own: it remembers which server to open,
 // keeps the login session, and adds what a browser tab cannot do well — a
 // real clipboard bridge for VM consoles, window state, and optionally starting
-// Open HL itself when run on the host.
+// Gridlantis-HL itself when run on the host.
 const { app, BrowserWindow, Menu, clipboard, dialog, ipcMain, shell } = require("electron");
 const fs = require("fs");
 const http = require("http");
@@ -11,7 +11,9 @@ const https = require("https");
 const path = require("path");
 const { spawn } = require("child_process");
 
-app.setName("Open HL");
+app.setName("Gridlantis-HL");
+// Formerly Open HL: keep the old settings folder so saved servers carry over.
+app.setPath("userData", path.join(app.getPath("appData"), "Open HL"));
 if (process.platform === "win32") app.setAppUserModelId("local.openhl.desktop");
 if (!app.requestSingleInstanceLock()) { app.quit(); process.exit(0); }
 
@@ -47,7 +49,7 @@ function webPreferences() {
 
 function attachHandlers(w) {
   w.webContents.setWindowOpenHandler(({ url }) => {
-    // Open HL pages (e.g. a VM console opened in a new tab) get their own app window.
+    // Gridlantis-HL pages (e.g. a VM console opened in a new tab) get their own app window.
     if (currentOrigin && originOf(url) === currentOrigin) {
       return { action: "allow", overrideBrowserWindowOptions: {
         width: 1320, height: 880, backgroundColor: "#050508", autoHideMenuBar: true, icon: iconPath(), webPreferences: webPreferences() } };
@@ -143,7 +145,7 @@ function createWindow() {
   const b = settings.bounds || {};
   win = new BrowserWindow({
     width: b.width || 1400, height: b.height || 900, x: b.x, y: b.y, minWidth: 820, minHeight: 560,
-    backgroundColor: "#0b0b10", title: "Open HL", icon: iconPath(), show: false,
+    backgroundColor: "#0b0b10", title: "Gridlantis-HL", icon: iconPath(), show: false,
     autoHideMenuBar: true, webPreferences: webPreferences(),
   });
   // Hidden rather than auto-hide: a lone Alt press must reach VM consoles
@@ -165,7 +167,7 @@ function createWindow() {
     if (!isMainFrame || code === -3 || url.startsWith("file:")) return;   // -3 = aborted (normal on redirects)
     showConnect({ error: "Could not reach " + originOf(url) + " (" + desc + ")", url: originOf(url) });
   });
-  win.webContents.on("page-title-updated", (e, t) => { e.preventDefault(); win.setTitle(t && t !== "Open HL" ? t : "Open HL"); });
+  win.webContents.on("page-title-updated", (e, t) => { e.preventDefault(); win.setTitle(t && t !== "Gridlantis-HL" ? t : "Gridlantis-HL"); });
 
   if (settings.lastUrl) openServer(settings.lastUrl).catch(err => showConnect({ error: err.message, url: settings.lastUrl }));
   else showConnect();
@@ -212,7 +214,7 @@ function probe(origin, timeoutMs = 6000) {
         if (!authorized && trusted !== fingerprint) {
           return resolve({ ok: false, certError: true, fingerprint, error: "The server's HTTPS certificate is not trusted (" + (res.socket.authorizationError || "self-signed") + ")." });
         }
-        if (!isOpenHL) return resolve({ ok: false, error: "Something answered, but it is not Open HL (HTTP " + res.statusCode + ")." });
+        if (!isOpenHL) return resolve({ ok: false, error: "Something answered, but it is not Gridlantis-HL (HTTP " + res.statusCode + ")." });
         resolve({ ok: true, needsLogin: res.statusCode === 401, hostname: j && j.hostname });
       });
     });
@@ -221,7 +223,7 @@ function probe(origin, timeoutMs = 6000) {
   });
 }
 function friendlyNetError(e) {
-  if (e.code === "ECONNREFUSED") return "Connection refused — Open HL is not running at that address/port.";
+  if (e.code === "ECONNREFUSED") return "Connection refused — Gridlantis-HL is not running at that address/port.";
   if (e.code === "ENOTFOUND" || e.code === "EAI_AGAIN") return "That host name could not be resolved.";
   if (e.code === "EHOSTUNREACH" || e.code === "ENETUNREACH") return "The host is unreachable from this network. Is Tailscale/VPN connected?";
   if (e.message === "timed out") return "Timed out. Check the address, port and firewall.";
@@ -247,7 +249,7 @@ const fromOpenHL = e => e.senderFrame && currentOrigin && originOf(e.senderFrame
 ipcMain.on("dialog:prompt", (e, message, value) => {
   const parent = BrowserWindow.fromWebContents(e.sender);
   const dlg = new BrowserWindow({ parent, modal: true, width: 440, height: 170, resizable: false, minimizable: false, maximizable: false,
-    title: "Open HL", backgroundColor: "#15151c", autoHideMenuBar: true, show: false, webPreferences: { sandbox: true, contextIsolation: true } });
+    title: "Gridlantis-HL", backgroundColor: "#15151c", autoHideMenuBar: true, show: false, webPreferences: { sandbox: true, contextIsolation: true } });
   dlg.setMenuBarVisibility(false);
   let answered = false;
   const answer = v => { if (answered) return; answered = true; e.returnValue = v; if (!dlg.isDestroyed()) dlg.close(); };
@@ -258,7 +260,7 @@ ipcMain.on("dialog:prompt", (e, message, value) => {
   });
   dlg.on("closed", () => answer(null));
   const esc = x => String(x).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
-  const page = `<!doctype html><meta charset="utf-8"><title>Open HL</title><style>
+  const page = `<!doctype html><meta charset="utf-8"><title>Gridlantis-HL</title><style>
     body{margin:0;padding:16px 18px;background:#15151c;color:#e5e7eb;font:14px system-ui,sans-serif}
     p{margin:0 0 10px;white-space:pre-wrap}input{width:100%;box-sizing:border-box;height:32px;padding:0 10px;background:#0b0b10;color:#e5e7eb;border:1px solid #333;border-radius:6px;outline:none}
     input:focus{border-color:#4f8ff7}div{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
@@ -310,12 +312,12 @@ ipcMain.handle("connect:remove", (e, url) => {
 });
 ipcMain.handle("connect:pick-folder", async e => {
   if (!fromConnectPage(e)) return null;
-  const r = await dialog.showOpenDialog(win, { title: "Open HL folder (contains server.js)", properties: ["openDirectory"] });
+  const r = await dialog.showOpenDialog(win, { title: "Gridlantis-HL folder (contains server.js)", properties: ["openDirectory"] });
   return r.canceled ? null : r.filePaths[0];
 });
 
-// ── Run Open HL on this computer ───────────────────────────────────────────────
-// For the host itself: start the Open HL server from its folder with Electron's
+// ── Run Gridlantis-HL on this computer ───────────────────────────────────────────────
+// For the host itself: start the Gridlantis-HL server from its folder with Electron's
 // bundled Node, then connect to it. Nothing happens if one is already running.
 function readPort(folder) {
   try {
@@ -328,7 +330,7 @@ ipcMain.handle("connect:start-local", async (e, folder) => {
   if (!fromConnectPage(e)) return null;
   folder = String(folder || "");
   if (!fs.existsSync(path.join(folder, "server.js"))) return { ok: false, error: "No server.js in that folder." };
-  if (!fs.existsSync(path.join(folder, ".env"))) return { ok: false, error: "That Open HL folder has no .env (copy .env.example to .env and set PASSWORD)." };
+  if (!fs.existsSync(path.join(folder, ".env"))) return { ok: false, error: "That Gridlantis-HL folder has no .env (copy .env.example to .env and set PASSWORD)." };
   settings.localFolder = folder; saveSettings();
   const origin = "http://127.0.0.1:" + readPort(folder);
   let st = await probe(origin, 1500);
@@ -340,7 +342,7 @@ ipcMain.handle("connect:start-local", async (e, folder) => {
     });
     localChild.on("exit", () => { localChild = null; });
     for (let i = 0; i < 40 && !(st = await probe(origin, 1000)).ok; i++) await new Promise(r => setTimeout(r, 500));
-    if (!st.ok) return { ok: false, error: "Open HL did not start. See " + path.join(app.getPath("userData"), "openhl-server.log") };
+    if (!st.ok) return { ok: false, error: "Gridlantis-HL did not start. See " + path.join(app.getPath("userData"), "openhl-server.log") };
   }
   await openServer(origin);
   return { ok: true };
@@ -349,7 +351,7 @@ ipcMain.handle("connect:start-local", async (e, folder) => {
 // ── Menu (hidden bar; the accelerators-free items stay reachable via Alt on the connect page) ─
 function buildMenu() {
   const tpl = [
-    { label: "Open HL", submenu: [
+    { label: "Gridlantis-HL", submenu: [
       { label: "Switch server…", click: () => showConnect() },
       { label: "Open in browser", click: () => { if (win && currentOrigin) shell.openExternal(win.webContents.getURL()); } },
       { type: "separator" },

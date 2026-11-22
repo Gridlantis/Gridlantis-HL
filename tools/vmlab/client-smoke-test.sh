@@ -1,5 +1,5 @@
 #!/bin/bash
-# client-smoke-test.sh — run ON a client machine to check Open HL + VM Lab over the network.
+# client-smoke-test.sh — run ON a client machine to check Gridlantis-HL + VM Lab over the network.
 #
 #   OPENHL_URL=http://100.64.0.1:3000 OPENHL_PW='…' tools/vmlab/client-smoke-test.sh
 #   ssh root@client "OPENHL_URL=… OPENHL_PW=… bash -s" < tools/vmlab/client-smoke-test.sh

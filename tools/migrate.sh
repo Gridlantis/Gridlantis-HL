@@ -1,7 +1,7 @@
 #!/bin/bash
 # migrate.sh <user@host> [target-dir]
 #
-# Copies this Open HL installation to another machine: code, all JSON stores,
+# Copies this Gridlantis-HL installation to another machine: code, all JSON stores,
 # secrets and uploads. Nothing is deleted here — verify the target first, then
 # remove this copy by hand.
 #
@@ -27,7 +27,7 @@ echo "  node       : $NODEV"
 case "$NODEV" in
   none) echo "  ✗ node is not installed on the target — install Node 22+ first"; exit 1;;
   v1[0-9].*|v2[01].*)
-    echo "  ! node $NODEV is older than the 22+ Open HL expects."
+    echo "  ! node $NODEV is older than the 22+ Gridlantis-HL expects."
     if [ "${ALLOW_OLD_NODE:-0}" = 1 ]; then
       echo "    ALLOW_OLD_NODE=1 set — continuing."
     else
@@ -41,7 +41,7 @@ echo "  need/free  : $((NEED_KB/1024))M / $((FREE_KB/1024))M"
 [ "$FREE_KB" -gt "$NEED_KB" ] || { echo "  ✗ not enough space on target"; exit 1; }
 
 if ssh "${SSH_OPTS[@]}" "$DEST" "[ -e '$REMOTE_TARGET/server.js' ]"; then
-  echo "  ! $REMOTE_TARGET already contains an Open HL install."
+  echo "  ! $REMOTE_TARGET already contains an Gridlantis-HL install."
   read -rp "  overwrite it? [y/N] " a; [ "$a" = y ] || exit 1
 fi
 
@@ -96,7 +96,7 @@ ssh "${SSH_OPTS[@]}" "$DEST" "cd '$REMOTE_TARGET' && \
 
 say "Done"
 cat <<EOF
-  Open HL is installed at $REMOTE_TARGET on $DEST.
+  Gridlantis-HL is installed at $REMOTE_TARGET on $DEST.
 
   Nothing was removed from this machine.
 

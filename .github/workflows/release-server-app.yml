@@ -1,4 +1,4 @@
-# Builds Open HL Server (server-app/) for Linux, Windows and macOS and
+# Builds Gridlantis-HL Server (server-app/) for Linux, Windows and macOS and
 # attaches the installers to a GitHub release of this repository.
 #
 # gridlantis.org links to /releases/latest/download/<file>, and the file names
@@ -8,7 +8,7 @@
 #   git tag v1.1.0 && git push origin v1.1.0
 # The tag must match the version in server-app/package.json.
 
-name: Release Open HL Server
+name: Release Gridlantis-HL Server
 
 on:
   push:
@@ -64,7 +64,7 @@ jobs:
 
       - run: npm ci
 
-      - name: Open HL starts on this OS
+      - name: Gridlantis-HL starts on this OS
         run: node scripts/smoke.js
 
       - run: npm run ${{ matrix.script }}
@@ -112,8 +112,8 @@ jobs:
         run: |
           gh release create "$TAG" \
             --repo "${{ github.repository }}" \
-            --title "Open HL $TAG" \
-            --notes "Open HL Server for Linux, Windows and macOS: run Open HL on your computer without installing anything else. Check your download against SHA256SUMS.
+            --title "Gridlantis-HL $TAG" \
+            --notes "Gridlantis-HL Server for Linux, Windows and macOS: run Gridlantis-HL on your computer without installing anything else. Check your download against SHA256SUMS.
 
           These builds are unsigned, so Windows SmartScreen and macOS Gatekeeper warn the first time you open them." \
             installers/* \

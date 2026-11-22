@@ -1,5 +1,5 @@
 #!/bin/bash
-# deploy-agent.sh — put the Open HL VM Lab agent on a second machine.
+# deploy-agent.sh — put the Gridlantis-HL VM Lab agent on a second machine.
 #
 #   tools/vmlab/deploy-agent.sh [user@]host [options]
 #
@@ -11,7 +11,7 @@
 #
 # It copies the agent's code, makes sure QEMU is present, starts it as a
 # systemd --user service, and prints the address and token to paste into
-# Open HL under VM Lab → Hosts → Add a VM host.
+# Gridlantis-HL under VM Lab → Hosts → Add a VM host.
 #
 # The agent has no login of its own: the token is the whole of its security,
 # so keep the port on a tailnet or LAN and never expose it to the internet.
@@ -129,7 +129,7 @@ fi
 say "4/5  Starting the agent"
 if [ "$WITH_SERVICE" = 1 ]; then
   UNIT='[Unit]
-Description=Open HL VM Lab agent
+Description=Gridlantis-HL VM Lab agent
 After=network-online.target
 
 [Service]
@@ -159,7 +159,7 @@ else
   echo "  --no-service: start it yourself with  cd $DEST && node vmlab-agent.js"
 fi
 
-say "5/5  Details for Open HL"
+say "5/5  Details for Gridlantis-HL"
 TOKEN="$(SSH "cat '$DEST/vmlab/agent-token' 2>/dev/null" | tr -d '\r\n' || true)"
 ADDR="$(SSH 'tailscale ip -4 2>/dev/null | head -1' | tr -d '\r\n' || true)"
 [ -n "$ADDR" ] || ADDR="${TARGET#*@}"
@@ -169,7 +169,7 @@ if [ -z "$TOKEN" ]; then
 else
   cat <<EOF
 
-  In Open HL: VM Lab → Hosts → Add a VM host
+  In Gridlantis-HL: VM Lab → Hosts → Add a VM host
 
     Address      $ADDR:$PORT
     Agent token  $TOKEN

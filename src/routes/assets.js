@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 
 // Static files every page needs before it can draw: the fonts, the Font Awesome
-// icons and the shared event-stream worker. Served by Open HL itself so no page
+// icons and the shared event-stream worker. Served by Gridlantis-HL itself so no page
 // waits on fonts.googleapis.com or cdnjs, and public because the login page
 // uses the fonts too (none of these hold anything private).
 const UI = path.join(__dirname, "../ui");

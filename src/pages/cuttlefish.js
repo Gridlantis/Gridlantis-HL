@@ -16,7 +16,7 @@ const CF_CSS = `
 
 function cuttlefishHtml() {
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Open HL · Cuttlefish</title>${FONT}${FAVICON}
+<title>Gridlantis-HL · Cuttlefish</title>${FONT}${FAVICON}
 <style>${BASE_CSS}${NAV_CSS}${TOAST_CSS}${VMLAB_CSS}${CF_CSS}</style><script>${THEME_JS}</script></head><body>
 ${navBar("/vmlab")}
 <div class="grid"></div>
@@ -61,7 +61,7 @@ body{padding:0;display:flex;flex-direction:column;background:#050508;}
 
 function wallHtml() {
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Open HL · All Cuttlefish phones</title>${FONT}${FAVICON}
+<title>Gridlantis-HL · All Cuttlefish phones</title>${FONT}${FAVICON}
 <style>${BASE_CSS}${TOAST_CSS}${VMLAB_CSS}${WALL_CSS}</style><script>${THEME_JS}</script></head><body>
 <div class="cbar">
   <a class="btn sm" href="/vmlab/cuttlefish" title="Back to Cuttlefish"><i class="fa-solid fa-arrow-left"></i></a>

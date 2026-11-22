@@ -10,10 +10,10 @@ const vm = require("../domains/vmlab/vm");
 const ws = require("../ws");
 
 // ─── VM LAB · the machine-facing API ─────────────────────────────────────────
-// Everything here acts on the machine this code runs on. Open HL mounts it for
+// Everything here acts on the machine this code runs on. Gridlantis-HL mounts it for
 // the "local" host (src/routes/vmlab.js) and the VM Lab agent mounts the very
 // same module on a second device (src/vmlab-agent.js), so a remote host needs
-// no parallel implementation — Open HL just proxies to another copy of this file.
+// no parallel implementation — Gridlantis-HL just proxies to another copy of this file.
 setImmediate(vm.startWatcher);   // not a module-level timer, so it runs even under the refactor harness preload
 
 async function capabilities() {
@@ -39,7 +39,7 @@ async function agentInfo() {
 }
 
 // Answers any /api/vmlab/* request that acts on this machine. Like every other
-// Open HL route module it claims a request simply by replying to it, and falls
+// Gridlantis-HL route module it claims a request simply by replying to it, and falls
 // through untouched when the path is not one of its own.
 async function handleApi(ctx) {
   const { req, res, parsed, pathname, json, readBody } = ctx;
@@ -110,7 +110,7 @@ async function handleApi(ctx) {
     });
     return json(rec);
   }
-  // Bootable media already in Open HL Files — the "pick an ISO you downloaded"
+  // Bootable media already in Gridlantis-HL Files — the "pick an ISO you downloaded"
   // path. Returns paths under UPLOAD_DIR only; importing uses /images/import.
   if (pathname === "/api/vmlab/files" && req.method === "GET") {
     return json(images.listFromFiles());
@@ -166,7 +166,7 @@ async function handleApi(ctx) {
 
 // ── VNC over WebSocket ───────────────────────────────────────────────────────
 // noVNC in the browser <-> this tunnel <-> QEMU's VNC unix socket. The socket is
-// only reachable through Open HL (or the agent), so the console inherits its auth.
+// only reachable through Gridlantis-HL (or the agent), so the console inherits its auth.
 function handleVncUpgrade(req, socket, head, id) {
   const conn = ws.accept(req, socket, head);
   if (!conn) return true;
@@ -181,7 +181,7 @@ function handleVncUpgrade(req, socket, head, id) {
   return true;
 }
 
-// Shared by Open HL and the agent: is this env in a state where a console can
+// Shared by Gridlantis-HL and the agent: is this env in a state where a console can
 // attach at all?
 function vncTarget(id) {
   if (!safeId(id)) return null;

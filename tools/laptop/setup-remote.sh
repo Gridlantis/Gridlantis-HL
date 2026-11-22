@@ -1,20 +1,20 @@
 #!/bin/bash
-# setup-remote.sh — let Open HL remote into this PC (Open HL → PC host).
+# setup-remote.sh — let Gridlantis-HL remote into this PC (Gridlantis-HL → PC host).
 #
 #   curl -fsSL http://<openhl-tailnet-ip>:<port>/laptops/setup.sh | sudo bash
 #   sudo bash setup-remote.sh [options]
 #
-#   --openhl IP      Open HL's tailnet address; the only machine let in
-#                   (filled in automatically when fetched from Open HL)
+#   --openhl IP      Gridlantis-HL's tailnet address; the only machine let in
+#                   (filled in automatically when fetched from Gridlantis-HL)
 #   --port N        VNC port on this PC's tailnet address       (default 5900)
-#   --name NAME     what Open HL calls this PC                    (default hostname)
+#   --name NAME     what Gridlantis-HL calls this PC                    (default hostname)
 #   --display D     X display to serve, e.g. :0   (default: find it — follows the
 #                   login screen and whichever desktop is signed in)
-#   --new-password  make a fresh password (re-pair in Open HL after); a plain
-#                   re-run keeps the password Open HL already has
+#   --new-password  make a fresh password (re-pair in Gridlantis-HL after); a plain
+#                   re-run keeps the password Gridlantis-HL already has
 #   --x11           switch the login screen and desktop to Xorg even when no
 #                   Wayland session is running right now
-#   --keep-wayland  leave a Wayland PC alone (Open HL then only reaches it when
+#   --keep-wayland  leave a Wayland PC alone (Gridlantis-HL then only reaches it when
 #                   someone picks an X11 session by hand)
 #   --uninstall     remove the service, password and firewall rule
 #
@@ -25,22 +25,22 @@
 #
 # KDE Plasma 6.8+ has no X11 session either. There the script runs KDE's own
 # Desktop Sharing (krfb) in the signed-in session: unattended access with the
-# Open HL password, pre-authorized with the screen-sharing portal so nobody has
+# Gridlantis-HL password, pre-authorized with the screen-sharing portal so nobody has
 # to click Allow, restarted by systemd if it ever exits. Same limit as GNOME
 # below: the desktop and lock screen, not the login screen.
 #
 # GNOME 49+ has no X11 session to switch to. There the script turns on GNOME
 # Remote Desktop's own VNC server in the signed-in user's session instead,
-# with the same password and Open HL-only firewall guard. That shares the
+# with the same password and Gridlantis-HL-only firewall guard. That shares the
 # desktop and its lock screen, but not GDM's login screen: after a reboot
-# Open HL reaches the PC once someone signs in (or GDM auto-login does).
+# Gridlantis-HL reaches the PC once someone signs in (or GDM auto-login does).
 #
 # The RustDesk model without a relay: a service that starts at boot and serves
 # the screen whether or not anyone is signed in, plus a permanent random
-# password. Open HL stores that password from the pairing code and signs in with
+# password. Gridlantis-HL stores that password from the pairing code and signs in with
 # it every time, so you never type it. Unlike RustDesk, nothing leaves the
 # tailnet — the VNC server listens only on this PC's Tailscale address and
-# accepts only Open HL's address, and the firewall is opened for that one peer.
+# accepts only Gridlantis-HL's address, and the firewall is opened for that one peer.
 set -euo pipefail
 
 OPENHL_IP="${OPENHL_IP:-}"
@@ -117,7 +117,7 @@ close_firewall() {
 
 # ── Uninstall ────────────────────────────────────────────────────────────────
 if [ "$UNINSTALL" = 1 ]; then
-  say "Removing Open HL remote desktop"
+  say "Removing Gridlantis-HL remote desktop"
   systemctl disable --now openhl-remote openhl-remote-info.socket openhl-remote-clip.socket openhl-remote-guard 2>/dev/null || true
   if [ -f "$CONF/remote.env" ]; then
     # shellcheck disable=SC1091
@@ -145,7 +145,7 @@ if [ "$UNINSTALL" = 1 ]; then
     echo "Pick the Wayland session on the login screen to go back to it."
   fi
   systemctl daemon-reload
-  echo "Done. x11vnc itself is left installed. Forget this PC in Open HL too."
+  echo "Done. x11vnc itself is left installed. Forget this PC in Gridlantis-HL too."
   exit 0
 fi
 
@@ -154,7 +154,7 @@ say "1/5  Checking this PC"
 command -v tailscale >/dev/null || die "Tailscale is not installed — https://tailscale.com/download/linux"
 TS_IP="$(tailscale ip -4 2>/dev/null | head -n1 || true)"
 [ -n "$TS_IP" ] || die "Tailscale is not connected — run 'sudo tailscale up' first"
-[ -n "$OPENHL_IP" ] || die "Open HL's tailnet address is unknown — re-run with --openhl 100.x.y.z"
+[ -n "$OPENHL_IP" ] || die "Gridlantis-HL's tailnet address is unknown — re-run with --openhl 100.x.y.z"
 [[ "$OPENHL_IP" =~ ^100\.[0-9]+\.[0-9]+\.[0-9]+$ ]] || die "--openhl must be a tailnet IPv4 address (100.x.y.z), got '$OPENHL_IP'"
 [[ "$PORT" =~ ^[0-9]+$ ]] && [ "$PORT" -ge 3 ] && [ "$PORT" -le 65535 ] || die "--port must be 3–65535"
 INFO_PORT=$((PORT - 1))   # hardware/usage info for the PC host card
@@ -162,7 +162,7 @@ CLIP_PORT=$((PORT - 2))   # clipboard bridge (KDE on Wayland only)
 [ -n "$NAME" ] || NAME="$(hostname)"
 NAME="$(printf '%s' "$NAME" | tr -cd 'A-Za-z0-9 ._-' | cut -c1-60)"
 echo "   this PC:     $NAME at $TS_IP:$PORT"
-echo "   Open HL:       $OPENHL_IP (the only address let in)"
+echo "   Gridlantis-HL:       $OPENHL_IP (the only address let in)"
 
 # ── Wayland → Xorg ───────────────────────────────────────────────────────────
 # x11vnc serves X11 only; a Wayland desktop shows as a black screen or not at
@@ -278,7 +278,7 @@ elif { [ "$WAYLAND" = 1 ] || [ "$FORCE_X11" = 1 ]; } && [ "$KEEP_WAYLAND" = 0 ];
   elif [ "$DM" = sddm ] || { [ -z "$GDM_CONF" ] && command -v sddm >/dev/null; }; then
     install -d -m 755 /etc/sddm.conf.d
     {
-      echo "# Written by Open HL setup-remote.sh: x11vnc can only share an Xorg screen."
+      echo "# Written by Gridlantis-HL setup-remote.sh: x11vnc can only share an Xorg screen."
       echo "# Delete this file (or run setup-remote.sh --uninstall) to go back to Wayland."
       echo "[General]"
       echo "DisplayServer=x11"
@@ -316,7 +316,7 @@ elif { [ "$WAYLAND" = 1 ] || [ "$FORCE_X11" = 1 ]; } && [ "$KEEP_WAYLAND" = 0 ];
     warn "pick an X11/Xorg session on the login screen for remote access."
   fi
 elif [ "$WAYLAND" = 1 ]; then
-  warn "a Wayland session is running and --keep-wayland was given: Open HL can only reach this PC"
+  warn "a Wayland session is running and --keep-wayland was given: Gridlantis-HL can only reach this PC"
   warn "when someone signs in to an X11/Xorg session."
 fi
 
@@ -329,15 +329,15 @@ if [ "$MODE" = kde ]; then
   KWRITE="$(command -v kwriteconfig6 || command -v kwriteconfig5 || true)"
   [ -n "$KWRITE" ] || die "kwriteconfig6 is missing — it comes with KDE Frameworks; is this really a Plasma desktop?"
   command -v python3 >/dev/null || command -v perl >/dev/null || pkg_install python3 || pkg_install python || die "need python3 or perl to store krfb's password"
-  # krfb listens on every address, so a guard rule drops the port for anyone but Open HL.
+  # krfb listens on every address, so a guard rule drops the port for anyone but Gridlantis-HL.
   command -v nft >/dev/null || pkg_install nftables || warn "no nft: port $PORT is only guarded if your firewall blocks it"
 elif [ "$MODE" = gnome ]; then
   say "2/5  Installing GNOME Remote Desktop"
   if command -v grdctl >/dev/null; then echo "   already installed"
   else pkg_install gnome-remote-desktop || die "could not install gnome-remote-desktop (see above)"; fi
-  grdctl --help 2>&1 | grep -qw vnc || die "this build of GNOME Remote Desktop has no VNC server (only RDP), which Open HL cannot speak"
+  grdctl --help 2>&1 | grep -qw vnc || die "this build of GNOME Remote Desktop has no VNC server (only RDP), which Gridlantis-HL cannot speak"
   # GNOME listens on every address, not just the tailnet one, so a guard
-  # rule drops the port for anyone but Open HL.
+  # rule drops the port for anyone but Gridlantis-HL.
   command -v nft >/dev/null || pkg_install nftables || warn "no nft: port $PORT is only guarded if your firewall blocks it"
 else
   say "2/5  Installing x11vnc"
@@ -352,8 +352,8 @@ fi
 
 # ── Password ─────────────────────────────────────────────────────────────────
 # VNC passwords stop at 8 characters; 8 random alphanumerics is ~47 bits, on
-# top of only answering Open HL's address. A re-run keeps the existing password
-# so Open HL stays paired.
+# top of only answering Gridlantis-HL's address. A re-run keeps the existing password
+# so Gridlantis-HL stays paired.
 install -d -m 700 "$CONF"
 OLD_ALLOW=""; OLD_PORT=""; OLD_INFO=""; OLD_CLIP=""
 if [ -f "$CONF/remote.env" ]; then
@@ -427,7 +427,7 @@ else
   fi
   [ -n "$DISP" ] || DISP=:0
 fi
-# The monitor layout rides along in the desktop name so Open HL's viewer can show
+# The monitor layout rides along in the desktop name so Gridlantis-HL's viewer can show
 # one monitor at a time ("WxH+X+Y/OUTPUT,…" from xrandr). -xrandr exit makes
 # x11vnc quit when the layout changes, so systemd restarts it with a fresh one.
 MONS=""
@@ -446,7 +446,7 @@ RUN
 chmod 700 "$CONF/run.sh"
 cat > "$UNIT" <<EOF
 [Unit]
-Description=Open HL remote desktop (x11vnc on the tailnet, Open HL only)
+Description=Gridlantis-HL remote desktop (x11vnc on the tailnet, Gridlantis-HL only)
 After=network-online.target tailscaled.service display-manager.service
 Wants=network-online.target
 
@@ -460,13 +460,13 @@ WantedBy=multi-user.target
 EOF
 fi
 
-# Hardware and live usage for Open HL's PC host card: a socket on the tailnet
-# address, Open HL only, that answers each connection with one line of JSON from
+# Hardware and live usage for Gridlantis-HL's PC host card: a socket on the tailnet
+# address, Gridlantis-HL only, that answers each connection with one line of JSON from
 # info.sh and hangs up. (Not in the VNC desktop name: x11vnc cuts that at 127
 # characters.) FreeBind lets it start before Tailscale has its address.
 cat > "$CONF/info.sh" <<'INFO'
 #!/bin/sh
-# One line of JSON about this PC for Open HL: what it is, and how busy it is now.
+# One line of JSON about this PC for Gridlantis-HL: what it is, and how busy it is now.
 clean() { tr -d '"\\' | tr -s ' ' | sed 's/^ //;s/ $//'; }
 CPU="$(sed -n 's/^model name[[:space:]]*:[[:space:]]*//p' /proc/cpuinfo | head -n1 | sed 's/(R)//g;s/(TM)//g;s/ CPU//' | clean)"
 [ -n "$CPU" ] || CPU="$(lscpu 2>/dev/null | sed -n 's/^Model name:[[:space:]]*//p' | head -n1 | clean)"
@@ -495,7 +495,7 @@ INFO
 chmod 755 "$CONF/info.sh"
 cat > "$INFO_SOCKET" <<SOCK
 [Unit]
-Description=Open HL remote desktop: hardware info for Open HL
+Description=Gridlantis-HL remote desktop: hardware info for Gridlantis-HL
 
 [Socket]
 ListenStream=$TS_IP:$INFO_PORT
@@ -509,7 +509,7 @@ WantedBy=sockets.target
 SOCK
 cat > "$INFO_SERVICE" <<SVC
 [Unit]
-Description=Open HL remote desktop: hardware info for Open HL
+Description=Gridlantis-HL remote desktop: hardware info for Gridlantis-HL
 
 [Service]
 ExecStart=$CONF/info.sh
@@ -527,7 +527,7 @@ else
   # x11vnc from an earlier run would only loop on "no X server"; retire it.
   systemctl disable --now openhl-remote >/dev/null 2>&1 || true; rm -f "$UNIT"
   # Guard: krfb and GNOME's VNC listen on every address, so drop the port for anyone
-  # but Open HL (IPv6 included). Loaded at boot before the desktop starts.
+  # but Gridlantis-HL (IPv6 included). Loaded at boot before the desktop starts.
   if command -v nft >/dev/null; then
     cat > "$CONF/guard.nft" <<NFT
 table inet openhl_remote
@@ -542,7 +542,7 @@ table inet openhl_remote {
 NFT
     cat > "$GUARD_UNIT" <<GUARD
 [Unit]
-Description=Open HL remote desktop: only Open HL may reach the VNC port
+Description=Gridlantis-HL remote desktop: only Gridlantis-HL may reach the VNC port
 Before=network-pre.target display-manager.service
 Wants=network-pre.target
 
@@ -607,7 +607,7 @@ if [ "$MODE" = kde ]; then
   install -d -o "$DESK_USER" -g "$(id -gn "$DESK_USER")" "$UHOME/.config" "$UHOME/.config/systemd" "$UHOME/.config/systemd/user"
   cat > "$UHOME/.config/systemd/user/app-org.kde.krfb.service" <<KRFB
 [Unit]
-Description=KDE Desktop Sharing (krfb) for Open HL
+Description=KDE Desktop Sharing (krfb) for Gridlantis-HL
 After=plasma-workspace.target
 PartOf=graphical-session.target
 
@@ -626,8 +626,8 @@ KRFB
 
   # Clipboard bridge. krfb uses Qt's clipboard, which Wayland only lets a
   # focused window touch, so on its own copy/paste never crosses. Klipper (the
-  # Plasma clipboard) can, over D-Bus: Open HL talks to it through this socket
-  # (tailnet address, Open HL only), running as the desktop user.
+  # Plasma clipboard) can, over D-Bus: Gridlantis-HL talks to it through this socket
+  # (tailnet address, Gridlantis-HL only), running as the desktop user.
   #   get          → the clipboard text
   #   set\n<text>  → replace it (text runs to end of input), answers "ok"
   #   watch        → "T <bytes>\n<text>" now and on every change, "." keep-alives
@@ -660,7 +660,7 @@ CLIP
   chmod 755 "$CLIP_SH"
   cat > "$CLIP_SOCKET" <<SOCK
 [Unit]
-Description=Open HL remote desktop: clipboard bridge for Open HL
+Description=Gridlantis-HL remote desktop: clipboard bridge for Gridlantis-HL
 
 [Socket]
 ListenStream=$TS_IP:$CLIP_PORT
@@ -674,7 +674,7 @@ WantedBy=sockets.target
 SOCK
   cat > "$CLIP_SERVICE" <<SVC
 [Unit]
-Description=Open HL remote desktop: clipboard bridge for Open HL
+Description=Gridlantis-HL remote desktop: clipboard bridge for Gridlantis-HL
 
 [Service]
 User=$DESK_USER
@@ -691,7 +691,7 @@ SVC
   echo "   clipboard: bridged through Klipper on port $CLIP_PORT"
 elif [ "$MODE" = gnome ]; then
   # GNOME Remote Desktop, VNC side, in the user's session. Password auth with
-  # no prompt at the screen; no TLS layer (Open HL's viewer speaks plain VNC
+  # no prompt at the screen; no TLS layer (Gridlantis-HL's viewer speaks plain VNC
   # auth, and the traffic is inside WireGuard anyway).
   as_user grdctl vnc set-password "$PASS" >/dev/null || die "could not store the VNC password — is $DESK_USER's keyring unlocked?"
   # set-password can return 0 without storing anything; check it took.
@@ -706,7 +706,7 @@ elif [ "$MODE" = gnome ]; then
   as_user systemctl --user restart gnome-remote-desktop.service
 fi
 
-# Firewall: open the port to Open HL only, on the tailnet interface only.
+# Firewall: open the port to Gridlantis-HL only, on the tailnet interface only.
 if [ -n "$OLD_ALLOW" ] && { [ "$OLD_ALLOW" != "$OPENHL_IP" ] || [ "$OLD_PORT" != "$PORT" ]; }; then
   close_firewall "$OLD_ALLOW" "${OLD_PORT:-5900}"
   [ -n "$OLD_INFO" ] && close_firewall "$OLD_ALLOW" "$OLD_INFO"
@@ -752,24 +752,24 @@ JSON="$(printf '{"v":1,"name":"%s","host":"%s","port":%s,"password":"%s"}' "$NAM
 CODE="openhl-laptop:$(printf '%s' "$JSON" | base64 -w0 | tr '+/' '-_' | tr -d '=')"
 printf '%s\n' "$CODE" > "$CONF/pairing.txt"; chmod 600 "$CONF/pairing.txt"
 
-say "Pairing code — paste it into Open HL → PC host → Pair a PC"
+say "Pairing code — paste it into Gridlantis-HL → PC host → Pair a PC"
 printf '\n  %s\n\n' "$CODE"
 echo "It is also kept in $CONF/pairing.txt (root only). Running this script again"
 echo "keeps this password; --new-password makes a new one to re-pair with."
 if [ "$SWITCHED" = 1 ]; then
   say "Reboot this PC to finish"
-  echo "The login screen and desktop come back up on Xorg, and Open HL can reach both."
-  echo "Pairing now is fine; the PC shows offline in Open HL until the reboot."
+  echo "The login screen and desktop come back up on Xorg, and Gridlantis-HL can reach both."
+  echo "Pairing now is fine; the PC shows offline in Gridlantis-HL until the reboot."
 fi
 if [ "$MODE" = kde ]; then
   say "KDE note"
-  echo "Open HL reaches this PC while $DESK_USER is signed in (locked screen is fine)."
+  echo "Gridlantis-HL reaches this PC while $DESK_USER is signed in (locked screen is fine)."
   echo "After a reboot it is offline until someone signs in; turn on automatic login"
   echo "on the login screen to cover reboots (krfb's password does not need the wallet)."
 fi
 if [ "$MODE" = gnome ]; then
   say "GNOME note"
-  echo "Open HL reaches this PC while $DESK_USER is signed in (locked screen is fine)."
+  echo "Gridlantis-HL reaches this PC while $DESK_USER is signed in (locked screen is fine)."
   echo "After a reboot it is offline until someone signs in. To cover reboots, turn on"
   echo "automatic login (Settings → System → Users) and give the login keyring an empty"
   echo "password (Passwords and Keys app) — GNOME keeps the VNC password in that keyring."

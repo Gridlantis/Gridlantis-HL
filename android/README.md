@@ -1,6 +1,6 @@
-# Open HL for Android
+# Gridlantis-HL for Android
 
-Open HL in its own app on a phone: a WebView around your Open HL server, like the
+Gridlantis-HL in its own app on a phone: a WebView around your Gridlantis-HL server, like the
 desktop app. It remembers servers and the login, handles uploads and downloads
 with your session, asks for the microphone or camera only when a page wants
 them, and can pin a self-signed HTTPS certificate. Sidebar → **Switch server**
@@ -12,7 +12,7 @@ goes back to the connect screen.
 android/build.sh      # → android/dist/OpenHL-<version>-android.apk
 ```
 
-Open HL serves the APK at `/download#android` (sidebar → Get the app → Android app).
+Gridlantis-HL serves the APK at `/download#android` (sidebar → Get the app → Android app).
 
 No Gradle. The script needs JDK 17 at `~/Android/jdk` and an Android SDK at
 `~/Android/Sdk` with `platforms;android-35` and `build-tools;35.0.0`

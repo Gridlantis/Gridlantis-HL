@@ -3,7 +3,7 @@ const { BASE_CSS, FAVICON, FONT, GAMEPAD_JS, NAV_CSS, TOAST_CSS, TOAST_JS, navBa
 function mailHtml() {
   return `<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Open HL · Mail</title>${FONT}${FAVICON}
+<title>Gridlantis-HL · Mail</title>${FONT}${FAVICON}
 <style>
 ${BASE_CSS}${NAV_CSS}${TOAST_CSS}
 .ml-page{max-width:1500px;}
@@ -90,7 +90,7 @@ ${navBar("/mail")}
           <div class="s" id="d-subj"></div><div class="f" id="d-from"></div></div>
         <div class="ml-detail-b" id="d-body">Loading&hellip;</div>
         <div class="ml-detail-foot">
-          <button class="m-btn danger" onclick="deleteMsg()"><i class="fa-solid fa-trash"></i>Remove from Open HL</button>
+          <button class="m-btn danger" onclick="deleteMsg()"><i class="fa-solid fa-trash"></i>Remove from Gridlantis-HL</button>
         </div>
       </div>
     </section>
@@ -108,7 +108,7 @@ ${navBar("/mail")}
     <div><label class="m-label" for="ac-email">Email</label><input class="m-input" id="ac-email" placeholder="you@gmail.com" autocapitalize="off" autocorrect="off"></div>
     <div><label class="m-label" for="ac-pass">App password</label><input class="m-input" id="ac-pass" type="password" placeholder="16 characters"></div>
     <button class="m-btn primary" onclick="addAccount()">Connect account</button>
-    <div class="ml-note">Needs 2-Step Verification and a Google app password. Open HL only reads mail.</div>
+    <div class="ml-note">Needs 2-Step Verification and a Google app password. Gridlantis-HL only reads mail.</div>
   </div>
   <div class="ml-sec">
     <h2>Important mail</h2>
@@ -149,7 +149,7 @@ async function loadAccounts(){
   try {
     var data = await fetch('/api/mail/accounts').then(function(r){return r.json();});
     PURGE_DAYS = data.purgeDays || 21;
-    document.getElementById('ml-purgenote').textContent = 'Unopened messages leave Open HL after ' + PURGE_DAYS + ' days. Opened ones stay until you remove them.';
+    document.getElementById('ml-purgenote').textContent = 'Unopened messages leave Gridlantis-HL after ' + PURGE_DAYS + ' days. Opened ones stay until you remove them.';
     var box = document.getElementById('acct-list');
     box.textContent = '';
     if (!data.accounts.length) { var n = document.createElement('div'); n.className='ml-note'; n.textContent='No accounts yet. Add one below.'; box.appendChild(n); }
@@ -216,7 +216,7 @@ async function addAccount(){
   } catch(e){ showToast('Failed: '+e.message,'error'); }
 }
 async function removeAccount(id, name){
-  if (!confirm('Remove ' + name + ' and its copied mail from Open HL? Gmail is not changed.')) return;
+  if (!confirm('Remove ' + name + ' and its copied mail from Gridlantis-HL? Gmail is not changed.')) return;
   await fetch('/api/mail/accounts/delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:id})});
   loadAccounts(); loadMessages();
 }

@@ -9,7 +9,7 @@ const { HOME_DIR } = require("../../config");
 // ═══ MOBILE HOST: ADB ═════════════════════════════════════════════════════════
 // Android phones are reached the way scrcpy/QtScrcpy reach them: over adb, by
 // USB on this machine or wirelessly (Android 11+ "Wireless debugging", or the
-// older adb tcpip). Open HL brings its own tools, so nothing needs installing
+// older adb tcpip). Gridlantis-HL brings its own tools, so nothing needs installing
 // system-wide: Google's platform-tools for adb, and the scrcpy server that is
 // pushed to the phone (pinned, checksum-verified — client and server must be
 // the exact same version).
@@ -24,7 +24,7 @@ const LOCAL_ADB = path.join(TOOLS_DIR, "platform-tools", "adb");
 const err = (msg, status = 500) => Object.assign(new Error(msg), { status });
 
 // A system adb is used if there is one (it may already have a server and udev
-// rules); otherwise the one Open HL downloaded.
+// rules); otherwise the one Gridlantis-HL downloaded.
 function systemAdb() {
   for (const d of String(process.env.PATH || "").split(":")) {
     const p = path.join(d, "adb");
@@ -41,7 +41,7 @@ function toolsStatus() {
 
 function download(url, dest, redirects = 5) {
   return new Promise((resolve, reject) => {
-    https.get(url, { headers: { "User-Agent": "Open HL" } }, res => {
+    https.get(url, { headers: { "User-Agent": "Gridlantis-HL" } }, res => {
       if ([301, 302, 303, 307, 308].includes(res.statusCode) && res.headers.location && redirects) {
         res.resume(); return download(new URL(res.headers.location, url).href, dest, redirects - 1).then(resolve, reject);
       }

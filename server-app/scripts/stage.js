@@ -1,4 +1,4 @@
-// Copies the Open HL program into server-app/openhl/, which electron-builder
+// Copies the Gridlantis-HL program into server-app/openhl/, which electron-builder
 // ships as a resource next to the app. Only files git tracks are copied, so
 // nothing from a local install (.env, data/, uploads/, live/) can end up in a
 // download.
@@ -15,7 +15,7 @@ const PATHS = ["server.js", "src", "tools", ".env.example", "LICENSE", "README.m
 const appVersion = require("../package.json").version;
 const openhlVersion = require(path.join(REPO, "desktop", "package.json")).version;
 if (appVersion !== openhlVersion) {
-  console.error(`server-app/package.json is ${appVersion} but Open HL is ${openhlVersion}. Make them match.`);
+  console.error(`server-app/package.json is ${appVersion} but Gridlantis-HL is ${openhlVersion}. Make them match.`);
   process.exit(1);
 }
 
@@ -27,4 +27,4 @@ for (const f of files) {
   fs.mkdirSync(path.dirname(to), { recursive: true });
   fs.copyFileSync(path.join(REPO, f), to);
 }
-console.log(`Staged ${files.length} Open HL files into server-app/openhl/`);
+console.log(`Staged ${files.length} Gridlantis-HL files into server-app/openhl/`);

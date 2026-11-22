@@ -3,7 +3,7 @@ const { BASE_CSS, FAVICON, FONT, GAMEPAD_CSS, NAV_CSS, SSE_JS, TOAST_CSS, TOAST_
 function notesHtml() {
   return `<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Open HL \xb7 Notes</title>${FONT}${FAVICON}
+<title>Gridlantis-HL \xb7 Notes</title>${FONT}${FAVICON}
 <style>
 ${BASE_CSS}${NAV_CSS}${TOAST_CSS}${GAMEPAD_CSS}
 /* Notes keeps its own HUD typography inside the shared shell. */

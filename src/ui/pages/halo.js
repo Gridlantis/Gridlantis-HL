@@ -1,6 +1,6 @@
 // Halo — the home page's 3D helper. Click it and it offers Help or Nevermind;
 // Help opens a feature picker that says which API keys and credentials each
-// Open HL feature needs and where to put them.
+// Gridlantis-HL feature needs and where to put them.
 //
 // Loaded as an ES module by src/pages/home.js, with an import map that points
 // "three" at the vendored copy in src/ui/vendor/three-0.170.0.
@@ -17,24 +17,24 @@ const FEATURES = [
     free: 'Local models need no key: run Ollama and set OLLAMA_HOST if it is not on this machine.',
     where: 'Paste the key on the AI page, or put it in .env.' },
   { id: 'calendar', name: 'Calendar (Google sync)', href: '/calendar',
-    about: 'Two-way sync between the Open HL calendar and Google Calendar.',
+    about: 'Two-way sync between the Gridlantis-HL calendar and Google Calendar.',
     keys: [['GOOGLE_CLIENT_ID', 'OAuth client ID of a "Web application" client.', 'Google Cloud console, with the Calendar API turned on'],
            ['GOOGLE_CLIENT_SECRET', 'The secret of that same OAuth client.', 'Google Cloud console'],
            ['GOOGLE_REDIRECT_URI', 'Optional. Only if you do not use http://localhost:<PORT>/api/calendar/callback.', 'Must match the redirect URI on the client']],
     free: 'The calendar itself works without Google. Keys are only for syncing.',
-    where: 'Put them in .env, restart Open HL, then press Connect on the Calendar page.' },
+    where: 'Put them in .env, restart Gridlantis-HL, then press Connect on the Calendar page.' },
   { id: 'mail', name: 'Mail', href: '/mail',
     about: 'Reads your inboxes over IMAP.',
     keys: [['account address', 'The email address to read.', 'Your mail provider'],
            ['app password', 'An app password, not your normal login. Gmail, Outlook and iCloud all require one.', 'Your mail account security settings']],
-    free: 'No API key needed. MAIL_IMAP_HOST is only for providers Open HL cannot detect.',
+    free: 'No API key needed. MAIL_IMAP_HOST is only for providers Gridlantis-HL cannot detect.',
     where: 'Add accounts on the Mail page, under Accounts and rules.' },
   { id: 'voicemail', name: 'Voicemail and Texts', href: '/voicemail',
     about: 'Pulls voicemail recordings and incoming text messages from a Twilio number.',
     keys: [['TWILIO_ACCOUNT_SID', 'Your Twilio account SID (starts with AC).', 'console.twilio.com'],
            ['TWILIO_AUTH_TOKEN', 'Your Twilio auth token.', 'console.twilio.com'],
            ['TWILIO_NUMBER', 'Optional. Only keep messages left on this number, like +18335550100.', 'Your Twilio phone numbers']],
-    where: 'Put them in .env and restart Open HL. Both pages stay off until the SID and token are set.' },
+    where: 'Put them in .env and restart Gridlantis-HL. Both pages stay off until the SID and token are set.' },
   { id: 'homeos', name: 'HomeOS (smart home)', href: '/homeos',
     about: 'Controls lights, plugs and cameras. Kasa, Sonoff and Tuya-local devices are found on your network and need nothing.',
     keys: [['WYZE_EMAIL / WYZE_PASSWORD', 'Your Wyze login.', 'Wyze app'],
@@ -42,12 +42,12 @@ const FEATURES = [
            ['BLINK_EMAIL / BLINK_PASSWORD', 'Your Blink login. Set BLINK_UUID too so you are not asked for 2FA after every restart.', 'Blink app'],
            ['RING_REFRESH_TOKEN', 'A Ring refresh token.', 'The ring-client-api command-line tool'],
            ['TUYA_CLIENT_ID / TUYA_CLIENT_SECRET', 'Only for Tuya devices that cannot be reached locally.', 'iot.tuya.com']],
-    where: 'Only add the vendors you own. Put them in .env and restart Open HL.' },
+    where: 'Only add the vendors you own. Put them in .env and restart Gridlantis-HL.' },
   { id: 'monitoring', name: 'Monitoring', href: '/monitoring',
     about: 'Watches your machines and services and shows what is up or down.',
     keys: [['UPTIMEROBOT_KEY', 'Optional. A read-only UptimeRobot API key, to show your UptimeRobot monitors too.', 'uptimerobot.com: Integrations and API']],
     free: 'Checking your own machines needs no key.',
-    where: 'Put it in .env and restart Open HL.' },
+    where: 'Put it in .env and restart Gridlantis-HL.' },
   { id: 'weather', name: 'Weather', href: '/',
     about: 'The weather line under the greeting on this page.',
     keys: [],
@@ -62,7 +62,7 @@ const FEATURES = [
     free: 'No key needed. TTS_VOICE picks the online voice, PIPER_VOICE the offline one.' },
   { id: 'login', name: 'Signing in', href: '/',
     about: 'The password that protects this dashboard.',
-    keys: [['PASSWORD', 'Required. Open HL will not start without it.', 'You choose it']],
+    keys: [['PASSWORD', 'Required. Gridlantis-HL will not start without it.', 'You choose it']],
     where: 'Set it in .env.' },
 ];
 

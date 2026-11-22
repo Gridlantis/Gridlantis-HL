@@ -1,6 +1,6 @@
 // ─── VM LAB · operating-system catalog ───────────────────────────────────────
 // Each entry is something VM Lab knows how to fetch and boot sensibly.
-//   kind 'cloud' — a ready-to-boot disk with cloud-init; Open HL seeds a user,
+//   kind 'cloud' — a ready-to-boot disk with cloud-init; Gridlantis-HL seeds a user,
 //                  password and the guest agent on first boot.
 //   kind 'iso'   — an installer or live ISO; boots from CD onto a blank disk.
 //   manual       — cannot be downloaded automatically (licensing); the entry
